@@ -1,7 +1,14 @@
 <script setup lang="ts">
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm, router } from '@inertiajs/vue3';
+import { computed, ref } from 'vue';
 import type { PageProps } from '@/types';
-import { admin_products_index, admin_products_update, admin_products_destroy } from '@/routes';
+import {
+    admin_products_index,
+    admin_products_update,
+    admin_products_destroy,
+    admin_products_images_primary,
+    admin_products_images_destroy,
+} from '@/routes';
 
 interface Option { id: string; name: string }
 interface AttributeValue { id: string; value: string }
@@ -79,6 +86,17 @@ const form = useForm({
     }),
 });
 
+/* ---------------- Variations ---------------- */
+const expandedVariation = ref<string | null>(null);
+
+function variationKey(index: number, row: VariationFormRow): string {
+    return row.id ?? `new-${index}`;
+}
+
+function toggleVariation(key: string) {
+    expandedVariation.value = expandedVariation.value === key ? null : key;
+}
+
 function addVariation() {
     form.variations.push({
         id: null,
@@ -89,6 +107,9 @@ function addVariation() {
         low_stock_threshold: null,
         selected: {},
     });
+    // Auto-expand the newly added variation
+    const newIndex = form.variations.length - 1;
+    expandedVariation.value = variationKey(newIndex, form.variations[newIndex]);
 }
 
 function removeVariation(index: number) {
@@ -103,6 +124,7 @@ function toggleAttribute(row: VariationFormRow, attributeName: string, valueId: 
     }
 }
 
+/* ---------------- Submit / Delete ---------------- */
 function submit() {
     form
         .transform((data) => ({
@@ -124,6 +146,46 @@ function deleteProduct() {
     if (confirm('Delete this product? This action cannot be undone.')) {
         form.delete(admin_products_destroy.url(props.product.id));
     }
+}
+
+/* ---------------- Image actions ---------------- */
+const imageActionBusy = ref<string | null>(null);
+
+function setPrimaryImage(image: { id: string }) {
+    imageActionBusy.value = image.id;
+    router.patch(
+        admin_products_images_primary.url({
+            product: props.product.id,
+            image: image.id,
+        }),
+        {},
+        {
+            preserveScroll: true,
+            preserveState: true,
+            onFinish: () => {
+                imageActionBusy.value = null;
+            },
+        },
+    );
+}
+
+function deleteImage(image: { id: string }) {
+    if (!confirm('Delete this image? This cannot be undone.')) return;
+
+    imageActionBusy.value = image.id;
+    router.delete(
+        admin_products_images_destroy.url({
+            product: props.product.id,
+            image: image.id,
+        }),
+        {
+            preserveScroll: true,
+            preserveState: true,
+            onFinish: () => {
+                imageActionBusy.value = null;
+            },
+        },
+    );
 }
 </script>
 
@@ -298,20 +360,56 @@ function deleteProduct() {
 
                     <div v-if="product.images.length" class="rounded-lg border border-slate-200 p-4 dark:border-navy-600">
                         <p class="font-medium text-slate-700 dark:text-navy-100">Existing images</p>
-                        <div class="mt-3 flex flex-wrap gap-3">
+                        <div class="mt-3 flex flex-row flex-nowrap gap-3 overflow-x-auto pb-1">
                             <div
                                 v-for="img in product.images"
                                 :key="img.id"
-                                class="h-20 w-20 overflow-hidden rounded-lg border bg-slate-100 dark:border-navy-500 dark:bg-navy-900"
+                                class="group relative h-24 w-24 shrink-0 overflow-hidden rounded-lg border bg-slate-100 dark:border-navy-500 dark:bg-navy-900"
                                 :class="img.is_primary ? 'ring-2 ring-primary dark:ring-accent' : ''"
                             >
-                                <img :src="`/storage/${img.path}`" :alt="img.alt ?? product.name" class="h-full w-full object-cover" />
+                                <img
+                                    :src="`/storage/${img.path}`"
+                                    :alt="img.alt ?? product.name"
+                                    class="h-full w-full object-cover"
+                                />
+
+                                <span
+                                    v-if="img.is_primary"
+                                    class="absolute left-1 top-1 z-10 rounded-full bg-primary/90 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white shadow-sm dark:bg-accent/90"
+                                >
+                                    Primary
+                                </span>
+
+                                <div
+                                    class="absolute inset-0 z-20 flex flex-col items-center justify-center gap-1.5 bg-black/55 transition-opacity duration-200
+                                           md:invisible md:opacity-0
+                                           group-hover:visible group-hover:opacity-100"
+                                >
+                                    <button
+                                        v-if="!img.is_primary"
+                                        type="button"
+                                        class="rounded-full bg-white/95 px-2.5 py-1 text-[11px] font-semibold text-slate-800 shadow-sm transition hover:bg-white disabled:opacity-50"
+                                        :disabled="imageActionBusy === img.id"
+                                        @click="setPrimaryImage(img)"
+                                    >
+                                        Set primary
+                                    </button>
+                                    <button
+                                        type="button"
+                                        class="rounded-full bg-error px-2.5 py-1 text-[11px] font-semibold text-white shadow-sm transition hover:bg-error/90 disabled:opacity-50"
+                                        :disabled="imageActionBusy === img.id"
+                                        @click="deleteImage(img)"
+                                    >
+                                        {{ imageActionBusy === img.id ? '…' : 'Delete' }}
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
+            <!-- Variations (accordion) -->
             <section class="card p-4 sm:p-5">
                 <div class="flex items-center justify-between border-b border-slate-200 pb-4 dark:border-navy-600">
                     <h2 class="text-base font-semibold text-slate-700 dark:text-navy-100">Variations</h2>
@@ -330,87 +428,147 @@ function deleteProduct() {
                     No variations yet. Add at least one.
                 </p>
 
-                <div
-                    v-for="(row, index) in form.variations"
-                    :key="row.id ?? `new-${index}`"
-                    class="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-navy-600 dark:bg-navy-750"
-                >
-                    <div class="flex items-center justify-between gap-4">
-                        <p class="font-medium text-slate-700 dark:text-navy-100">Variation {{ index + 1 }}</p>
-                        <button type="button" class="text-sm font-medium text-error hover:underline" @click="removeVariation(index)">
-                            Remove
-                        </button>
-                    </div>
-
-                    <div class="mt-3 grid gap-3 sm:grid-cols-5">
-                        <div>
-                            <label class="text-xs font-medium text-slate-600 dark:text-navy-300">SKU</label>
-                            <input
-                                v-model="row.sku"
-                                class="form-input mt-1 w-full rounded-lg border border-slate-300 bg-transparent px-2.5 py-1.5 text-sm dark:border-navy-450 dark:bg-navy-900"
-                            />
-                        </div>
-                        <div>
-                            <label class="text-xs font-medium text-slate-600 dark:text-navy-300">Price</label>
-                            <input
-                                v-model.number="row.price"
-                                type="number"
-                                step="0.01"
-                                class="form-input mt-1 w-full rounded-lg border border-slate-300 bg-transparent px-2.5 py-1.5 text-sm dark:border-navy-450 dark:bg-navy-900"
-                                placeholder="Inherit"
-                            />
-                        </div>
-                        <div>
-                            <label class="text-xs font-medium text-slate-600 dark:text-navy-300">Sale price</label>
-                            <input
-                                v-model.number="row.sale_price"
-                                type="number"
-                                step="0.01"
-                                class="form-input mt-1 w-full rounded-lg border border-slate-300 bg-transparent px-2.5 py-1.5 text-sm dark:border-navy-450 dark:bg-navy-900"
-                            />
-                        </div>
-                        <div>
-                            <label class="text-xs font-medium text-slate-600 dark:text-navy-300">Stock</label>
-                            <input
-                                v-model.number="row.stock_quantity"
-                                type="number"
-                                class="form-input mt-1 w-full rounded-lg border border-slate-300 bg-transparent px-2.5 py-1.5 text-sm dark:border-navy-450 dark:bg-navy-900"
-                            />
-                        </div>
-                        <div>
-                            <label class="text-xs font-medium text-slate-600 dark:text-navy-300">Low stock</label>
-                            <input
-                                v-model.number="row.low_stock_threshold"
-                                type="number"
-                                class="form-input mt-1 w-full rounded-lg border border-slate-300 bg-transparent px-2.5 py-1.5 text-sm dark:border-navy-450 dark:bg-navy-900"
-                            />
-                        </div>
-                    </div>
-
-                    <div class="mt-4 space-y-3">
-                        <div v-for="attr in attributes" :key="attr.id">
-                            <p class="text-xs font-medium text-slate-500 dark:text-navy-300">{{ attr.name }}</p>
-                            <div class="mt-1.5 flex flex-wrap gap-1.5">
+                <!-- Accordion -->
+                <div class="flex flex-col space-y-3 sm:space-y-4 lg:space-y-5">
+                    <div
+                        v-for="(row, index) in form.variations"
+                        :key="variationKey(index, row)"
+                        class="overflow-hidden rounded-lg border border-slate-150 dark:border-navy-500"
+                    >
+                        <!-- Header -->
+                        <div
+                            class="flex cursor-pointer items-center justify-between bg-slate-150 px-4 py-4 transition-colors hover:bg-slate-200/60 dark:bg-navy-500 dark:hover:bg-navy-450/60 sm:px-5"
+                            @click="toggleVariation(variationKey(index, row))"
+                        >
+                            <div class="flex min-w-0 items-center space-x-3.5">
+                                <div class="flex size-10 shrink-0 items-center justify-center rounded-full bg-warning text-xs font-semibold uppercase text-white dark:bg-accent">
+                                    #{{ index + 1 }}
+                                </div>
+                                <div class="min-w-0">
+                                    <p class="line-clamp-1 text-slate-700 dark:text-navy-100">
+                                        {{ row.sku || 'Untitled variation' }}
+                                    </p>
+                                    <p class="text-xs text-slate-500 dark:text-navy-300">
+                                        {{ Object.keys(row.selected).length }} attribute{{ Object.keys(row.selected).length === 1 ? '' : 's' }}
+                                        <span v-if="row.stock_quantity !== null"> · {{ row.stock_quantity }} in stock</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-1">
                                 <button
-                                    v-for="val in attr.values"
-                                    :key="val.id"
                                     type="button"
-                                    class="btn rounded-full bg-slate-150 font-medium text-slate-800  focus:bg-slate-200 active:bg-slate-200/80 dark:bg-navy-500 dark:text-navy-50 dark:hover:bg-navy-450 dark:focus:bg-navy-450 dark:active:bg-navy-450/90"
-                                    :class="row.selected[attr.name] === val.id ? 'border-primary bg-primary/10 text-primary dark:border-accent dark:bg-accent/10 dark:text-accent-light' : 'border-slate-300 bg-white hover:bg-slate-100 dark:border-navy-500 dark:bg-navy-800 dark:hover:bg-navy-700'"
-                                    @click="toggleAttribute(row, attr.name, val.id)"
+                                    class="badge space-x-2.5 rounded-full bg-error/10 text-error hover:underline dark:bg-error/15"
+                                    @click.stop="removeVariation(index)"
                                 >
-                                    {{ val.value }}
+                                    Remove
+                                </button>
+                                <button
+                                    type="button"
+                                    class="btn -mr-1.5 size-8 rounded-full p-0 text-slate-600 hover:bg-slate-300/20 focus:bg-slate-300/20 active:bg-slate-300/25 dark:text-navy-200 dark:hover:bg-navy-300/20 dark:focus:bg-navy-300/20 dark:active:bg-navy-300/25"
+                                    :aria-expanded="expandedVariation === variationKey(index, row)"
+                                    :aria-controls="`variation-${variationKey(index, row)}-panel`"
+                                    @click.stop="toggleVariation(variationKey(index, row))"
+                                >
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        class="size-4 transition-transform duration-200"
+                                        :class="expandedVariation === variationKey(index, row) ? '-rotate-180' : ''"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                    >
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                                    </svg>
                                 </button>
                             </div>
                         </div>
-                    </div>
 
-                    <p v-if="form.errors[`variations.${index}.sku`]" class="mt-2 text-xs text-error">
-                        {{ form.errors[`variations.${index}.sku`] }}
-                    </p>
-                    <p v-if="form.errors[`variations.${index}.attribute_value_ids`]" class="mt-2 text-xs text-error">
-                        {{ form.errors[`variations.${index}.attribute_value_ids`] }}
-                    </p>
+                        <!-- Body (grid trick for smooth collapse) -->
+                        <div
+                            :id="`variation-${variationKey(index, row)}-panel`"
+                            class="grid transition-[grid-template-rows,opacity] duration-300 ease-in-out"
+                            :class="
+                                expandedVariation === variationKey(index, row)
+                                    ? 'grid-rows-[1fr] opacity-100'
+                                    : 'grid-rows-[0fr] opacity-0'
+                            "
+                        >
+                            <div class="overflow-hidden">
+                                <div class="px-4 py-4 sm:px-5">
+                                    <div class="grid gap-3 sm:grid-cols-5">
+                                        <div>
+                                            <label class="text-xs font-medium text-slate-600 dark:text-navy-300">SKU</label>
+                                            <input
+                                                v-model="row.sku"
+                                                class="form-input mt-1 w-full rounded-lg border border-slate-300 bg-transparent px-2.5 py-1.5 text-sm dark:border-navy-450 dark:bg-navy-900"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label class="text-xs font-medium text-slate-600 dark:text-navy-300">Price</label>
+                                            <input
+                                                v-model.number="row.price"
+                                                type="number"
+                                                step="0.01"
+                                                class="form-input mt-1 w-full rounded-lg border border-slate-300 bg-transparent px-2.5 py-1.5 text-sm dark:border-navy-450 dark:bg-navy-900"
+                                                placeholder="Inherit"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label class="text-xs font-medium text-slate-600 dark:text-navy-300">Sale price</label>
+                                            <input
+                                                v-model.number="row.sale_price"
+                                                type="number"
+                                                step="0.01"
+                                                class="form-input mt-1 w-full rounded-lg border border-slate-300 bg-transparent px-2.5 py-1.5 text-sm dark:border-navy-450 dark:bg-navy-900"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label class="text-xs font-medium text-slate-600 dark:text-navy-300">Stock</label>
+                                            <input
+                                                v-model.number="row.stock_quantity"
+                                                type="number"
+                                                class="form-input mt-1 w-full rounded-lg border border-slate-300 bg-transparent px-2.5 py-1.5 text-sm dark:border-navy-450 dark:bg-navy-900"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label class="text-xs font-medium text-slate-600 dark:text-navy-300">Low stock</label>
+                                            <input
+                                                v-model.number="row.low_stock_threshold"
+                                                type="number"
+                                                class="form-input mt-1 w-full rounded-lg border border-slate-300 bg-transparent px-2.5 py-1.5 text-sm dark:border-navy-450 dark:bg-navy-900"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-4 space-y-3">
+                                        <div v-for="attr in attributes" :key="attr.id">
+                                            <p class="text-xs font-medium text-slate-500 dark:text-navy-300">{{ attr.name }}</p>
+                                            <div class="mt-1.5 flex flex-wrap gap-1.5">
+                                                <button
+                                                    v-for="val in attr.values"
+                                                    :key="val.id"
+                                                    type="button"
+                                                    class="btn rounded-full bg-slate-150 font-medium text-slate-800 focus:bg-slate-200 active:bg-slate-200/80 dark:bg-navy-500 dark:text-navy-50 dark:hover:bg-navy-450 dark:focus:bg-navy-450 dark:active:bg-navy-450/90"
+                                                    :class="row.selected[attr.name] === val.id ? 'border-primary bg-primary/10 text-primary dark:border-accent dark:bg-accent/10 dark:text-accent-light' : 'border-slate-300 bg-white hover:bg-slate-100 dark:border-navy-500 dark:bg-navy-800 dark:hover:bg-navy-700'"
+                                                    @click="toggleAttribute(row, attr.name, val.id)"
+                                                >
+                                                    {{ val.value }}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <p v-if="form.errors[`variations.${index}.sku`]" class="mt-2 text-xs text-error">
+                                        {{ form.errors[`variations.${index}.sku`] }}
+                                    </p>
+                                    <p v-if="form.errors[`variations.${index}.attribute_value_ids`]" class="mt-2 text-xs text-error">
+                                        {{ form.errors[`variations.${index}.attribute_value_ids`] }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
@@ -418,13 +576,14 @@ function deleteProduct() {
                 <button
                     type="submit"
                     :disabled="form.processing"
-                    class="btn bg-primary font-medium text-white hover:bg-primary-focus focus:bg-primary-focus active:bg-primary-focus/90 disabled:opacity-50 dark:bg-accent dark:hover:bg-accent-focus dark:focus:bg-accent-focus dark:active:bg-accent/90"
+                    class="btn bg-primary/10 font-medium text-primary hover:bg-primary/20 focus:bg-primary/20 active:bg-primary/25 dark:bg-accent-light/10 dark:text-accent-light dark:hover:bg-accent-light/20 dark:focus:bg-accent-light/20 dark:active:bg-accent-light/25"
                 >
                     {{ form.processing ? 'Saving…' : 'Save changes' }}
                 </button>
                 <button
                     type="button"
-                    class="btn border border-error font-medium text-error hover:bg-error/10 focus:bg-error/10 active:bg-error/25"
+                    class="btn border border-secondary/30 bg-secondary/10 font-medium text-secondary hover:bg-secondary/20 focus:bg-secondary/20 active:bg-secondary/25 dark:border-secondary-light/30 dark:bg-secondary-light/10 dark:text-secondary-light dark:hover:bg-secondary-light/20 dark:focus:bg-secondary-light/20 dark:active:bg-secondary-light/25"
+
                     @click="deleteProduct"
                 >
                     Delete product

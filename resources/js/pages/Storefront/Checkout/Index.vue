@@ -48,7 +48,7 @@ interface SavedAddress {
 interface Props extends PageProps {
     cart: CartPayload;
     counties: County[];
-    user: { name: string; email: string } | null;
+    user: {} | null;
     addresses: SavedAddress[];
 }
 
@@ -85,6 +85,8 @@ const form = useForm({
     address_label: '',
     idempotency_key: crypto.randomUUID(),
 });
+
+const isAdmin = computed(() => props.auth?.user?.role === 'admin');
 
 // When a saved address is picked, mirror its delivery fields into the form.
 // Phone is never copied — it belongs to the contact section for M-Pesa.
@@ -196,12 +198,16 @@ const formatMoney = (amount) =>
                                 payment prompt?</p>
                         </div>
                     </div>
-
                     <div class="mt-4 space-y-4">
                         <div>
                             <label class="text-xs+ font-medium text-slate-600 dark:text-navy-200">Full Name</label>
-                            <input :value="auth.user?.name" disabled placeholder="Enter your full name"
-                                class="form-input mt-1.5 w-full cursor-not-allowed rounded-lg bg-slate-150 px-3 py-2.5 ring-primary/50 placeholder:text-slate-400 hover:bg-slate-200 focus:ring-3 dark:bg-navy-900/90 dark:ring-accent/50 dark:text-navy-100" />
+                            <input
+    :value="auth.user?.name"
+    :disabled="!isAdmin"
+    placeholder="Enter your full name"
+    class="form-input mt-1.5 w-full rounded-lg bg-slate-150 px-3 py-2.5 ring-primary/50 placeholder:text-slate-400 hover:bg-slate-200 focus:ring-3 dark:bg-navy-900/90 dark:ring-accent/50 dark:text-navy-100 disabled:cursor-not-allowed disabled:bg-slate-150 disabled:text-slate-500 disabled:hover:bg-slate-150 dark:disabled:bg-navy-900/90 dark:disabled:text-navy-400 dark:disabled:hover:bg-navy-900/90"
+/>
+                            
                         </div>
 
                         <!-- M-Pesa Phone -->
@@ -472,7 +478,7 @@ const formatMoney = (amount) =>
                         <div
                             class="flex justify-between border-t border-slate-150 pt-3 text-base font-bold text-slate-800 dark:border-navy-600 dark:text-navy-50">
                             <dt>Total Amount</dt>
-                            <dd>KES {{ grandTotal }}</dd>
+                            <dd>KES {{ formatMoney (grandTotal) }}</dd>
                         </div>
                     </dl>
                 </div>
