@@ -1,0 +1,16 @@
+@import 'tailwindcss';
+
+@import 'tw-animate-css';
+
+
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+
+
+
+
+
+@import '../../public/custom/app.css'
+/* No sidebar in this layout — zero out the offset so header/content go full-width */
+
