@@ -52,7 +52,7 @@ class ShopController extends Controller
                     default => $q->latest(),
                 };
             })
-            ->paginate(2)
+            ->paginate(10)
             ->withQueryString();
 
         return Inertia::render('Storefront/Products/Index', [

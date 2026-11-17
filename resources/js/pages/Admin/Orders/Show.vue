@@ -3,7 +3,6 @@ import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import type { PageProps } from '@/types';
 import {
     admin_orders_index,
-    admin_orders_fulfilment_update,
     admin_orders_notes_store,
     admin_orders_cancel,
 } from '@/routes';
@@ -73,12 +72,12 @@ const fulfilmentForm = useForm({
 
 const noteForm = useForm({ note: '' });
 
-function updateFulfilment() {
-    fulfilmentForm.patch(admin_orders_fulfilment_update.url(props.order.ulid), {
-        preserveScroll: true,
-        onSuccess: () => { fulfilmentForm.note = ''; },
-    });
-}
+// function updateFulfilment() {
+//     fulfilmentForm.patch(admin_orders_fulfilment_update.url(props.order.ulid), {
+//         preserveScroll: true,
+//         onSuccess: () => { fulfilmentForm.note = ''; },
+//     });
+// }
 
 function addNote() {
     noteForm.post(admin_orders_notes_store.url(props.order.ulid), {
