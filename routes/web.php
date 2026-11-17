@@ -46,7 +46,11 @@ Route::get('/disk-check', function () {
     ];
 });
 
-
+Route::get('/checkout/status/{payment:ulid}', [CheckoutController::class, 'status'])
+    ->name('checkout_status');
+Route::get('/checkout/waiting/{order:ulid}', [CheckoutController::class, 'waiting'])
+    ->name('checkout_waiting');
+      
 Route::get('/', HomeController::class)->name('home');
 
 // Storefront browsing (public — guests can browse)
