@@ -53,7 +53,21 @@ class ShopController extends Controller
                 };
             })
             ->paginate(10)
-            ->withQueryString();
+            ->withQueryString()
+            ->through(fn (Product $p) => [
+                'id' => $p->id,
+                'name' => $p->name,
+                'slug' => $p->slug,
+                'price' => $p->price,
+                'sale_price' => $p->sale_price,
+                'stock_quantity' => (int) $p->total_stock,
+                'type' => $p->variations()->exists() ? 'variable' : 'simple',
+                'primary_image_url' => $p->primary_image_url,
+                'category' => $p->category ? [
+                    'id' => $p->category->id,
+                    'name' => $p->category->name,
+                ] : null,
+            ]);
 
         return Inertia::render('Storefront/Products/Index', [
             'products'   => $products,

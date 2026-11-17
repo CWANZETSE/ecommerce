@@ -26,31 +26,34 @@ class HomeController extends Controller
                 'link_url' => $b->link_url,
                 'link_text' => $b->link_text,
             ])->values(),
+
             'featured' => Product::active()
                 ->where('is_featured', true)
                 ->with('primaryImage')
                 ->limit($featuredLimit)
                 ->get()
-                ->map(fn ($p) => [
+                ->map(fn (Product $p) => [
                     'id' => $p->id,
                     'name' => $p->name,
                     'slug' => $p->slug,
-                    'price' => number_format($p->sale_price ?? $p->price),
-                    'primary_image' => $p->primary_image_url,
+                    'price' => number_format((float) ($p->sale_price ?? $p->price), 0),
+                    'primary_image_url' => $p->primary_image_url,   // ← accessor → Storage::url()
                 ]),
+
             'newArrivals' => Product::active()
                 ->latest()
                 ->with('primaryImage')
                 ->limit($newArrivalsLimit)
                 ->get()
-                ->map(fn ($p) => [
+                ->map(fn (Product $p) => [
                     'id' => $p->id,
                     'name' => $p->name,
                     'slug' => $p->slug,
-                    'price' => number_format($p->sale_price ?? $p->price),
-                    'primary_image' => $p->primaryImage ? ['path' => $p->primaryImage->path] : null,
+                    'price' => number_format((float) ($p->sale_price ?? $p->price), 0),
+                    'primary_image_url' => $p->primary_image_url,   // ← was `primary_image: {path}` — now matches Vue interface
                 ]),
-            $categories = Category::active()->roots()
+
+            'categories' => Category::active()->roots()
                 ->with(['children' => fn ($q) => $q->active()->orderBy('sort_order')])
                 ->orderBy('sort_order')
                 ->get()
@@ -58,13 +61,13 @@ class HomeController extends Controller
                     'id' => $c->id,
                     'name' => $c->name,
                     'slug' => $c->slug,
-                    'image_url' => $c->image_url,                       // ← accessor → Storage::url()
+                    'image_url' => $c->image_url,
                     'children' => $c->children->map(fn (Category $ch) => [
                         'id' => $ch->id,
                         'name' => $ch->name,
                         'slug' => $ch->slug,
                         'image_url' => $ch->image_url,
-                    ]),
+                    ])->values(),
                 ]),
         ]);
     }

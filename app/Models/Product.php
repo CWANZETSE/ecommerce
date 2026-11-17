@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\Storage;
 
 class Product extends Model
 {
@@ -19,7 +18,7 @@ class Product extends Model
     protected $fillable = [
         'category_id', 'brand_id', 'name', 'slug', 'sku',
         'short_description', 'description', 'price', 'sale_price',
-        'is_active', 'is_featured', 'seo_title', 'seo_description','show_on_homepage',
+        'is_active', 'is_featured', 'seo_title', 'seo_description', 'show_on_homepage',
     ];
 
     protected function casts(): array
@@ -42,6 +41,7 @@ class Product extends Model
     {
         return $this->belongsTo(Brand::class);
     }
+
     public function scopeOnHomepage($query)
     {
         return $query->where('show_on_homepage', true)->where('is_active', true);
@@ -103,8 +103,6 @@ class Product extends Model
      */
     protected function primaryImageUrl(): Attribute
     {
-        return Attribute::get(
-            fn () => $this->primaryImage?->image_url
-        );
+        return Attribute::get(fn () => $this->primaryImage?->image_url);
     }
 }
