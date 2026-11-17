@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Webhooks;
 
 use App\Http\Controllers\Controller;
+use App\Models\Cart;
 use App\Models\Payment;
 use App\Models\PaymentAttempt;
 use App\Notifications\OrderPaidNotification;
@@ -190,6 +191,13 @@ class MpesaCallbackController extends Controller
                         'order_id' => $locked->order_id,
                     ]);
                 }
+            }
+            // ✅ Clear the original cart — payment is confirmed
+            if ($locked->order->cart_id) {
+                Cart::whereKey($locked->order->cart_id)
+                    ->first()
+                    ?->items()
+                    ->delete();
             }
 
             return $locked->order->fresh();

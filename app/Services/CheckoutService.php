@@ -195,6 +195,7 @@ class CheckoutService
                 'ulid' => (string) Str::ulid(),
                 'order_number' => $orderNumber,
                 'user_id' => auth()->id(),
+                'cart_id' => $cart->id, 
                 'customer_name' => $customer['name'],
                 'customer_email' => $customer['email'],
                 'customer_phone' => $customer['phone'],
@@ -328,13 +329,6 @@ class CheckoutService
 
             Log::debug('Checkout: PaymentAttempt recorded', [
                 'payment_id' => $payment->id,
-            ]);
-
-            $this->cart->clear($cart);
-            $this->cart->forgetCoupon();
-
-            Log::debug('Checkout: cart cleared', [
-                'cart_id' => $cart->id,
             ]);
 
             return ['order' => $order, 'payment' => $payment, 'stk_response' => $stkResponse];

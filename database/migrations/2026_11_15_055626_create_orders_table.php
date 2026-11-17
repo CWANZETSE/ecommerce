@@ -13,7 +13,7 @@ return new class extends Migration
             $table->string('ulid', 26)->unique();
             $table->string('order_number')->unique();
             $table->foreignUuid('user_id')->nullable()->constrained('users')->nullOnDelete();
-
+            $table->foreignUuid('cart_id')->nullable()->constrained('carts')->nullOnDelete();
             // Customer snapshot
             $table->string('customer_name');
             $table->string('customer_email');

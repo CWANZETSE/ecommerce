@@ -16,7 +16,7 @@ class Order extends Model
     use HasUuids,HasFactory;
 
     protected $fillable = [
-        'ulid', 'order_number', 'user_id',
+        'ulid', 'order_number', 'user_id','cart_id',
         'customer_name', 'customer_email', 'customer_phone', 'shipping_address',
         'subtotal', 'shipping_fee', 'grand_total',
         'payment_status', 'fulfilment_status',
