@@ -260,6 +260,5 @@ Route::middleware(['auth', 'verified', EnsureUserIsAdmin::class])
 |--------------------------------------------------------------------------
 */
 
-Route::post('/webhooks/mobile/payment/callback', [MpesaCallbackController::class, 'handle']);
 
 require __DIR__.'/settings.php';
