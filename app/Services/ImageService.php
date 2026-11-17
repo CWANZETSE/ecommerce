@@ -11,7 +11,7 @@ class ImageService
 {
     public function store(Product $product, UploadedFile $file, bool $makePrimary = false): ProductImage
     {
-        $path = $file->store("products/{$product->id}", 'public');
+        $path = Storage::putFile("products/{$product->id}", $file);
 
         $hasPrimary = $product->images()->where('is_primary', true)->exists();
 
@@ -38,7 +38,7 @@ class ImageService
 
     public function delete(ProductImage $image): void
     {
-        Storage::disk('public')->delete($image->path);
+        Storage::delete($image->path);
 
         $wasPrimary = $image->is_primary;
         $product = $image->product;

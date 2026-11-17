@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use App\Models\StoreSetting;
 use App\Services\CartService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
@@ -36,7 +37,7 @@ class HandleInertiaRequests extends Middleware
             'store_tagline' => fn () => StoreSetting::get('store_tagline', ''),
             'store_logo_url' => function () {
                 $logo = StoreSetting::get('store_logo');
-                return $logo ? asset('storage/' . $logo) : null;
+                return $logo ? Storage::url($logo) : null;
             },
             'currency' => fn () => StoreSetting::get('currency', 'KES'),
             'free_shipping_enabled' => fn () => StoreSetting::get('free_shipping_enabled', 'true') === 'true',

@@ -8,6 +8,7 @@ use App\Http\Requests\Admin\UpdateCategoryRequest;
 use App\Models\Category;
 use App\Services\CategoryService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -27,9 +28,9 @@ class CategoryController extends Controller
 
         // Attach public image URLs for both roots and children
         $roots->each(function (Category $root) {
-            $root->setAttribute('image_url', $root->image_path ? asset('storage/' . $root->image_path) : null);
+            $root->setAttribute('image_url', $root->image_path ? Storage::url($root->image_path) : null);
             $root->children->each(function (Category $child) {
-                $child->setAttribute('image_url', $child->image_path ? asset('storage/' . $child->image_path) : null);
+                $child->setAttribute('image_url', $child->image_path ? Storage::url($child->image_path) : null);
             });
         });
 
@@ -69,7 +70,7 @@ class CategoryController extends Controller
                 'name' => $category->name,
                 'parent_id' => $category->parent_id,
                 'description' => $category->description,
-                'image_url' => $category->image_path ? asset('storage/' . $category->image_path) : null,
+                'image_url' => $category->image_path ? Storage::url($category->image_path) : null,
                 'is_active' => $category->is_active,
                 'sort_order' => $category->sort_order,
                 'seo_title' => $category->seo_title,

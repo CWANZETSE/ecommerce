@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Storage;
 
 class Brand extends Model
 {
@@ -36,7 +37,7 @@ class Brand extends Model
     protected function logoUrl(): Attribute
     {
         return Attribute::get(
-            fn () => $this->logo_path ? asset('storage/' . $this->logo_path) : null
+            fn () => $this->logo_path ? Storage::url($this->logo_path) : null
         );
     }
 }

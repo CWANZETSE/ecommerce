@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Storage;
 
 class ProductImage extends Model
 {
@@ -23,5 +24,14 @@ class ProductImage extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
+    }
+
+    /**
+     * Public URL for the stored image.
+     * Uses the default disk (R2 on Laravel Cloud) — never asset('storage/...').
+     */
+    public function getImageUrlAttribute(): ?string
+    {
+        return $this->path ? Storage::url($this->path) : null;
     }
 }

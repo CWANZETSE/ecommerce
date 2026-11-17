@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Banner extends Model
 {
@@ -30,6 +31,8 @@ class Banner extends Model
 
     protected function imageUrl(): Attribute
     {
-        return Attribute::get(fn () => asset('storage/' . $this->image_path));
+        return Attribute::get(
+            fn () => $this->image_path ? Storage::url($this->image_path) : null
+        );
     }
 }

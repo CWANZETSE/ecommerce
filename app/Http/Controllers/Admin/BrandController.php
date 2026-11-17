@@ -8,6 +8,7 @@ use App\Http\Requests\Admin\UpdateBrandRequest;
 use App\Models\Brand;
 use App\Services\BrandService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -27,7 +28,7 @@ class BrandController extends Controller
                     'id' => $brand->id,
                     'name' => $brand->name,
                     'slug' => $brand->slug,
-                    'logo_url' => $brand->logo_path ? asset('storage/' . $brand->logo_path) : null,
+                    'logo_url' => $brand->logo_path ? Storage::url($brand->logo_path) : null,
                     'is_active' => $brand->is_active,
                     'products_count' => $brand->products_count,
                 ]),
@@ -64,7 +65,7 @@ class BrandController extends Controller
                 'id' => $brand->id,
                 'name' => $brand->name,
                 'slug' => $brand->slug,
-                'logo_url' => $brand->logo_path ? asset('storage/' . $brand->logo_path) : null,
+                'logo_url' => $brand->logo_path ? Storage::url($brand->logo_path) : null,
                 'is_active' => $brand->is_active,
             ],
         ]);

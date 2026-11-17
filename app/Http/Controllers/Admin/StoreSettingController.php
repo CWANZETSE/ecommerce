@@ -35,7 +35,7 @@ class StoreSettingController extends Controller
                 'type' => $this->typeFor($s->key),
                 'group' => $s->group,
                 'image_url' => $s->key === 'store_logo' && $s->value
-                    ? asset('storage/'.$s->value)
+                    ? Storage::url($s->value)
                     : null,
             ])->values());
 
@@ -69,10 +69,10 @@ class StoreSettingController extends Controller
             $existing = StoreSetting::where('key', 'store_logo')->first();
 
             if ($existing?->value) {
-                Storage::disk('public')->delete($existing->value);
+                Storage::delete($existing->value);
             }
 
-            $path = $request->file('logo')->store('branding', 'public');
+            $path = Storage::putFile('branding', $request->file('logo'));
             StoreSetting::set('store_logo', $path, 'general');
         }
 
@@ -80,7 +80,7 @@ class StoreSettingController extends Controller
         if ($request->boolean('remove_logo')) {
             $existing = StoreSetting::where('key', 'store_logo')->first();
             if ($existing?->value) {
-                Storage::disk('public')->delete($existing->value);
+                Storage::delete($existing->value);
             }
             StoreSetting::where('key', 'store_logo')->update(['value' => null]);
         }
