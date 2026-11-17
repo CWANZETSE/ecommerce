@@ -1,7 +1,11 @@
 <script setup lang="ts">
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import type { PageProps } from '@/types';
-import { admin_banners_index, admin_banners_update } from '@/routes';
+import {
+    admin_banners_index,
+    admin_banners_update,
+    admin_banners_destroy,
+} from '@/routes';
 
 interface Banner {
     id: string;
@@ -34,6 +38,17 @@ function onImageChange(e: Event) {
 
 function submit() {
     form.post(admin_banners_update.url(props.banner.id), { forceFormData: true });
+}
+
+function deleteBanner() {
+    if (!confirm(`Delete banner "${props.banner.title}"? This cannot be undone.`)) return;
+
+    router.delete(admin_banners_destroy.url(props.banner.id), {
+        preserveScroll: true,
+        onSuccess: () => {
+            // Controller already redirects to admin_banners_index with a flash message
+        },
+    });
 }
 </script>
 
@@ -162,13 +177,23 @@ function submit() {
                 </div>
             </div>
 
-            <div class="pt-2">
+            <div class="flex flex-wrap items-center gap-3 pt-2">
                 <button
                     type="submit"
                     :disabled="form.processing"
-                    class="btn bg-primary/10 font-medium text-primary hover:bg-primary/20 focus:bg-primary/20 active:bg-primary/25 dark:bg-accent-light/10 dark:text-accent-light dark:hover:bg-accent-light/20 dark:focus:bg-accent-light/20 dark:active:bg-accent-light/25"
+                    class="btn bg-primary/10 font-medium text-primary hover:bg-primary/20 focus:bg-primary/20 active:bg-primary/25 disabled:opacity-50 dark:bg-accent-light/10 dark:text-accent-light dark:hover:bg-accent-light/20 dark:focus:bg-accent-light/20 dark:active:bg-accent-light/25"
                 >
                     {{ form.processing ? 'Saving…' : 'Save changes' }}
+                </button>
+
+                <button
+                    type="button"
+                    class="btn border border-secondary/30 bg-secondary/10 font-medium text-secondary hover:bg-secondary/20 focus:bg-secondary/20 active:bg-secondary/25 dark:border-secondary-light/30 dark:bg-secondary-light/10 dark:text-secondary-light dark:hover:bg-secondary-light/20 dark:focus:bg-secondary-light/20 dark:active:bg-secondary-light/25"
+
+                    :disabled="form.processing"
+                    @click="deleteBanner"
+                >
+                    Delete banner
                 </button>
             </div>
         </form>

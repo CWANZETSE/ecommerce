@@ -123,7 +123,7 @@ const formatMoney = (amount) =>
                 Explore our catalog and add items to your cart to get started.
             </p>
             <Link :href="customer_products_index.url()"
-                class="mt-8 inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-primary-focus focus:outline-none focus:ring-2 focus:ring-primary/40 dark:bg-accent dark:hover:bg-accent-focus">
+                class="btn bg-primary/10 mt-3 font-medium text-primary hover:bg-primary/20 focus:bg-primary/20 active:bg-primary/25 dark:bg-accent-light/10 dark:text-accent-light dark:hover:bg-accent-light/20 dark:focus:bg-accent-light/20 dark:active:bg-accent-light/25">
                 <span>Browse products</span>
                 <svg xmlns="http://www.w3.org/2000/svg" class="size-4" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor" stroke-width="2">
@@ -134,54 +134,77 @@ const formatMoney = (amount) =>
 
         <!-- Cart Layout -->
         <div v-else class="mt-8 grid gap-6 lg:grid-cols-12">
-            <!-- Cart Items -->
-            <section class="lg:col-span-8">
-                <div
-                    class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-navy-600 dark:bg-navy-750">
-                    <div
-                        class="flex items-center justify-between border-b border-slate-200 px-5 py-4 dark:border-navy-600">
-                        <h2 class="text-base font-semibold text-slate-900 dark:text-navy-50">
-                            Cart Items
-                        </h2>
-                        <span
-                            class="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-600 dark:bg-navy-800 dark:text-navy-200">
-                            {{ props.cart!.item_count }} {{ props.cart!.item_count === 1 ? 'item' : 'items' }}
-                        </span>
-                    </div>
+    <!-- Cart Items -->
+    <section class="min-w-0 lg:col-span-8">
+        <div
+            class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-navy-600 dark:bg-navy-750">
+            <div
+                class="flex items-center justify-between border-b border-slate-200 px-5 py-4 dark:border-navy-600">
+                <h2 class="text-base font-semibold text-slate-900 dark:text-navy-50">
+                    Cart Items
+                </h2>
+                <span
+                    class="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-600 dark:bg-navy-800 dark:text-navy-200">
+                    {{ props.cart!.item_count }} {{ props.cart!.item_count === 1 ? 'item' : 'items' }}
+                </span>
+            </div>
 
-                    <ul class="divide-y divide-slate-100 dark:divide-navy-600">
-                        <li v-for="line in props.cart!.items" :key="line.id"
-                            class="flex flex-col gap-4 p-5 sm:flex-row sm:items-center">
-                            <!-- Product Info -->
-                            <div class="min-w-0 flex-1 space-y-1.5">
-                                <Link :href="`/customer/products/${line.product.slug}`"
-                                    class="block truncate text-sm font-semibold text-slate-900 transition-colors hover:text-primary dark:text-navy-50 dark:hover:text-accent-light">
-                                    {{ line.product.name }}
-                                </Link>
-                                <p class="font-mono text-xs text-slate-400 dark:text-navy-300">
-                                    SKU: {{ line.sku }}
-                                </p>
-                                <div v-if="line.attributes.length" class="flex flex-wrap gap-1.5 pt-1">
-                                    <span v-for="(attr, i) in line.attributes" :key="i"
-                                        class="btn py-1 bg-slate-150 font-medium text-slate-800 hover:bg-slate-200 hover:shadow-lg hover:shadow-slate-200/50 focus:bg-slate-200 focus:shadow-lg focus:shadow-slate-200/50 active:bg-slate-200/80 dark:bg-navy-500 dark:text-navy-50 dark:hover:bg-navy-450 dark:hover:shadow-navy-450/50 dark:focus:bg-navy-450 dark:focus:shadow-navy-450/50 dark:active:bg-navy-450/90">
-                                        {{ attr.name }}: {{ attr.value }}
-                                    </span>
+            <!-- Horizontally scrollable table on narrow viewports -->
+            <div class="is-scrollbar-x overflow-x-auto">
+                <table class="w-full text-left text-sm">
+                    <thead class="border-b border-slate-200 bg-slate-50 text-slate-700 dark:border-navy-600 dark:bg-navy-900 dark:text-navy-100">
+                        <tr>
+                            <th class="px-4 py-3.5 font-medium sm:px-5">Product</th>
+                            <th class="px-4 py-3.5 font-medium sm:px-5">Qty</th>
+                            <th class="px-4 py-3.5 text-right font-medium sm:px-5">Price</th>
+                            <th class="px-4 py-3.5 text-right font-medium sm:px-5">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 dark:divide-navy-600">
+                        <tr
+                            v-for="line in props.cart!.items"
+                            :key="line.id"
+                            class="hover:bg-slate-50 dark:hover:bg-navy-900/50"
+                        >
+                            <!-- Product -->
+                            <td class="px-4 py-4 sm:px-5">
+                                <div class="min-w-[12rem] max-w-xs space-y-1.5">
+                                    <Link
+                                        :href="`/customer/products/${line.product.slug}`"
+                                        class="block truncate text-sm font-semibold text-slate-900 transition-colors hover:text-primary dark:text-navy-50 dark:hover:text-accent-light"
+                                    >
+                                        {{ line.product.name }}
+                                    </Link>
+                                    <p class="font-mono text-xs text-slate-400 dark:text-navy-300">
+                                        SKU: {{ line.sku }}
+                                    </p>
+                                    <div v-if="line.attributes.length" class="flex flex-wrap gap-1.5 pt-1">
+                                        <span
+                                            v-for="(attr, i) in line.attributes"
+                                            :key="i"
+                                            class="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-600 dark:bg-navy-800 dark:text-navy-200"
+                                        >
+                                            {{ attr.name }}: {{ attr.value }}
+                                        </span>
+                                    </div>
                                 </div>
-                            </div>
+                            </td>
 
                             <!-- Quantity -->
-                            <div class="flex items-center gap-2 sm:shrink-0">
-                                <label class="text-xs font-medium text-slate-500 dark:text-navy-300">Qty</label>
-                                <input :value="line.quantity" type="number" min="1"
+                            <td class="px-4 py-4 sm:px-5">
+                                <input
+                                    :value="line.quantity"
+                                    type="number"
+                                    min="1"
                                     :max="Math.min(99, line.stock_quantity)"
                                     class="form-input w-16 rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-center text-sm text-slate-800 transition-colors hover:border-slate-300 focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-navy-600 dark:bg-navy-900 dark:text-navy-100 dark:hover:border-navy-500 dark:focus:border-accent dark:focus:ring-accent/20"
-                                    @change="(e) => updateQty(line, (e.target as HTMLInputElement).value)" />
-                            </div>
+                                    @change="(e) => updateQty(line, (e.target as HTMLInputElement).value)"
+                                />
+                            </td>
 
-                            <!-- Price & Remove -->
-                            <div
-                                class="flex items-center justify-between gap-4 sm:w-40 sm:flex-col sm:items-end sm:gap-1">
-                                <div class="text-left sm:text-right">
+                            <!-- Price -->
+                            <td class="px-4 py-4 text-right sm:px-5">
+                                <div class="whitespace-nowrap">
                                     <p class="text-base font-bold text-slate-900 dark:text-navy-50">
                                         KES {{ formatMoney(line.line_total) }}
                                     </p>
@@ -189,98 +212,106 @@ const formatMoney = (amount) =>
                                         @ KES {{ formatMoney(line.unit_price) }}
                                     </p>
                                 </div>
-                                <button type="button"
-                                    class="btn border border-secondary/30 py-1 bg-secondary/10 font-medium text-secondary hover:bg-secondary/20 focus:bg-secondary/20 active:bg-secondary/25 dark:border-secondary-light/30 dark:bg-secondary-light/10 dark:text-secondary-light dark:hover:bg-secondary-light/20 dark:focus:bg-secondary-light/20 dark:active:bg-secondary-light/25"
-                                    @click="removeLine(line)">
+                            </td>
+
+                            <!-- Actions -->
+                            <td class="px-4 py-4 text-right sm:px-5">
+                                <button
+                                    type="button"
+                                    class="btn border border-secondary/30 bg-secondary/10 font-medium text-secondary hover:bg-secondary/20 focus:bg-secondary/20 active:bg-secondary/25 dark:border-secondary-light/30 dark:bg-secondary-light/10 dark:text-secondary-light dark:hover:bg-secondary-light/20 dark:focus:bg-secondary-light/20 dark:active:bg-secondary-light/25"
+                                    @click="removeLine(line)"
+                                >
                                     Remove
                                 </button>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-            </section>
-
-            <!-- Summary -->
-            <aside class="lg:col-span-4">
-                <div class="sticky top-6 space-y-4">
-                    <div
-                        class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-navy-600 dark:bg-navy-750">
-                        <div class="border-b border-slate-200 px-5 py-4 dark:border-navy-600">
-                            <h2 class="text-base font-semibold text-slate-900 dark:text-navy-50">
-                                Order Summary
-                            </h2>
-                        </div>
-
-                        <dl class="space-y-3 p-5 text-sm">
-                            <div class="flex items-center justify-between">
-                                <dt class="text-slate-500 dark:text-navy-300">Total Items</dt>
-                                <dd class="font-medium text-slate-900 dark:text-navy-50">{{ props.cart!.item_count }}
-                                </dd>
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <dt class="text-slate-500 dark:text-navy-300">Subtotal</dt>
-                                <dd class="font-medium text-slate-900 dark:text-navy-50">KES {{ formatMoney(props.cart!.subtotal) }}
-                                </dd>
-                            </div>
-                            <div v-if="discountAmount > 0" class="flex items-center justify-between text-success">
-                                <dt>
-                                    Discount
-                                    <span class="ml-1 font-mono text-xs text-slate-400 dark:text-navy-300">({{
-                                        props.cart!.coupon_code }})</span>
-                                </dt>
-                                <dd class="font-medium">− KES {{ formatMoney(props.cart!.discount) }}</dd>
-                            </div>
-                            <div
-                                class="!mt-4 flex items-center justify-between border-t border-slate-200 pt-4 text-base dark:border-navy-600">
-                                <dt class="font-semibold text-slate-900 dark:text-navy-50">Total</dt>
-                                <dd class="font-bold text-slate-900 dark:text-navy-50">KES {{ formatMoney(total) }}</dd>
-                            </div>
-                            <p class="text-xs text-slate-400 dark:text-navy-300">
-                                * Shipping charges will be calculated at checkout.
-                            </p>
-                        </dl>
-
-                        <!-- Coupon -->
-                        <div class="border-t border-slate-200 p-5 dark:border-navy-600">
-                            <template v-if="props.cart!.coupon_code">
-                                <div class="flex items-center justify-between rounded-lg bg-success/10 px-3.5 py-2.5">
-                                    <span class="font-mono text-sm font-bold uppercase text-success">{{
-                                        props.cart!.coupon_code }}</span>
-                                    <button type="button" class="text-xs font-semibold text-error hover:underline"
-                                        @click="removeCoupon">
-                                        Remove
-                                    </button>
-                                </div>
-                            </template>
-                            <template v-else>
-                                <form class="flex gap-2" @submit.prevent="applyCoupon">
-                                    <input v-model="couponForm.code" placeholder="Coupon code"
-                                        class="form-input w-full rounded-lg border border-slate-300 uppercase bg-transparent px-3 py-2 placeholder:text-slate-400/70 hover:border-slate-400 focus:border-primary dark:border-navy-450 dark:hover:border-navy-400 dark:focus:border-accent"
-                                        autocomplete="off" />
-                                    <button type="submit" :disabled="couponForm.processing || !couponForm.code"
-                                        class="btn bg-primary/10 font-medium text-primary hover:bg-primary/20 focus:bg-primary/20 active:bg-primary/25 dark:bg-accent-light/10 dark:text-accent-light dark:hover:bg-accent-light/20 dark:focus:bg-accent-light/20 dark:active:bg-accent-light/25">
-                                        {{ couponForm.processing ? '…' : 'Apply' }}
-                                    </button>
-                                </form>
-                                <p v-if="couponForm.errors.code" class="mt-1.5 text-xs text-error">
-                                    {{ couponForm.errors.code }}
-                                </p>
-                            </template>
-                        </div>
-
-                        <div class="px-5 pb-5">
-                            <Link href="/checkout"
-                                class="flex w-full items-center justify-center gap-2 rounded-lg bg-primary py-3 text-center text-sm font-semibold text-white shadow-sm transition-colors hover:bg-primary-focus active:bg-primary-focus/90 dark:bg-accent dark:hover:bg-accent-focus">
-                                <span>Proceed to Checkout</span>
-                                <svg xmlns="http://www.w3.org/2000/svg" class="size-4" fill="none" viewBox="0 0 24 24"
-                                    stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                                </svg>
-                            </Link>
-                        </div>
-                    </div>
-                </div>
-            </aside>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
+    </section>
+
+    <!-- Summary -->
+    <aside class="min-w-0 lg:col-span-4">
+        <div class="sticky top-6 space-y-4">
+            <div
+                class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-navy-600 dark:bg-navy-750">
+                <div class="border-b border-slate-200 px-5 py-4 dark:border-navy-600">
+                    <h2 class="text-base font-semibold text-slate-900 dark:text-navy-50">
+                        Order Summary
+                    </h2>
+                </div>
+
+                <dl class="space-y-3 p-5 text-sm">
+                    <div class="flex items-center justify-between">
+                        <dt class="text-slate-500 dark:text-navy-300">Total Items</dt>
+                        <dd class="font-medium text-slate-900 dark:text-navy-50">{{ props.cart!.item_count }}
+                        </dd>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <dt class="text-slate-500 dark:text-navy-300">Subtotal</dt>
+                        <dd class="font-medium text-slate-900 dark:text-navy-50">KES {{ formatMoney(props.cart!.subtotal) }}
+                        </dd>
+                    </div>
+                    <div v-if="discountAmount > 0" class="flex items-center justify-between text-success">
+                        <dt>
+                            Discount
+                            <span class="ml-1 font-mono text-xs text-slate-400 dark:text-navy-300">({{
+                                props.cart!.coupon_code }})</span>
+                        </dt>
+                        <dd class="font-medium">− KES {{ formatMoney(props.cart!.discount) }}</dd>
+                    </div>
+                    <div
+                        class="!mt-4 flex items-center justify-between border-t border-slate-200 pt-4 text-base dark:border-navy-600">
+                        <dt class="font-semibold text-slate-900 dark:text-navy-50">Total</dt>
+                        <dd class="font-bold text-slate-900 dark:text-navy-50">KES {{ formatMoney(total) }}</dd>
+                    </div>
+                    <p class="text-xs text-slate-400 dark:text-navy-300">
+                        * Shipping charges will be calculated at checkout.
+                    </p>
+                </dl>
+
+                <!-- Coupon -->
+                <div class="border-t border-slate-200 p-5 dark:border-navy-600">
+                    <template v-if="props.cart!.coupon_code">
+                        <div class="flex items-center justify-between rounded-lg bg-success/10 px-3.5 py-2.5">
+                            <span class="font-mono text-sm font-bold uppercase text-success">{{
+                                props.cart!.coupon_code }}</span>
+                            <button type="button" class="text-xs font-semibold text-error hover:underline"
+                                @click="removeCoupon">
+                                Remove
+                            </button>
+                        </div>
+                    </template>
+                    <template v-else>
+                        <form class="flex gap-2" @submit.prevent="applyCoupon">
+                            <input v-model="couponForm.code" placeholder="Coupon code"
+                                class="form-input w-full min-w-0 rounded-lg border border-slate-300 uppercase bg-transparent px-3 py-2 placeholder:text-slate-400/70 hover:border-slate-400 focus:border-primary dark:border-navy-450 dark:hover:border-navy-400 dark:focus:border-accent"
+                                autocomplete="off" />
+                            <button type="submit" :disabled="couponForm.processing || !couponForm.code"
+                                class="btn shrink-0 bg-primary/10 font-medium text-primary hover:bg-primary/20 focus:bg-primary/20 active:bg-primary/25 dark:bg-accent-light/10 dark:text-accent-light dark:hover:bg-accent-light/20 dark:focus:bg-accent-light/20 dark:active:bg-accent-light/25">
+                                {{ couponForm.processing ? '…' : 'Apply' }}
+                            </button>
+                        </form>
+                        <p v-if="couponForm.errors.code" class="mt-1.5 text-xs text-error">
+                            {{ couponForm.errors.code }}
+                        </p>
+                    </template>
+                </div>
+
+                <div class="px-5 pb-5">
+                    <Link href="/checkout"
+                        class="flex w-full items-center justify-center gap-2 rounded-lg bg-primary py-3 text-center text-sm font-semibold text-white shadow-sm transition-colors hover:bg-primary-focus active:bg-primary-focus/90 dark:bg-accent dark:hover:bg-accent-focus">
+                        <span>Proceed to Checkout</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="size-4" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                        </svg>
+                    </Link>
+                </div>
+            </div>
+        </div>
+    </aside>
+</div>
     </div>
 </template>

@@ -146,7 +146,7 @@ function savePassword() {
                             <button
                                 type="submit"
                                 :disabled="profileForm.processing"
-                                class="btn bg-primary font-medium text-white hover:bg-primary-focus focus:bg-primary-focus active:bg-primary-focus/90 dark:bg-accent dark:hover:bg-accent-focus disabled:opacity-50"
+                                class="btn bg-primary/10 font-medium text-primary hover:bg-primary/20 focus:bg-primary/20 active:bg-primary/25 dark:bg-accent-light/10 dark:text-accent-light dark:hover:bg-accent-light/20 dark:focus:bg-accent-light/20 dark:active:bg-accent-light/25"
                             >
                                 {{ profileForm.processing ? 'Saving changes…' : 'Save profile' }}
                             </button>
@@ -209,7 +209,7 @@ function savePassword() {
                             <button
                                 type="submit"
                                 :disabled="passwordForm.processing"
-                                class="btn border border-slate-300 font-medium text-slate-800 hover:bg-slate-150 focus:bg-slate-150 active:bg-slate-150/80 dark:border-navy-450 dark:text-navy-50 dark:hover:bg-navy-500 disabled:opacity-50"
+                                class="btn bg-primary/10 font-medium text-primary hover:bg-primary/20 focus:bg-primary/20 active:bg-primary/25 dark:bg-accent-light/10 dark:text-accent-light dark:hover:bg-accent-light/20 dark:focus:bg-accent-light/20 dark:active:bg-accent-light/25"
                             >
                                 {{ passwordForm.processing ? 'Updating…' : 'Update password' }}
                             </button>

@@ -111,13 +111,16 @@ const categoriesOpen = ref(false);
                     </button>
 
                     <!-- Brand -->
-                    <Link href="/"
-                        class="flex shrink-0 items-center gap-2.5 text-lg font-bold text-slate-800 dark:text-navy-50">
-                        <span
+                    <Link href="/" class="flex shrink-0 items-center gap-2.5">
+                        <img v-if="page.props.store_logo_url" :src="page.props.store_logo_url"
+                            :alt="page.props.store_name" class="h-30 w-auto  object-contain" />
+                        <span v-else
                             class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary font-bold text-white shadow-md dark:bg-accent">
                             <ShoppingBag class="size-4.5" />
                         </span>
-                        <span class="hidden sm:inline">My Store</span>
+                        <span class="hidden text-lg font-bold text-slate-800 dark:text-navy-50 sm:inline">
+                            {{ page.props.store_name }}
+                        </span>
                     </Link>
 
                     <!-- Desktop Search -->
@@ -145,14 +148,21 @@ const categoriesOpen = ref(false);
                         <template v-if="auth?.user">
                             <div class="relative hidden lg:block">
                                 <button type="button"
-                                    class="flex items-center gap-2 rounded-lg px-2 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-150 dark:text-navy-100 dark:hover:bg-navy-700 sm:px-3"
+                                    class="group relative flex size-10 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-slate-100 text-slate-700 transition-colors hover:bg-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/30 dark:border-navy-500 dark:bg-navy-700 dark:text-navy-100 dark:focus:ring-accent/30"
+                                    :aria-label="`Account menu — ${firstName}`" :aria-expanded="accountOpen"
                                     @click="toggleAccount">
                                     <span
-                                        class="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary dark:bg-accent-light/10 dark:text-accent-light">
+                                        class="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary dark:bg-accent-light/15 dark:text-accent-light">
                                         {{ firstName.charAt(0).toUpperCase() }}
                                     </span>
-                                    <span class="hidden sm:inline">{{ firstName }}</span>
-                                    <ChevronDown class="hidden size-3.5 text-slate-400 sm:inline" />
+
+                                    <!-- Online indicator -->
+                                    <span class="absolute -right-0.5 -top-0.5 flex size-2.5">
+                                        <span
+                                            class="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-75"></span>
+                                        <span
+                                            class="relative inline-flex size-2.5 rounded-full border-2 border-white bg-success dark:border-navy-700"></span>
+                                    </span>
                                 </button>
 
                                 <div v-if="accountOpen"
@@ -355,7 +365,7 @@ const categoriesOpen = ref(false);
                         </div>
                         <div class="min-w-0 flex-1">
                             <p class="truncate text-sm font-semibold text-slate-800 dark:text-navy-50">{{ auth.user.name
-                            }}</p>
+                                }}</p>
                             <p class="truncate text-xs text-slate-500 dark:text-navy-300">{{ auth.user.email }}</p>
                         </div>
                     </div>
@@ -366,27 +376,28 @@ const categoriesOpen = ref(false);
                             My Account
                         </p>
 
-                        <Link href="/customer/account" @click="mobileMenuOpen = false"
+                        <Link href="/customer/account" @click="mobileMenuOpen = false" v-if="auth?.user?.role != 'admin'"
                             class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 dark:text-navy-100 dark:hover:bg-navy-700">
                             <User class="size-4.5 text-slate-400" /> My Account
                         </Link>
 
-                        <Link href="/customer/orders" @click="mobileMenuOpen = false"
+                        <Link href="/customer/orders" @click="mobileMenuOpen = false" v-if="auth?.user?.role != 'admin'"
                             class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 dark:text-navy-100 dark:hover:bg-navy-700">
                             <Package class="size-4.5 text-info" /> My Orders
                         </Link>
 
-                        <Link href="/customer/addresses" @click="mobileMenuOpen = false"
+                        <Link href="/customer/addresses" @click="mobileMenuOpen = false" v-if="auth?.user?.role != 'admin'"
                             class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 dark:text-navy-100 dark:hover:bg-navy-700">
                             <MapPin class="size-4.5 text-warning" /> Addresses
                         </Link>
 
-                        <Link href="/customer/reviews" @click="mobileMenuOpen = false"
+                        <Link href="/customer/reviews" @click="mobileMenuOpen = false" v-if="auth?.user?.role != 'admin'"
                             class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 dark:text-navy-100 dark:hover:bg-navy-700">
                             <Star class="size-4.5 text-warning" /> My Reviews
                         </Link>
 
-                        <Link v-if="auth.user.role === 'admin'" href="/admin" @click="mobileMenuOpen = false"
+                        <Link v-if="auth.user.role === 'admin'" :href="admin_dashboard.url()"
+                            @click="mobileMenuOpen = false"
                             class="mt-2 flex items-center gap-3 rounded-lg bg-slate-100 px-3 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-200 dark:bg-navy-800 dark:text-navy-100 dark:hover:bg-navy-700">
                             <Settings class="size-4.5 text-slate-500" /> Admin Panel
                         </Link>
@@ -396,9 +407,16 @@ const categoriesOpen = ref(false);
                 <template v-else>
                     <nav class="space-y-4 p-4">
                         <div class="space-y-1.5 border-b border-slate-150 pb-4 dark:border-navy-600">
-                            <Link href="/" @click="mobileMenuOpen = false"
-                                class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-100 dark:text-navy-100 dark:hover:bg-navy-700">
-                                <Home class="size-4.5 text-primary dark:text-accent-light" /> Home
+                            <Link href="/" class="flex shrink-0 items-center gap-2.5">
+                                <img v-if="page.props.store_logo_url" :src="page.props.store_logo_url" alt="Store logo"
+                                    class="h-9 w-auto" />
+                                <span v-else
+                                    class="flex size-9 items-center justify-center rounded-xl bg-primary text-white">
+                                    <ShoppingBag class="size-4.5" />
+                                </span>
+                                <span class="hidden text-lg font-bold text-slate-800 dark:text-navy-50 sm:inline">
+                                    {{ page.props.store_name ?? 'My Store' }}
+                                </span>
                             </Link>
                             <Link href="/customer/products" @click="mobileMenuOpen = false"
                                 class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-100 dark:text-navy-100 dark:hover:bg-navy-700">

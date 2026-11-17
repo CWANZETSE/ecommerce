@@ -7,6 +7,7 @@ import { admin_products_create, admin_products_edit } from '@/routes';
 interface Category { id: string; name: string }
 interface Variation { id: string; product_id: string; stock_quantity: number }
 interface ProductRow {
+    is_featured: any;
     id: string;
     name: string;
     sku: string;
@@ -82,6 +83,10 @@ function totalStock(row: ProductRow): number {
                             </th>
                             <th
                                 class="whitespace-nowrap bg-slate-200 px-4 py-3 font-semibold uppercase text-slate-800 dark:bg-navy-800 dark:text-navy-100 lg:px-5">
+                                Featured
+                            </th>
+                            <th
+                                class="whitespace-nowrap bg-slate-200 px-4 py-3 font-semibold uppercase text-slate-800 dark:bg-navy-800 dark:text-navy-100 lg:px-5">
                                 SKU
                             </th>
                             <th
@@ -121,10 +126,22 @@ function totalStock(row: ProductRow): number {
                                     </div>
                                 </div>
                             </td>
-                            <td class="whitespace-nowrap px-4 py-3 sm:px-5">
+                            <td class="px-4 py-3 sm:px-5">
                                 <p class="font-medium text-slate-700 dark:text-navy-100">
                                     {{ p.name }}
                                 </p>
+                            </td>
+                            <td class="whitespace-nowrap px-4 py-3 sm:px-5">
+                                <div v-if="p.is_featured"
+                                    class="badge space-x-2.5 rounded-full bg-success/10 text-success dark:bg-success/15">
+                                    
+                                    <span>Yes</span>
+                                </div>
+                                <div v-else
+                                    class="badge space-x-2.5 rounded-full bg-error/10 text-error dark:bg-error/15">
+                                    
+                                    <span>No</span>
+                                </div>
                             </td>
                             <td class="whitespace-nowrap px-4 py-3 text-slate-600 dark:text-navy-200 sm:px-5">
                                 <p class="text-slate-500 dark:text-navy-300">
@@ -179,8 +196,8 @@ function totalStock(row: ProductRow): number {
                 <template v-for="(link, i) in products.links" :key="i">
                     <Link v-if="link.url" :href="link.url"
                         class="btn h-8 min-w-[2rem] rounded-lg px-3 text-xs-plus font-medium" :class="link.active
-                                ? 'bg-primary text-white dark:bg-accent'
-                                : 'border border-slate-300 text-slate-600 hover:bg-slate-100 dark:border-navy-450 dark:text-navy-200 dark:hover:bg-navy-600'
+                            ? 'bg-primary text-white dark:bg-accent'
+                            : 'border border-slate-300 text-slate-600 hover:bg-slate-100 dark:border-navy-450 dark:text-navy-200 dark:hover:bg-navy-600'
                             " v-html="link.label" />
                     <span v-else
                         class="btn h-8 min-w-[2rem] cursor-not-allowed rounded-lg border border-slate-200 px-3 text-xs-plus font-medium text-slate-400 dark:border-navy-600 dark:text-navy-500"

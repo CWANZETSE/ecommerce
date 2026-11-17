@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Banner;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\StoreSetting;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -13,6 +14,8 @@ class HomeController extends Controller
 {
     public function __invoke(): Response
     {
+        $featuredLimit = (int) StoreSetting::get('featured_products_limit', 8);
+    $newArrivalsLimit = (int) StoreSetting::get('new_arrivals_limit', 8);
         return Inertia::render('Welcome', [
             'banners' => Banner::active()->get()->map(fn ($b) => [
                 'id' => $b->id,
@@ -25,7 +28,7 @@ class HomeController extends Controller
             'featured' => Product::active()
                 ->where('is_featured', true)
                 ->with('primaryImage')
-                ->limit(8)
+                ->limit($featuredLimit)
                 ->get()
                 ->map(fn ($p) => [
                     'id' => $p->id,
@@ -37,7 +40,7 @@ class HomeController extends Controller
             'newArrivals' => Product::active()
                 ->latest()
                 ->with('primaryImage')
-                ->limit(8)
+                ->limit($newArrivalsLimit)
                 ->get()
                 ->map(fn ($p) => [
                     'id' => $p->id,

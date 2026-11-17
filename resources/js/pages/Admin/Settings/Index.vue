@@ -8,8 +8,9 @@ interface Setting {
     id: string;
     key: string;
     value: string | null;
-    type: 'text' | 'boolean';
+    type: 'text' | 'boolean' | 'number' | 'image';
     group: string;
+    image_url: string | null;
 }
 
 interface Props extends PageProps {
@@ -18,14 +19,15 @@ interface Props extends PageProps {
 
 const props = defineProps<Props>();
 
-// Build initial state keyed by setting.key
+/* ---------- Initial values ---------- */
 const initialValues: Record<string, string | boolean> = {};
 for (const settings of Object.values(props.groups)) {
     for (const setting of settings) {
-        initialValues[setting.key] =
-            setting.type === 'boolean'
-                ? setting.value === 'true'
-                : (setting.value ?? '');
+        if (setting.type === 'boolean') {
+            initialValues[setting.key] = setting.value === 'true';
+        } else {
+            initialValues[setting.key] = setting.value ?? '';
+        }
     }
 }
 
@@ -33,20 +35,69 @@ const values = ref<Record<string, string | boolean>>({ ...initialValues });
 
 const form = useForm({
     settings: [] as { key: string; value: string }[],
+    logo: null as File | null,
+    remove_logo: false,
 });
+
+/* ---------- Logo preview ---------- */
+const logoPreview = ref<string | null>(null);
+const currentLogo = computed(() => {
+    for (const settings of Object.values(props.groups)) {
+        const logo = settings.find((s) => s.key === 'store_logo');
+        if (logo) return logo.image_url;
+    }
+    return null;
+});
+
+function onLogoChange(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0] ?? null;
+    form.logo = file;
+    form.remove_logo = false;
+
+    if (logoPreview.value) {
+        URL.revokeObjectURL(logoPreview.value);
+        logoPreview.value = null;
+    }
+
+    if (file) {
+        logoPreview.value = URL.createObjectURL(file);
+    }
+}
+
+function clearLogo() {
+    form.logo = null;
+    form.remove_logo = true;
+    if (logoPreview.value) {
+        URL.revokeObjectURL(logoPreview.value);
+        logoPreview.value = null;
+    }
+}
+
+function undoRemoveLogo() {
+    form.remove_logo = false;
+}
 
 const processing = computed(() => form.processing);
 
+/* ---------- Labels ---------- */
 const fieldLabels: Record<string, string> = {
     store_name: 'Store name',
+    store_tagline: 'Store tagline',
+    store_logo: 'Store logo',
     store_email: 'Contact email',
     store_phone: 'Contact phone',
     store_address: 'Physical address',
     currency: 'Currency',
     timezone: 'Timezone',
+    order_prefix: 'Order number prefix',
     tax_rate: 'Tax rate (%)',
     tax_enabled: 'Tax enabled',
+    free_shipping_enabled: 'Offer free shipping',
     free_shipping_threshold: 'Free shipping above (KES)',
+    featured_products_limit: 'Featured products limit',
+    new_arrivals_limit: 'New arrivals limit',
+    low_stock_threshold: 'Low stock alert threshold',
     maintenance_mode: 'Maintenance mode',
 };
 
@@ -55,17 +106,45 @@ const groupTitles: Record<string, string> = {
     tax: 'Tax',
     contact: 'Contact details',
     shipping: 'Shipping',
+    homepage: 'Homepage',
     system: 'System',
 };
 
-function submit() {
-    form.settings = Object.entries(values.value).map(([key, value]) => ({
-        key,
-        value: typeof value === 'boolean' ? String(value) : value,
-    }));
+const groupDescriptions: Record<string, string> = {
+    general: 'Core identity of your storefront — name, branding, currency.',
+    tax: 'How tax is calculated and displayed on orders.',
+    contact: 'Where customers can reach you and find your store.',
+    shipping: 'Shipping rules and free-delivery threshold.',
+    homepage: 'What appears on the storefront home page.',
+    system: 'Operational flags and defaults.',
+};
 
-    form.patch(admin_settings_update.url(), {
+const groupIcons: Record<string, string> = {
+    general: 'M3 12h18M3 6h18M3 18h18',
+    tax: 'M9 14l6-6M9.5 8.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm8 8a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z',
+    contact: 'M3 8l9 6 9-6M3 8v10a2 2 0 002 2h14a2 2 0 002-2V8M3 8l9-4 9 4',
+    shipping: 'M3 7h11v10H3V7zm11 3h4l3 3v4h-7v-7zM7 20a1.5 1.5 0 100-3 1.5 1.5 0 000 3zm10 0a1.5 1.5 0 100-3 1.5 1.5 0 000 3z',
+    homepage: 'M3 12l9-9 9 9M5 10v10h14V10',
+    system: 'M12 15a3 3 0 100-6 3 3 0 000 6zm7-3a7 7 0 01-.1 1.2l2 1.5-2 3.5-2.4-1a7 7 0 01-2.1 1.2L14 21h-4l-.4-2.6a7 7 0 01-2.1-1.2l-2.4 1-2-3.5 2-1.5A7 7 0 015 12z',
+};
+
+function submit() {
+    form.transform((data) => ({
+        ...data,
+        settings: Object.entries(values.value).map(([key, value]) => ({
+            key,
+            value: typeof value === 'boolean' ? String(value) : value,
+        })),
+    })).patch(admin_settings_update.url(), {
+        forceFormData: true,
         preserveScroll: true,
+        onSuccess: () => {
+            form.logo = null;
+            if (logoPreview.value) {
+                URL.revokeObjectURL(logoPreview.value);
+                logoPreview.value = null;
+            }
+        },
     });
 }
 </script>
@@ -73,64 +152,238 @@ function submit() {
 <template>
     <Head title="Settings" />
 
-    <div class="p-4 sm:p-5 lg:p-6">
-        <div class="flex items-center justify-between py-5 lg:py-6">
-            <h2 class="text-xl font-medium text-slate-800 dark:text-navy-50 lg:text-2xl">
-                Store Settings
-            </h2>
-        </div>
-
-        <form class="max-w-3xl space-y-6" @submit.prevent="submit">
-            <div
-                v-for="(settings, group) in groups"
-                :key="group"
-                class="card p-4 sm:p-5"
-            >
-                <h3 class="font-medium text-slate-700 dark:text-navy-100 text-base border-b border-slate-150 pb-3 dark:border-navy-600">
-                    {{ groupTitles[group] ?? group }}
-                </h3>
-
-                <div class="mt-4 space-y-4">
-                    <div v-for="setting in settings" :key="setting.id">
-                        <!-- Boolean toggle -->
-                        <template v-if="setting.type === 'boolean'">
-                            <label class="inline-flex items-center space-x-2 cursor-pointer">
-                                <input
-                                    v-model="values[setting.key]"
-                                    type="checkbox"
-                                    class="form-checkbox is-basic size-5 rounded-sm border-slate-400/70 bg-slate-100 checked:border-primary checked:bg-primary hover:border-primary focus:border-primary dark:border-navy-500 dark:bg-navy-900 dark:checked:border-accent dark:checked:bg-accent dark:hover:border-accent dark:focus:border-accent"
-                                />
-                                <span class="font-medium text-slate-700 dark:text-navy-100 text-sm">
-                                    {{ fieldLabels[setting.key] ?? setting.key }}
-                                </span>
-                            </label>
-                        </template>
-
-                        <!-- Text input -->
-                        <template v-else>
-                            <label class="block">
-                                <span class="font-medium text-slate-700 dark:text-navy-100 text-sm">
-                                    {{ fieldLabels[setting.key] ?? setting.key }}
-                                </span>
-                                <input
-                                    v-model="values[setting.key]"
-                                    class="form-input mt-1.5 w-full rounded-lg border border-slate-300 bg-transparent px-3 py-2 text-sm placeholder:text-slate-400/70 hover:border-slate-400 focus:border-primary dark:border-navy-450 dark:hover:border-navy-400 dark:focus:border-accent"
-                                />
-                            </label>
-                        </template>
+    <div class="min-h-screen bg-slate-50/60 dark:bg-navy-900">
+        <div class="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
+            <!-- Header -->
+            <div class="mb-8">
+                <div class="flex items-center gap-3">
+                    <div class="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary dark:bg-accent/15 dark:text-accent-light">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-navy-50">
+                            Store Settings
+                        </h1>
+                        <p class="mt-0.5 text-sm text-slate-500 dark:text-navy-300">
+                            Configure how your storefront looks, behaves, and communicates.
+                        </p>
                     </div>
                 </div>
             </div>
 
-            <div class="pt-2">
-                <button
-                    type="submit"
-                    :disabled="processing"
-                    class="btn bg-primary/10 font-medium text-primary hover:bg-primary/20 focus:bg-primary/20 active:bg-primary/25 dark:bg-accent-light/10 dark:text-accent-light dark:hover:bg-accent-light/20 dark:focus:bg-accent-light/20 dark:active:bg-accent-light/25"
-                >
-                    {{ processing ? 'Saving…' : 'Save settings' }}
-                </button>
-            </div>
-        </form>
+            <form @submit.prevent="submit">
+                <div class="grid gap-6 lg:grid-cols-12">
+                    <!-- Main column -->
+                    <div class="space-y-6 lg:col-span-8">
+                        <div
+                            v-for="(settings, group) in groups"
+                            :key="group"
+                            class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-navy-600 dark:bg-navy-750"
+                        >
+                            <!-- Section header -->
+                            <div class="flex items-start gap-3 border-b border-slate-100 px-5 py-4 dark:border-navy-600 sm:px-6">
+                                <div class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-600 dark:bg-navy-800 dark:text-navy-200">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
+                                        <path stroke-linecap="round" stroke-linejoin="round" :d="groupIcons[group] ?? groupIcons.general" />
+                                    </svg>
+                                </div>
+                                <div class="min-w-0">
+                                    <h2 class="text-base font-semibold text-slate-900 dark:text-navy-50">
+                                        {{ groupTitles[group] ?? group }}
+                                    </h2>
+                                    <p v-if="groupDescriptions[group]" class="mt-0.5 text-xs text-slate-500 dark:text-navy-300">
+                                        {{ groupDescriptions[group] }}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Fields -->
+                            <div class="divide-y divide-slate-100 dark:divide-navy-600">
+                                <div
+                                    v-for="setting in settings"
+                                    :key="setting.id"
+                                    class="px-5 py-4 sm:px-6"
+                                >
+                                    <!-- Image / logo -->
+                                    <template v-if="setting.type === 'image'">
+                                        <div class="flex flex-col gap-4 sm:flex-row sm:items-start">
+                                            <div class="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-slate-200 bg-slate-50 dark:border-navy-600 dark:bg-navy-900">
+                                                <img
+                                                    v-if="logoPreview"
+                                                    :src="logoPreview"
+                                                    alt="New logo preview"
+                                                    class="h-full w-full object-contain p-1.5"
+                                                />
+                                                <img
+                                                    v-else-if="currentLogo && !form.remove_logo"
+                                                    :src="currentLogo"
+                                                    alt="Current logo"
+                                                    class="h-full w-full object-contain p-1.5"
+                                                />
+                                                <svg v-else xmlns="http://www.w3.org/2000/svg" class="size-7 text-slate-300 dark:text-navy-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                </svg>
+                                            </div>
+
+                                            <div class="min-w-0 flex-1">
+                                                <p class="text-sm font-medium text-slate-700 dark:text-navy-100">
+                                                    {{ fieldLabels[setting.key] ?? setting.key }}
+                                                </p>
+                                                <p class="mt-0.5 text-xs text-slate-500 dark:text-navy-300">
+                                                    PNG, JPG, or SVG. Max 2 MB. Shown in the storefront header.
+                                                </p>
+
+                                                <div class="mt-3 flex flex-wrap items-center gap-2">
+                                                    <label class="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 shadow-sm transition-colors hover:bg-slate-50 dark:border-navy-600 dark:bg-navy-800 dark:text-navy-100 dark:hover:bg-navy-700">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5-5m0 0l5 5m-5-5v12" />
+                                                        </svg>
+                                                        <span>Choose file</span>
+                                                        <input
+                                                            type="file"
+                                                            accept="image/*"
+                                                            class="sr-only"
+                                                            @change="onLogoChange"
+                                                        />
+                                                    </label>
+
+                                                    <button
+                                                        v-if="form.remove_logo"
+                                                        type="button"
+                                                        class="rounded-lg px-3 py-1.5 text-xs font-medium text-primary hover:bg-primary/5 dark:text-accent-light dark:hover:bg-accent-light/10"
+                                                        @click="undoRemoveLogo"
+                                                    >
+                                                        Undo remove
+                                                    </button>
+                                                    <button
+                                                        v-else-if="currentLogo || logoPreview"
+                                                        type="button"
+                                                        class="rounded-lg px-3 py-1.5 text-xs font-medium text-error hover:bg-error/5"
+                                                        @click="clearLogo"
+                                                    >
+                                                        Remove logo
+                                                    </button>
+                                                </div>
+
+                                                <p v-if="form.errors.logo" class="mt-1.5 text-xs text-error">{{ form.errors.logo }}</p>
+                                            </div>
+                                        </div>
+                                    </template>
+
+                                    <!-- Boolean toggle (modern switch) -->
+                                    <template v-else-if="setting.type === 'boolean'">
+                                        <label class="flex cursor-pointer items-center justify-between gap-4">
+                                            <span class="text-sm font-medium text-slate-700 dark:text-navy-100">
+                                                {{ fieldLabels[setting.key] ?? setting.key }}
+                                            </span>
+                                            <span class="relative inline-flex">
+                                                <input
+                                                    v-model="values[setting.key]"
+                                                    type="checkbox"
+                                                    class="peer sr-only"
+                                                />
+                                                <span class="h-6 w-11 rounded-full bg-slate-200 transition-colors peer-checked:bg-primary dark:bg-navy-700 dark:peer-checked:bg-accent"></span>
+                                                <span class="absolute left-0.5 top-0.5 size-5 rounded-full bg-white shadow-sm transition-transform peer-checked:translate-x-5"></span>
+                                            </span>
+                                        </label>
+                                    </template>
+
+                                    <!-- Number -->
+                                    <template v-else-if="setting.type === 'number'">
+                                        <label class="block">
+                                            <span class="text-sm font-medium text-slate-700 dark:text-navy-100">
+                                                {{ fieldLabels[setting.key] ?? setting.key }}
+                                            </span>
+                                            <input
+                                                v-model.number="values[setting.key]"
+                                                type="number"
+                                                min="0"
+                                                class="form-input mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 transition-colors hover:border-slate-300 focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-navy-600 dark:bg-navy-900 dark:text-navy-100 dark:hover:border-navy-500 dark:focus:border-accent dark:focus:ring-accent/20"
+                                            />
+                                            <span
+                                                v-if="setting.key === 'featured_products_limit' || setting.key === 'new_arrivals_limit'"
+                                                class="mt-1.5 block text-xs text-slate-500 dark:text-navy-300"
+                                            >
+                                                How many products appear on the homepage. 0 hides the section.
+                                            </span>
+                                        </label>
+                                    </template>
+
+                                    <!-- Text -->
+                                    <template v-else>
+                                        <label class="block">
+                                            <span class="text-sm font-medium text-slate-700 dark:text-navy-100">
+                                                {{ fieldLabels[setting.key] ?? setting.key }}
+                                            </span>
+                                            <input
+                                                v-model="values[setting.key]"
+                                                class="form-input mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 transition-colors placeholder:text-slate-400/70 hover:border-slate-300 focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-navy-600 dark:bg-navy-900 dark:text-navy-100 dark:hover:border-navy-500 dark:focus:border-accent dark:focus:ring-accent/20"
+                                            />
+                                        </label>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sticky sidebar -->
+                    <aside class="lg:col-span-4">
+                        <div class="sticky top-6 space-y-4">
+                            <!-- Status card -->
+                            <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-navy-600 dark:bg-navy-750">
+                                <div class="border-b border-slate-100 px-5 py-4 dark:border-navy-600">
+                                    <h3 class="text-sm font-semibold text-slate-900 dark:text-navy-50">
+                                        Publish changes
+                                    </h3>
+                                </div>
+                                <div class="space-y-3 p-5">
+                                    <p class="text-xs leading-relaxed text-slate-500 dark:text-navy-300">
+                                        Your settings take effect immediately after saving. Some changes, like the logo, will be visible to customers on their next page load.
+                                    </p>
+                                    <button
+                                        type="submit"
+                                        :disabled="processing"
+                                        class="flex w-full items-center justify-center gap-2 rounded-lg bg-primary py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-primary-focus active:bg-primary-focus/90 disabled:opacity-50 dark:bg-accent dark:hover:bg-accent-focus"
+                                    >
+                                        <svg v-if="processing" xmlns="http://www.w3.org/2000/svg" class="size-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                                            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-opacity="0.25" stroke-width="3" />
+                                            <path fill="currentColor" d="M4 12a8 8 0 018-8v3a5 5 0 00-5 5H4z" />
+                                        </svg>
+                                        <span>{{ processing ? 'Saving…' : 'Save settings' }}</span>
+                                    </button>
+                                    <p class="text-center text-[11px] text-slate-400 dark:text-navy-400">
+                                        Changes apply to the public storefront.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Quick reference -->
+                            <div class="rounded-2xl border border-slate-200 bg-slate-50/60 p-5 dark:border-navy-600 dark:bg-navy-800/40">
+                                <h4 class="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-navy-300">
+                                    Tips
+                                </h4>
+                                <ul class="mt-3 space-y-2.5 text-xs leading-relaxed text-slate-600 dark:text-navy-300">
+                                    <li class="flex gap-2">
+                                        <span class="mt-1.5 size-1 shrink-0 rounded-full bg-slate-400 dark:bg-navy-500"></span>
+                                        <span>Set the homepage limits to <strong class="font-semibold text-slate-800 dark:text-navy-100">0</strong> to hide a section entirely.</span>
+                                    </li>
+                                    <li class="flex gap-2">
+                                        <span class="mt-1.5 size-1 shrink-0 rounded-full bg-slate-400 dark:bg-navy-500"></span>
+                                        <span>Free shipping threshold is per-order subtotal, before tax.</span>
+                                    </li>
+                                    <li class="flex gap-2">
+                                        <span class="mt-1.5 size-1 shrink-0 rounded-full bg-slate-400 dark:bg-navy-500"></span>
+                                        <span>Logos display best with a transparent background.</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+            </form>
+        </div>
     </div>
 </template>

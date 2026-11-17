@@ -131,10 +131,11 @@ function submit() {
                         </div>
 
                         <input
-                            type="file"
-                            accept="image/*"
-                            class="btn bg-slate-150 mt-3 font-medium text-slate-800 hover:bg-slate-200 focus:bg-slate-200 active:bg-slate-200/80 dark:bg-navy-500 dark:text-navy-50 dark:hover:bg-navy-450 dark:focus:bg-navy-450 dark:active:bg-navy-450/90"
-                        />
+    type="file"
+    accept="image/*"
+    class="btn bg-slate-150 mt-3 font-medium text-slate-800 hover:bg-slate-200 focus:bg-slate-200 active:bg-slate-200/80 dark:bg-navy-500 dark:text-navy-50 dark:hover:bg-navy-450 dark:focus:bg-navy-450 dark:active:bg-navy-450/90"
+    @change="onImageChange"
+/>
                         <p class="mt-1 text-xs text-slate-400 dark:text-navy-300">PNG, JPG, or SVG. Max 2 MB.</p>
                         <p v-if="form.errors.image" class="mt-1 text-xs text-error">{{ form.errors.image }}</p>
                     </div>

@@ -21,6 +21,8 @@ const user = computed(() => (page.props as any).auth?.user ?? null);
 
 const isActive = (href: string) =>
     currentPath.value === href || currentPath.value.startsWith(href + '/');
+    const storeName = computed(() => (page.props as any).store_name ?? 'My Store');
+const storeLogoUrl = computed(() => (page.props as any).store_logo_url ?? null);
 
 const userInitial = computed(() => {
     const name = user.value?.name ?? '';
@@ -41,16 +43,39 @@ function logout() {
         class="fixed inset-y-0 left-0 z-50 flex w-[300px] flex-col border-r border-slate-150 bg-white transition-transform duration-300 ease-in-out dark:border-navy-700 dark:bg-navy-750 md:translate-x-0"
         :class="!props.open && 'max-md:-translate-x-full'">
         <!-- Logo -->
-        <div class="flex h-[61px] shrink-0 items-center gap-3 border-b border-slate-150 px-4 dark:border-navy-700">
-            <Link href="/admin/dashboard"
-                class="flex size-9 items-center justify-center rounded-lg bg-primary text-white dark:bg-accent">
-                <span class="text-base font-bold">A</span>
-            </Link>
-            <div class="min-w-0 flex-1">
-                <p class="truncate text-sm font-semibold text-slate-800 dark:text-navy-50">Admin Panel</p>
-                <p class="truncate text-tiny text-slate-500 dark:text-navy-300">My Store</p>
-            </div>
+        <!-- Logo -->
+<div class="flex h-[61px] shrink-0 items-center border-b border-slate-150 dark:border-navy-700">
+    <Link
+        v-if="storeLogoUrl"
+        href="/admin/dashboard"
+        class="flex h-full w-full items-center px-4"
+        :aria-label="storeName"
+    >
+        <img
+            :src="storeLogoUrl"
+            :alt="storeName"
+            class="h-30 w-auto object-contain object-left"
+        />
+    </Link>
+
+    <Link
+        v-else
+        href="/admin/dashboard"
+        class="flex h-full w-full items-center gap-3 px-4"
+    >
+        <span class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary text-white dark:bg-accent">
+            <span class="text-base font-bold">A</span>
+        </span>
+        <div class="min-w-0 flex-1">
+            <p class="truncate text-sm font-semibold text-slate-800 dark:text-navy-50">
+                Admin Panel
+            </p>
+            <p class="truncate text-tiny text-slate-500 dark:text-navy-300">
+                {{ storeName }}
+            </p>
         </div>
+    </Link>
+</div>
 
         <!-- Nav -->
         <nav class="is-scrollbar-hidden mt-2 flex-1 overflow-y-auto px-3 pb-3">
