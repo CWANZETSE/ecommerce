@@ -260,7 +260,7 @@ Route::middleware(['auth', 'verified', EnsureUserIsAdmin::class])
 |--------------------------------------------------------------------------
 */
 
-Route::post('/webhooks/mpesa/callback', [MpesaCallbackController::class, 'handle'])
+Route::post('/webhooks/mobile/payment/callback', [MpesaCallbackController::class, 'handle'])
     ->withoutMiddleware([VerifyCsrfToken::class]);
 
 require __DIR__.'/settings.php';
