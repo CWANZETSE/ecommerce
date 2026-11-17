@@ -15,7 +15,14 @@ class BannerController extends Controller
     public function index(): Response
     {
         return Inertia::render('Admin/Banners/Index', [
-            'banners' => Banner::orderBy('sort_order')->get(),
+            'banners' => Banner::orderBy('sort_order')->get()->map(fn (Banner $b) => [
+                'id' => $b->id,
+                'title' => $b->title,
+                'subtitle' => $b->subtitle,
+                'image_url' => $b->image_url,          // accessor → Storage::url()
+                'is_active' => $b->is_active,
+                'sort_order' => $b->sort_order,
+            ])->values(),
         ]);
     }
 
@@ -27,7 +34,7 @@ class BannerController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $data = $this->validated($request);
-        $data['image_path'] = $request->file('image')->store('banners', 'public');
+        $data['image_path'] = Storage::putFile('banners', $request->file('image'));
         unset($data['image']);
 
         Banner::create($data);
@@ -37,7 +44,18 @@ class BannerController extends Controller
 
     public function edit(Banner $banner): Response
     {
-        return Inertia::render('Admin/Banners/Edit', ['banner' => $banner]);
+        return Inertia::render('Admin/Banners/Edit', [
+            'banner' => [
+                'id' => $banner->id,
+                'title' => $banner->title,
+                'subtitle' => $banner->subtitle,
+                'image_url' => $banner->image_url,     // accessor → Storage::url()
+                'link_url' => $banner->link_url,
+                'link_text' => $banner->link_text,
+                'sort_order' => $banner->sort_order,
+                'is_active' => $banner->is_active,
+            ],
+        ]);
     }
 
     public function update(Request $request, Banner $banner): RedirectResponse
@@ -45,8 +63,11 @@ class BannerController extends Controller
         $data = $this->validated($request);
 
         if ($request->hasFile('image')) {
-            Storage::disk('public')->delete($banner->image_path);
-            $data['image_path'] = $request->file('image')->store('banners', 'public');
+            if ($banner->image_path) {
+                Storage::delete($banner->image_path);
+            }
+
+            $data['image_path'] = Storage::putFile('banners', $request->file('image'));
         }
         unset($data['image']);
 
@@ -57,7 +78,10 @@ class BannerController extends Controller
 
     public function destroy(Banner $banner): RedirectResponse
     {
-        Storage::disk('public')->delete($banner->image_path);
+        if ($banner->image_path) {
+            Storage::delete($banner->image_path);
+        }
+
         $banner->delete();
 
         return redirect()->route('admin_banners_index')->with('success', 'Banner deleted.');
