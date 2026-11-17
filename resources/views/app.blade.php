@@ -47,6 +47,8 @@
     </head>
     <body class="is-header-blur font-sans antialiased">
         <x-inertia::app />
+
+        <script src="{{ asset('/custom/app.js') }}"></script>
     </body>
     
 </html>

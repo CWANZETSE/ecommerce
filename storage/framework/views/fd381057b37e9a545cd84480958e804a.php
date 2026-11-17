@@ -84,6 +84,8 @@
 <?php $component = $__componentOriginal1830bdc8f8b965a5838ec47487b5507c; ?>
 <?php unset($__componentOriginal1830bdc8f8b965a5838ec47487b5507c); ?>
 <?php endif; ?>
+
+        <script src="<?php echo e(asset('/custom/app.js')); ?>"></script>
     </body>
     
 </html>
