@@ -201,13 +201,9 @@ const formatMoney = (amount) =>
                     <div class="mt-4 space-y-4">
                         <div>
                             <label class="text-xs+ font-medium text-slate-600 dark:text-navy-200">Full Name</label>
-                            <input
-    :value="auth.user?.name"
-    :disabled="!isAdmin"
-    placeholder="Enter your full name"
-    class="form-input mt-1.5 w-full rounded-lg bg-slate-150 px-3 py-2.5 ring-primary/50 placeholder:text-slate-400 hover:bg-slate-200 focus:ring-3 dark:bg-navy-900/90 dark:ring-accent/50 dark:text-navy-100 disabled:cursor-not-allowed disabled:bg-slate-150 disabled:text-slate-500 disabled:hover:bg-slate-150 dark:disabled:bg-navy-900/90 dark:disabled:text-navy-400 dark:disabled:hover:bg-navy-900/90"
-/>
-                            
+                            <input :value="auth.user?.name" :disabled="!isAdmin" placeholder="Enter your full name"
+                                class="form-input mt-1.5 w-full rounded-lg bg-slate-150 px-3 py-2.5 ring-primary/50 placeholder:text-slate-400 hover:bg-slate-200 focus:ring-3 dark:bg-navy-900/90 dark:ring-accent/50 dark:text-navy-100 disabled:cursor-not-allowed disabled:bg-slate-150 disabled:text-slate-500 disabled:hover:bg-slate-150 dark:disabled:bg-navy-900/90 dark:disabled:text-navy-400 dark:disabled:hover:bg-navy-900/90" />
+
                         </div>
 
                         <!-- M-Pesa Phone -->
@@ -397,7 +393,7 @@ const formatMoney = (amount) =>
                                 ? 'Enter M-Pesa phone to continue'
                                 : !form.county
                                     ? 'Select a delivery county'
-                    : `Pay KES ${formatMoney(grandTotal)} with M-Pesa`
+                                    : `Pay KES ${formatMoney(grandTotal)} with M-Pesa`
                     }}
                 </button>
             </form>
@@ -414,19 +410,19 @@ const formatMoney = (amount) =>
                         <li v-for="(line, i) in props.cart.items" :key="i" class="space-y-1 py-3 first:pt-0 last:pb-0">
                             <div class="flex items-start gap-3">
                                 <!-- Image -->
-                                <div class="relative size-12 shrink-0 overflow-hidden rounded-lg bg-slate-100 dark:bg-navy-900">
-    <img v-if="line.product.primary_image_url"
-        :src="line.product.primary_image_url" :alt="line.product.name"
-        class="h-full w-full object-cover object-center" />
-    <div v-else
-        class="flex h-full w-full items-center justify-center text-slate-300 dark:text-navy-500">
-        <svg xmlns="http://www.w3.org/2000/svg" class="size-5" fill="none"
-            viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-            <path stroke-linecap="round" stroke-linejoin="round"
-                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-        </svg>
-    </div>
-</div>
+                                <div
+                                    class="relative size-12 shrink-0 overflow-hidden rounded-lg bg-slate-100 dark:bg-navy-900">
+                                    <img v-if="line.product.primary_image_url" :src="line.product.primary_image_url"
+                                        :alt="line.product.name" class="h-full w-full object-cover object-center" />
+                                    <div v-else
+                                        class="flex h-full w-full items-center justify-center text-slate-300 dark:text-navy-500">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="size-5" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                    </div>
+                                </div>
 
                                 <!-- Details -->
                                 <div class="min-w-0 flex-1">
@@ -477,7 +473,7 @@ const formatMoney = (amount) =>
                         <div
                             class="flex justify-between border-t border-slate-150 pt-3 text-base font-bold text-slate-800 dark:border-navy-600 dark:text-navy-50">
                             <dt>Total Amount</dt>
-                            <dd>KES {{ formatMoney (grandTotal) }}</dd>
+                            <dd>KES {{ formatMoney(grandTotal) }}</dd>
                         </div>
                     </dl>
                 </div>
