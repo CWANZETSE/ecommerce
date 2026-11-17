@@ -9,6 +9,7 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductAttribute;
+use App\Models\ProductImage;
 use App\Services\ImageService;
 use App\Services\ProductService;
 use Illuminate\Http\RedirectResponse;
@@ -37,7 +38,25 @@ class ProductController extends Controller
             ->when($request->filled('status'), fn ($q) => $q->where('is_active', $request->status === 'active'))
             ->latest()
             ->paginate(20)
-            ->withQueryString();
+            ->withQueryString()
+            ->through(fn (Product $p) => [
+                'id' => $p->id,
+                'name' => $p->name,
+                'sku' => $p->sku,
+                'price' => $p->price,
+                'is_active' => $p->is_active,
+                'is_featured' => $p->is_featured,
+                'category' => $p->category ? [
+                    'id' => $p->category->id,
+                    'name' => $p->category->name,
+                ] : null,
+                'primary_image_url' => $p->primary_image_url,   // accessor → Storage::url()
+                'variations' => $p->variations->map(fn ($v) => [
+                    'id' => $v->id,
+                    'product_id' => $v->product_id,
+                    'stock_quantity' => (int) $v->stock_quantity,
+                ])->values(),
+            ]);
 
         return Inertia::render('Admin/Products/Index', [
             'products' => $products,
@@ -72,7 +91,7 @@ class ProductController extends Controller
         }
 
         return redirect()
-            ->route('admin_products_index', $product)
+            ->route('admin_products_index')
             ->with('success', 'Product created successfully.');
     }
 
@@ -83,7 +102,42 @@ class ProductController extends Controller
         $product->load(['images', 'variations.attributeValues.attribute']);
 
         return Inertia::render('Admin/Products/Edit', [
-            'product' => $product,
+            'product' => [
+                'id' => $product->id,
+                'name' => $product->name,
+                'sku' => $product->sku,
+                'category_id' => $product->category_id,
+                'brand_id' => $product->brand_id,
+                'short_description' => $product->short_description,
+                'description' => $product->description,
+                'price' => $product->price,
+                'sale_price' => $product->sale_price,
+                'is_active' => $product->is_active,
+                'is_featured' => $product->is_featured,
+                'show_on_homepage' => $product->show_on_homepage,
+                'images' => $product->images->map(fn (ProductImage $img) => [
+                    'id' => $img->id,
+                    'path' => $img->path,
+                    'url' => $img->image_url,                 // accessor → Storage::url()
+                    'is_primary' => $img->is_primary,
+                    'alt' => $img->alt,
+                ])->values(),
+                'variations' => $product->variations->map(fn ($v) => [
+                    'id' => $v->id,
+                    'sku' => $v->sku,
+                    'price' => $v->price,
+                    'sale_price' => $v->sale_price,
+                    'stock_quantity' => (int) $v->stock_quantity,
+                    'low_stock_threshold' => $v->low_stock_threshold,
+                    'attribute_values' => $v->attributeValues->map(fn ($av) => [
+                        'id' => $av->id,
+                        'value' => $av->value,
+                        'attribute' => [
+                            'name' => $av->attribute->name,
+                        ],
+                    ])->values(),
+                ])->values(),
+            ],
             'categories' => Category::active()->orderBy('name')->get(['id', 'name']),
             'brands' => Brand::active()->orderBy('name')->get(['id', 'name']),
             'attributes' => ProductAttribute::with('values')->get(),
@@ -106,7 +160,7 @@ class ProductController extends Controller
 
         return redirect()
             ->route('admin_products_index')
-        ->with('success', 'Product updated successfully.');
+            ->with('success', 'Product updated successfully.');
     }
 
     public function destroy(Product $product): RedirectResponse
