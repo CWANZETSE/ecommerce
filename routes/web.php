@@ -29,12 +29,23 @@ use App\Http\Middleware\EnsureUserIsAdmin;
 use App\Http\Middleware\EnsureUserIsCustomer;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 
 /*
 |--------------------------------------------------------------------------
 | Public Routes
 |--------------------------------------------------------------------------
 */
+
+Route::get('/disk-check', function () {
+    return [
+        'default'     => config('filesystems.default'),
+        'aws_url_env' => env('AWS_URL'),
+        'config_url'  => config('filesystems.disks.bazario_cloud_disk.url'),
+        'storage_url' => Storage::url('test.png'),
+    ];
+});
+
 
 Route::get('/', HomeController::class)->name('home');
 
