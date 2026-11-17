@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -9,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Storage;
 
 class Product extends Model
 {
@@ -86,12 +88,23 @@ class Product extends Model
     }
 
     public function reviews(): HasMany
-{
-    return $this->hasMany(ProductReview::class);
-}
+    {
+        return $this->hasMany(ProductReview::class);
+    }
 
-public function approvedReviews(): HasMany
-{
-    return $this->hasMany(ProductReview::class)->where('status', 'approved');
-}
+    public function approvedReviews(): HasMany
+    {
+        return $this->hasMany(ProductReview::class)->where('status', 'approved');
+    }
+
+    /**
+     * Public URL for the primary image (R2-safe).
+     * Usage in Vue: product.primary_image_url
+     */
+    protected function primaryImageUrl(): Attribute
+    {
+        return Attribute::get(
+            fn () => $this->primaryImage?->image_url
+        );
+    }
 }

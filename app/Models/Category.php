@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Storage;
 
 class Category extends Model
 {
@@ -54,7 +55,7 @@ class Category extends Model
     protected function imageUrl(): Attribute
     {
         return Attribute::get(
-            fn () => $this->image_path ? asset('storage/' . $this->image_path) : null
+            fn () => $this->image_path ? Storage::url($this->image_path) : null
         );
     }
 }
