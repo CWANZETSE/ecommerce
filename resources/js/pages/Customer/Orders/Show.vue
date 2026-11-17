@@ -355,8 +355,20 @@ const showCancelNode = computed(() => isCancelled.value);
             <div class="space-y-1">
                 <div class="flex items-center gap-3">
                     <span
-                        class="flex size-12 items-center justify-center rounded-2xl bg-primary/10 text-primary shadow-xs dark:bg-accent-light/10 dark:text-accent-light">
-                        <ShoppingBag class="size-6" />
+                        class="flex size-12 p-2 items-center justify-center rounded-2xl bg-primary/10 text-primary shadow-xs dark:bg-accent-light/10 dark:text-accent-light">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                            <g id="SVGRepo_iconCarrier">
+                                <!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
+                                <path opacity="0.4"
+                                    d="M19.24 5.58006H18.84L15.46 2.20006C15.19 1.93006 14.75 1.93006 14.47 2.20006C14.2 2.47006 14.2 2.91006 14.47 3.19006L16.86 5.58006H7.14L9.53 3.19006C9.8 2.92006 9.8 2.48006 9.53 2.20006C9.26 1.93006 8.82 1.93006 8.54 2.20006L5.17 5.58006H4.77C3.87 5.58006 2 5.58006 2 8.14006C2 9.11006 2.2 9.75006 2.62 10.1701C2.86 10.4201 3.15 10.5501 3.46 10.6201C3.75 10.6901 4.06 10.7001 4.36 10.7001H19.64C19.95 10.7001 20.24 10.6801 20.52 10.6201C21.36 10.4201 22 9.82006 22 8.14006C22 5.58006 20.13 5.58006 19.24 5.58006Z"
+                                    fill="#4f46e5"></path>
+                                <path
+                                    d="M19.6509 10.7001H4.36094C4.06094 10.7001 3.75094 10.6901 3.46094 10.6201L4.72094 18.3001C5.00094 20.0201 5.75094 22.0001 9.08094 22.0001H14.6909C18.0609 22.0001 18.6609 20.3101 19.0209 18.4201L20.5309 10.6201C20.2509 10.6801 19.9509 10.7001 19.6509 10.7001ZM10.6109 17.1601C10.6109 17.5501 10.3009 17.8601 9.91094 17.8601C9.52094 17.8601 9.21094 17.5501 9.21094 17.1601V13.8601C9.21094 13.4701 9.52094 13.1601 9.91094 13.1601C10.3009 13.1601 10.6109 13.4701 10.6109 13.8601V17.1601ZM14.8909 17.1601C14.8909 17.5501 14.5809 17.8601 14.1909 17.8601C13.8009 17.8601 13.4909 17.5501 13.4909 17.1601V13.8601C13.4909 13.4701 13.8009 13.1601 14.1909 13.1601C14.5809 13.1601 14.8909 13.4701 14.8909 13.8601V17.1601Z"
+                                    fill="#4f46e5"></path>
+                            </g>
+                        </svg>
                     </span>
                     <div>
                         <div class="flex flex-wrap items-center gap-3">
@@ -364,7 +376,7 @@ const showCancelNode = computed(() => isCancelled.value);
                                 {{ order.order_number }}
                             </h1>
                             <span
-                                class="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary dark:bg-accent-light/15 dark:text-accent-light">
+                                class="badge rounded-full bg-primary/10 text-primary dark:bg-accent-light/15 dark:text-accent-light">
                                 <ShieldCheck class="size-3.5" />
                                 Verified Secure Order
                             </span>
@@ -386,225 +398,7 @@ const showCancelNode = computed(() => isCancelled.value);
             </div>
         </div>
 
-        <!-- ================= Unified Top Card (50/50 Split on LG) ================= -->
-        <div
-            class="card mt-6 overflow-hidden rounded-2xl border border-slate-200/80 shadow-sm dark:border-navy-600 dark:bg-navy-750">
-            <div class="grid grid-cols-1 lg:grid-cols-2">
-
-                <!-- Left: Live Lifecycle Status (1/2 width on lg) -->
-                <div class="border-b border-slate-150 dark:border-navy-600 lg:border-b-0 lg:border-r">
-                    <div class="flex h-full flex-col pb-4">
-                        <!-- Timeline Header -->
-                        <div class="flex items-center justify-between px-4 pt-5 pb-2 sm:px-5">
-                            <h2 class="font-medium tracking-wide text-slate-700 dark:text-navy-100">
-                                Live Lifecycle Status
-                            </h2>
-                            <div class="flex items-center gap-2">
-                                <div class="inline-flex">
-                                    <button
-                                        class="btn -mr-1.5 size-8 rounded-full p-0 hover:bg-slate-300/20 focus:bg-slate-300/20 active:bg-slate-300/25 dark:hover:bg-navy-300/20 dark:focus:bg-navy-300/20 dark:active:bg-navy-300/25">
-                                        <MoreHorizontal class="size-5" />
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Status chips -->
-                        <div class="flex flex-wrap items-center gap-2 px-4 pb-3 sm:px-5">
-                            <div
-                                class="flex items-center space-x-2 rounded-lg border border-slate-200/60 bg-slate-50 px-3 py-1.5 text-xs dark:border-navy-600 dark:bg-navy-900">
-                                <span class="font-medium text-slate-400">Payment:</span>
-                                <span :class="badgeClass(paymentStatus)">
-                                    {{ paymentStatus }}
-                                </span>
-                            </div>
-                            <div
-                                class="flex items-center space-x-2 rounded-lg border border-slate-200/60 bg-slate-50 px-3 py-1.5 text-xs dark:border-navy-600 dark:bg-navy-900">
-                                <span class="font-medium text-slate-400">Fulfilment:</span>
-                                <span :class="badgeClass(fulfilmentStatus)">
-    {{ fulfilmentStatus }}
-</span>
-                            </div>
-                        </div>
-
-                        <!-- Vertical timeline -->
-                        <ol class="timeline line-space flex-1 px-4 [--size:1.5rem] sm:px-5">
-                            <li v-for="(stage, i) in stages" :key="stage.key" class="timeline-item">
-                                <!-- Point -->
-                                <div class="relative">
-                                    <div class="timeline-item-point flex items-center justify-center rounded-full border"
-                                        :class="stageStates[i] === 'future'
-                                            ? 'border-slate-300 bg-white text-slate-300 dark:border-navy-600 dark:bg-navy-700 dark:text-navy-600'
-                                            : tonePoint[stage.tone]">
-                                        <component :is="stage.icon" class="size-3" />
-                                    </div>
-
-                                    <!-- Corner ping indicator on current stage -->
-                                    <span v-if="stageStates[i] === 'current'"
-                                        class="absolute -top-px -right-px flex size-3 items-center justify-center">
-                                        <span
-                                            class="absolute inline-flex h-full w-full animate-ping rounded-full bg-secondary opacity-80"></span>
-                                        <span class="inline-flex size-2 rounded-full bg-secondary"></span>
-                                    </span>
-                                </div>
-
-                                <!-- Content -->
-                                <div class="timeline-item-content flex-1 pl-4 sm:pl-8">
-                                    <div class="flex flex-col justify-between pb-2 sm:flex-row sm:pb-0">
-                                        <p
-                                            class="flex items-center gap-2 pb-2 font-medium leading-none text-slate-600 dark:text-navy-100 sm:pb-0">
-                                            {{ stage.label }}
-
-                                            <span v-if="stageStates[i] === 'current'"
-                                                class="inline-flex items-center rounded-full bg-secondary/10 px-2 py-0.5 text-2xs font-bold uppercase tracking-wide text-secondary dark:bg-secondary-light/15 dark:text-secondary-light">
-                                                Current
-                                            </span>
-                                            <span v-else-if="stageStates[i] === 'done'"
-                                                class="inline-flex items-center rounded-full bg-success/10 px-2 py-0.5 text-2xs font-bold uppercase tracking-wide text-success dark:bg-success/15">
-                                                Done
-                                            </span>
-                                            <span v-else-if="stageStates[i] === 'cancelled'"
-                                                class="inline-flex items-center rounded-full bg-error/10 px-2 py-0.5 text-2xs font-bold uppercase tracking-wide text-error dark:bg-error/15">
-                                                Cancelled here
-                                            </span>
-                                            <span v-else
-                                                class="inline-flex items-center rounded-full bg-slate-150 px-2 py-0.5 text-2xs font-bold uppercase tracking-wide text-slate-500 dark:bg-navy-600 dark:text-navy-300">
-                                                Pending
-                                            </span>
-                                        </p>
-
-                                        <span v-if="stage.timestamp" class="text-xs text-slate-400 dark:text-navy-300">
-                                            {{ stage.timestamp }}
-                                        </span>
-                                        <span v-else-if="stageStates[i] === 'future'"
-                                            class="text-xs text-slate-300 dark:text-navy-500">
-                                            Not yet
-                                        </span>
-                                    </div>
-
-                                    <p class="py-1"
-                                        :class="stageStates[i] === 'future' ? 'text-slate-400 dark:text-navy-500' : 'text-slate-500 dark:text-navy-200'">
-                                        {{ stage.description }}
-                                    </p>
-
-                                    <div v-if="stage.meta" class="pt-1">
-                                        <span
-                                            class="tag rounded-full border border-secondary/30 bg-secondary/10 text-secondary dark:border-secondary-light/30 dark:bg-secondary-light/10 dark:text-secondary-light">
-                                            {{ stage.meta }}
-                                        </span>
-                                    </div>
-                                </div>
-                            </li>
-
-                            <!-- Terminal: Cancelled -->
-                            <li v-if="showCancelNode" class="timeline-item">
-                                <div
-                                    class="timeline-item-point flex items-center justify-center rounded-full border border-current bg-white text-error dark:bg-navy-700 dark:text-error-light">
-                                    <X class="size-3" />
-                                </div>
-                                <div class="timeline-item-content flex-1 pl-4 sm:pl-8">
-                                    <div class="flex flex-col justify-between pb-2 sm:flex-row sm:pb-0">
-                                        <p
-                                            class="flex items-center gap-2 pb-2 font-medium leading-none text-slate-600 dark:text-navy-100 sm:pb-0">
-                                            Order Cancelled
-                                            <span
-                                                class="inline-flex items-center rounded-full bg-error/10 px-2 py-0.5 text-2xs font-bold uppercase tracking-wide text-error dark:bg-error/15">
-                                                Terminal
-                                            </span>
-                                        </p>
-                                    </div>
-                                    <p class="py-1 text-slate-500 dark:text-navy-200">
-                                        This order was cancelled before completion. If payment was captured, a refund
-                                        will be processed automatically.
-                                    </p>
-                                    <div class="pt-1">
-                                        <span class="tag rounded-full border border-error/30 bg-error/10 text-error">
-                                            Flow terminated
-                                        </span>
-                                    </div>
-                                </div>
-                            </li>
-                        </ol>
-                    </div>
-                </div>
-
-                <!-- Right Column (1/2 width on lg): Order Summary (top) & Delivery Address (bottom) -->
-                <div class="flex flex-col">
-                    <!-- Right Top: Order Summary -->
-                    <div class="border-b border-slate-150 p-6 dark:border-navy-600">
-                        <h2
-                            class="border-b border-slate-150 pb-4 text-base font-bold text-slate-900 dark:border-navy-600 dark:text-navy-50">
-                            Order Summary
-                        </h2>
-                        <table
-                            class="mt-3 w-full divide-y divide-slate-150 text-sm text-slate-600 dark:divide-navy-600 dark:text-navy-200">
-                            <tbody>
-                                <tr>
-                                    <td class="py-3 text-slate-400 dark:text-navy-300">Subtotal</td>
-                                    <td class="py-3 text-right  font-semibold text-slate-800 dark:text-navy-50">KES {{
-                                        order.subtotal }}</td>
-                                </tr>
-                                <tr v-if="Number(order.discount_total) > 0">
-                                    <td class="py-3 font-medium text-success">
-                                        Discount
-                                        <span class="rounded bg-success/10 px-1 py-0.5  text-2xs">({{ order.coupon_code
-                                            }})</span>
-                                    </td>
-                                    <td class="py-3 text-right  text-success">− KES {{ order.discount_total }}</td>
-                                </tr>
-                                <tr>
-                                    <td class="py-3 text-slate-400 dark:text-navy-300">Shipping Fee</td>
-                                    <td class="py-3 text-right  font-semibold text-slate-800 dark:text-navy-50">KES {{
-                                        order.shipping_fee }}</td>
-                                </tr>
-                                <tr
-                                    class="border-t-2 border-slate-200 text-base font-black text-slate-900 dark:border-navy-600 dark:text-navy-50">
-                                    <td class="py-4">Grand Total</td>
-                                    <td class="py-4 text-right  text-lg text-primary dark:text-accent-light">KES {{
-                                        order.grand_total }}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <!-- Right Bottom: Delivery Address -->
-                    <div class="flex-1 p-6">
-                        <div class="flex items-center space-x-2.5 border-b border-slate-150 pb-4 dark:border-navy-600">
-                            <div
-                                class="rounded-lg bg-primary/10 p-2 text-primary dark:bg-accent-light/10 dark:text-accent-light">
-                                <MapPin class="size-5" />
-                            </div>
-                            <h2 class="text-base font-bold text-slate-900 dark:text-navy-50">Delivery Address Details
-                            </h2>
-                        </div>
-
-                        <table
-                            class="mt-3 w-full divide-y divide-slate-150 text-sm text-slate-600 dark:divide-navy-600 dark:text-navy-200">
-                            <tbody>
-                                <tr>
-                                    <td class="py-3 font-medium text-slate-400 dark:text-navy-300">Destination</td>
-                                    <td class="py-3 text-right font-bold text-slate-900 dark:text-navy-50">
-                                        {{ order.shipping_address.county }} — {{ order.shipping_address.town }}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="py-3 font-medium text-slate-400 dark:text-navy-300">Street Address</td>
-                                    <td class="py-3 text-right text-slate-700 dark:text-navy-100">{{
-                                        order.shipping_address.address }}</td>
-                                </tr>
-                                <tr v-if="order.shipping_address.instructions">
-                                    <td class="py-3 font-medium text-slate-400 dark:text-navy-300">Instructions</td>
-                                    <td class="py-3 text-right text-xs italic text-slate-500 dark:text-navy-300">"{{
-                                        order.shipping_address.instructions }}"</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ================= Full-width: Order Items + Payment Transactions ================= -->
+         <!-- ================= Full-width: Order Items + Payment Transactions ================= -->
         <div class="mt-6 space-y-6">
 
             <!-- Order Items Table (full width) -->
@@ -613,12 +407,27 @@ const showCancelNode = computed(() => isCancelled.value);
                 <div class="flex items-center justify-between border-b border-slate-150 pb-4 dark:border-navy-600">
                     <div class="flex items-center gap-2.5">
                         <div
-                            class="rounded-lg bg-primary/10 p-2 text-primary dark:bg-accent-light/10 dark:text-accent-light">
-                            <PackageCheck class="size-5" />
+                            class="rounded-lg size-10 bg-primary/10 p-2 text-primary dark:bg-accent-light/10 dark:text-accent-light">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                                <g id="SVGRepo_iconCarrier">
+                                    <!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
+                                    <path opacity="0.4"
+                                        d="M21.0409 7.19L12.0009 12.42L2.96094 7.19C3.36094 6.45 3.94094 5.8 4.59094 5.44L9.93094 2.48C11.0709 1.84 12.9309 1.84 14.0709 2.48L19.4109 5.44C20.0609 5.8 20.6409 6.45 21.0409 7.19Z"
+                                        fill="#4f46e5"></path>
+                                    <path opacity="0.6"
+                                        d="M12.0006 12.4199V21.9999C11.2506 21.9999 10.5006 21.8399 9.93062 21.5199L4.59063 18.5599C3.38063 17.8899 2.39062 16.2099 2.39062 14.8299V9.16994C2.39062 8.52994 2.61062 7.82994 2.96062 7.18994L12.0006 12.4199Z"
+                                        fill="#4f46e5"></path>
+                                    <path
+                                        d="M21.61 9.16994V14.8299C21.61 16.2099 20.62 17.8899 19.41 18.5599L14.07 21.5199C13.5 21.8399 12.75 21.9999 12 21.9999V12.4199L21.04 7.18994C21.39 7.82994 21.61 8.52994 21.61 9.16994Z"
+                                        fill="#4f46e5"></path>
+                                </g>
+                            </svg>
                         </div>
                         <h2 class="text-base font-bold text-slate-900 dark:text-navy-50">
                             Order Items <span class="ml-1 text-xs font-normal text-slate-400">({{ order.items.length
-                                }})</span>
+                            }})</span>
                         </h2>
                     </div>
                 </div>
@@ -702,8 +511,8 @@ const showCancelNode = computed(() => isCancelled.value);
                                 </td>
                                 <td class="px-3 py-3.5">
                                     <span :class="badgeClass(p.status)">
-    {{ p.status }}
-</span>
+                                        {{ p.status }}
+                                    </span>
                                 </td>
                                 <td class="px-3 py-3.5 text-xs text-slate-500 dark:text-navy-300">
                                     {{ p.paid_at || '—' }}
@@ -714,6 +523,294 @@ const showCancelNode = computed(() => isCancelled.value);
                             </tr>
                         </tbody>
                     </table>
+                </div>
+            </div>
+        </div>
+        <!-- ================= Unified Top Card (50/50 Split on LG) ================= -->
+        <div
+            class="card mt-6 overflow-hidden rounded-2xl border border-slate-200/80 shadow-sm dark:border-navy-600 dark:bg-navy-750">
+            <div class="grid grid-cols-1 lg:grid-cols-2">
+
+                <!-- Left: Live Lifecycle Status (1/2 width on lg) -->
+                <div class="border-b border-slate-150 dark:border-navy-600 lg:border-b-0 lg:border-r">
+                    <div class="flex h-full flex-col pb-4">
+                        <!-- Timeline Header -->
+                        <div class="flex items-center justify-between px-4 pt-5 pb-2 sm:px-5">
+                            <div
+                                class="flex items-center space-x-2.5 border-b border-slate-150 pb-4 dark:border-navy-600">
+                                <div
+                                    class="rounded-lg size-10 bg-primary/10 p-2 text-primary dark:bg-accent-light/10 dark:text-accent-light">
+                                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round">
+                                        </g>
+                                        <g id="SVGRepo_iconCarrier">
+                                            <!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
+                                            <path
+                                                d="M16.7502 3.56V2C16.7502 1.59 16.4102 1.25 16.0002 1.25C15.5902 1.25 15.2502 1.59 15.2502 2V3.5H8.75023V2C8.75023 1.59 8.41023 1.25 8.00023 1.25C7.59023 1.25 7.25023 1.59 7.25023 2V3.56C4.55023 3.81 3.24023 5.42 3.04023 7.81C3.02023 8.1 3.26023 8.34 3.54023 8.34H20.4602C20.7502 8.34 20.9902 8.09 20.9602 7.81C20.7602 5.42 19.4502 3.81 16.7502 3.56Z"
+                                                fill="#4f46e5"></path>
+                                            <path opacity="0.4"
+                                                d="M21 10.8401V12.5801C21 13.1901 20.46 13.6601 19.86 13.5601C19.58 13.5201 19.29 13.4901 19 13.4901C15.97 13.4901 13.5 15.9601 13.5 18.9901C13.5 19.4501 13.68 20.0901 13.87 20.6701C14.09 21.3201 13.61 21.9901 12.92 21.9901H8C4.5 21.9901 3 19.9901 3 16.9901V10.8301C3 10.2801 3.45 9.83008 4 9.83008H20C20.55 9.84008 21 10.2901 21 10.8401Z"
+                                                fill="#4f46e5"></path>
+                                            <path
+                                                d="M19 15C16.79 15 15 16.79 15 19C15 19.75 15.21 20.46 15.58 21.06C16.27 22.22 17.54 23 19 23C20.46 23 21.73 22.22 22.42 21.06C22.79 20.46 23 19.75 23 19C23 16.79 21.21 15 19 15ZM21.07 18.57L18.94 20.54C18.8 20.67 18.61 20.74 18.43 20.74C18.24 20.74 18.05 20.67 17.9 20.52L16.91 19.53C16.62 19.24 16.62 18.76 16.91 18.47C17.2 18.18 17.68 18.18 17.97 18.47L18.45 18.95L20.05 17.47C20.35 17.19 20.83 17.21 21.11 17.51C21.39 17.81 21.37 18.28 21.07 18.57Z"
+                                                fill="#4f46e5"></path>
+                                            <path
+                                                d="M8.5 14.9999C8.24 14.9999 7.98 14.8899 7.79 14.7099C7.61 14.5199 7.5 14.2599 7.5 13.9999C7.5 13.7399 7.61 13.4799 7.79 13.2899C8.02 13.0599 8.37 12.9499 8.7 13.0199C8.76 13.0299 8.82 13.0499 8.88 13.0799C8.94 13.0999 9 13.1299 9.06 13.1699C9.11 13.2099 9.16 13.2499 9.21 13.2899C9.39 13.4799 9.5 13.7399 9.5 13.9999C9.5 14.2599 9.39 14.5199 9.21 14.7099C9.16 14.7499 9.11 14.7899 9.06 14.8299C9 14.8699 8.94 14.8999 8.88 14.9199C8.82 14.9499 8.76 14.9699 8.7 14.9799C8.63 14.9899 8.56 14.9999 8.5 14.9999Z"
+                                                fill="#4f46e5"></path>
+                                            <path
+                                                d="M12 14.9999C11.74 14.9999 11.48 14.8899 11.29 14.7099C11.11 14.5199 11 14.2599 11 13.9999C11 13.7399 11.11 13.48 11.29 13.29C11.67 12.92 12.34 12.92 12.71 13.29C12.89 13.48 13 13.7399 13 13.9999C13 14.2599 12.89 14.5199 12.71 14.7099C12.52 14.8899 12.26 14.9999 12 14.9999Z"
+                                                fill="#4f46e5"></path>
+                                            <path
+                                                d="M8.5 18.4999C8.24 18.4999 7.98 18.3899 7.79 18.2099C7.61 18.0199 7.5 17.7599 7.5 17.4999C7.5 17.2399 7.61 16.9799 7.79 16.7899C7.89 16.6999 7.99 16.6299 8.12 16.5799C8.49 16.4199 8.93 16.5099 9.21 16.7899C9.39 16.9799 9.5 17.2399 9.5 17.4999C9.5 17.7599 9.39 18.0199 9.21 18.2099C9.02 18.3899 8.76 18.4999 8.5 18.4999Z"
+                                                fill="#4f46e5"></path>
+                                        </g>
+                                    </svg>
+                                </div>
+                                <h2 class="text-base font-bold text-slate-900 dark:text-navy-50">Lifecycle Status
+                                </h2>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <div class="inline-flex">
+                                    <button
+                                        class="btn -mr-1.5 size-8 rounded-full p-0 hover:bg-slate-300/20 focus:bg-slate-300/20 active:bg-slate-300/25 dark:hover:bg-navy-300/20 dark:focus:bg-navy-300/20 dark:active:bg-navy-300/25">
+                                        <MoreHorizontal class="size-5" />
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Status chips -->
+                        <div class="flex flex-wrap items-center gap-2 px-4 pb-3 sm:px-5">
+                            <div
+                                class="flex items-center space-x-2 rounded-lg border border-slate-200/60 bg-slate-50 px-3 py-1.5 text-xs dark:border-navy-600 dark:bg-navy-900">
+                                <span class="font-medium text-slate-400">Payment:</span>
+                                <span :class="badgeClass(paymentStatus)">
+                                    {{ paymentStatus }}
+                                </span>
+                            </div>
+                            <div
+                                class="flex items-center space-x-2 rounded-lg border border-slate-200/60 bg-slate-50 px-3 py-1.5 text-xs dark:border-navy-600 dark:bg-navy-900">
+                                <span class="font-medium text-slate-400">Fulfilment:</span>
+                                <span :class="badgeClass(fulfilmentStatus)">
+                                    {{ fulfilmentStatus }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Vertical timeline -->
+                        <ol class="timeline line-space flex-1 px-4 [--size:1.5rem] sm:px-5">
+                            <li v-for="(stage, i) in stages" :key="stage.key" class="timeline-item">
+                                <!-- Point -->
+                                <div class="relative">
+                                    <div class="timeline-item-point flex items-center justify-center rounded-full border"
+                                        :class="stageStates[i] === 'future'
+                                            ? 'border-slate-300 bg-white text-slate-300 dark:border-navy-600 dark:bg-navy-700 dark:text-navy-600'
+                                            : tonePoint[stage.tone]">
+                                        <component :is="stage.icon" class="size-3" />
+                                    </div>
+
+                                    <!-- Corner ping indicator on current stage -->
+                                    <span v-if="stageStates[i] === 'current'"
+                                        class="absolute -top-px -right-px flex size-3 items-center justify-center">
+                                        <span
+                                            class="absolute inline-flex h-full w-full animate-ping rounded-full bg-secondary opacity-80"></span>
+                                        <span class="inline-flex size-2 rounded-full bg-secondary"></span>
+                                    </span>
+                                </div>
+
+                                <!-- Content -->
+                                <div class="timeline-item-content flex-1 pl-4 sm:pl-8">
+                                    <div class="flex flex-col justify-between pb-2 sm:flex-row sm:pb-0">
+                                        <p
+                                            class="flex items-center gap-2 pb-2 font-medium leading-none text-slate-600 dark:text-navy-100 sm:pb-0">
+                                            {{ stage.label }}
+
+                                            <span v-if="stageStates[i] === 'current'"
+                                                class="inline-flex items-center rounded-full bg-secondary/10 px-2 py-0.5 text-2xs font-bold uppercase tracking-wide text-secondary dark:bg-secondary-light/15 dark:text-secondary-light">
+                                                Current
+                                            </span>
+                                            <span v-else-if="stageStates[i] === 'done'"
+                                                class="inline-flex items-center rounded-full bg-success/10 px-2 py-0.5 text-2xs font-bold uppercase tracking-wide text-success dark:bg-success/15">
+                                                Done
+                                            </span>
+                                            <span v-else-if="stageStates[i] === 'cancelled'"
+                                                class="inline-flex items-center rounded-full bg-error/10 px-2 py-0.5 text-2xs font-bold uppercase tracking-wide text-error dark:bg-error/15">
+                                                Cancelled here
+                                            </span>
+                                            <span v-else
+                                                class="inline-flex items-center rounded-full bg-slate-150 px-2 py-0.5 text-2xs font-bold uppercase tracking-wide text-slate-500 dark:bg-navy-600 dark:text-navy-300">
+                                                Pending
+                                            </span>
+                                        </p>
+
+                                        <span v-if="stage.timestamp" class="text-xs text-slate-400 dark:text-navy-300">
+                                            {{ stage.timestamp }}
+                                        </span>
+                                        <span v-else-if="stageStates[i] === 'future'"
+                                            class="badge rounded-full bg-slate-150 text-slate-500 dark:bg-navy-500 dark:text-navy-100">
+                                            Not yet
+                                        </span>
+                                    </div>
+
+                                    <p class="py-1"
+                                        :class="stageStates[i] === 'future' ? 'text-slate-400 dark:text-navy-500' : 'text-slate-500 dark:text-navy-200'">
+                                        {{ stage.description }}
+                                    </p>
+
+                                    <div v-if="stage.meta" class="pt-1">
+                                        <span
+                                            class="tag rounded-full border border-secondary/30 bg-secondary/10 text-secondary dark:border-secondary-light/30 dark:bg-secondary-light/10 dark:text-secondary-light">
+                                            {{ stage.meta }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </li>
+
+                            <!-- Terminal: Cancelled -->
+                            <li v-if="showCancelNode" class="timeline-item">
+                                <div
+                                    class="timeline-item-point flex items-center justify-center rounded-full border border-current bg-white text-error dark:bg-navy-700 dark:text-error-light">
+                                    <X class="size-3" />
+                                </div>
+                                <div class="timeline-item-content flex-1 pl-4 sm:pl-8">
+                                    <div class="flex flex-col justify-between pb-2 sm:flex-row sm:pb-0">
+                                        <p
+                                            class="flex items-center gap-2 pb-2 font-medium leading-none text-slate-600 dark:text-navy-100 sm:pb-0">
+                                            Order Cancelled
+                                            <span
+                                                class="inline-flex items-center rounded-full bg-error/10 px-2 py-0.5 text-2xs font-bold uppercase tracking-wide text-error dark:bg-error/15">
+                                                Terminal
+                                            </span>
+                                        </p>
+                                    </div>
+                                    <p class="py-1 text-slate-500 dark:text-navy-200">
+                                        This order was cancelled before completion. If payment was captured, a refund
+                                        will be processed automatically.
+                                    </p>
+                                    <div class="pt-1">
+                                        <span class="tag rounded-full border border-error/30 bg-error/10 text-error">
+                                            Flow terminated
+                                        </span>
+                                    </div>
+                                </div>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+
+                <!-- Right Column (1/2 width on lg): Order Summary (top) & Delivery Address (bottom) -->
+                <div class="flex flex-col">
+                    <!-- Right Top: Order Summary -->
+                    <div class="border-b border-slate-150 p-6 dark:border-navy-600">
+                        <div class="flex items-center space-x-2.5 border-b border-slate-150 pb-4 dark:border-navy-600">
+                            <div
+                                class="rounded-lg size-10 bg-primary/10 p-2 text-primary dark:bg-accent-light/10 dark:text-accent-light">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                    <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                                    <g id="SVGRepo_iconCarrier">
+                                        <!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
+                                        <path opacity="0.4"
+                                            d="M12 20C16.4183 20 20 16.4183 20 12C20 7.58172 16.4183 4 12 4C7.58172 4 4 7.58172 4 12C4 16.4183 7.58172 20 12 20Z"
+                                            fill="#4f46e5"></path>
+                                        <path
+                                            d="M12.0009 15.1199C13.724 15.1199 15.1209 13.723 15.1209 11.9999C15.1209 10.2768 13.724 8.87988 12.0009 8.87988C10.2777 8.87988 8.88086 10.2768 8.88086 11.9999C8.88086 13.723 10.2777 15.1199 12.0009 15.1199Z"
+                                            fill="#4f46e5"></path>
+                                        <path
+                                            d="M12.75 2V4.04H12.74C12.5 4.01 12.25 4 12 4C11.75 4 11.5 4.01 11.26 4.04H11.25V2C11.25 1.59 11.59 1.25 12 1.25C12.41 1.25 12.75 1.59 12.75 2Z"
+                                            fill="#4f46e5"></path>
+                                        <path
+                                            d="M4 12C4 12.25 4.01 12.51 4.04 12.75H2C1.59 12.75 1.25 12.41 1.25 12C1.25 11.59 1.59 11.25 2 11.25H4.04C4.01 11.49 4 11.75 4 12Z"
+                                            fill="#4f46e5"></path>
+                                        <path
+                                            d="M12.75 19.96V22C12.75 22.41 12.41 22.75 12 22.75C11.59 22.75 11.25 22.41 11.25 22V19.96H11.26C11.5 19.99 11.75 20 12 20C12.25 20 12.5 19.99 12.74 19.96H12.75Z"
+                                            fill="#4f46e5"></path>
+                                        <path
+                                            d="M22.7509 12C22.7509 12.41 22.4109 12.75 22.0009 12.75H19.9609C19.9909 12.51 20.0009 12.25 20.0009 12C20.0009 11.75 19.9909 11.49 19.9609 11.25H22.0009C22.4109 11.25 22.7509 11.59 22.7509 12Z"
+                                            fill="#4f46e5"></path>
+                                    </g>
+                                </svg>
+                            </div>
+                            <h2 class="text-base font-bold text-slate-900 dark:text-navy-50">Delivery Address Details
+                            </h2>
+                        </div>
+                        <table
+                            class="mt-3 w-full divide-y divide-slate-150 text-sm text-slate-600 dark:divide-navy-600 dark:text-navy-200">
+                            <tbody>
+                                <tr>
+                                    <td class="py-3 text-slate-400 dark:text-navy-300">Subtotal</td>
+                                    <td class="py-3 text-right  font-semibold text-slate-800 dark:text-navy-50">KES {{
+                                        order.subtotal }}</td>
+                                </tr>
+                                <tr v-if="Number(order.discount_total) > 0">
+                                    <td class="py-3 font-medium text-success">
+                                        Discount
+                                        <span class="rounded bg-success/10 px-1 py-0.5  text-2xs">({{ order.coupon_code
+                                        }})</span>
+                                    </td>
+                                    <td class="py-3 text-right  text-success">− KES {{ order.discount_total }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-3 text-slate-400 dark:text-navy-300">Shipping Fee</td>
+                                    <td class="py-3 text-right  font-semibold text-slate-800 dark:text-navy-50">KES {{
+                                        order.shipping_fee }}</td>
+                                </tr>
+                                <tr
+                                    class="border-t-2 border-slate-200 text-base font-black text-slate-900 dark:border-navy-600 dark:text-navy-50">
+                                    <td class="py-4">Grand Total</td>
+                                    <td class="py-4 text-right  text-lg text-primary dark:text-accent-light">KES {{
+                                        order.grand_total }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Right Bottom: Delivery Address -->
+                    <div class="flex-1 p-6">
+                        <div class="flex items-center space-x-2.5 border-b border-slate-150 pb-4 dark:border-navy-600">
+                            <div
+                                class="rounded-lg size-10 bg-primary/10 p-2 text-primary dark:bg-accent-light/10 dark:text-accent-light">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                    <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                                    <g id="SVGRepo_iconCarrier">
+                                        <!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
+                                        <path
+                                            d="M9.96055 14.0401V12.9301C9.96055 12.5001 9.64055 12.2901 9.25055 12.4601L4.24055 14.6201C3.45055 14.9601 2.81055 14.5401 2.81055 13.6901V12.3701C2.81055 11.6901 3.32055 10.9001 3.95055 10.6401L9.65055 8.19006C9.81055 8.11006 9.95055 7.90006 9.95055 7.72006V4.66006C9.95055 3.70006 10.6605 2.55006 11.5105 2.11006C11.8105 1.96006 12.1705 1.96006 12.4705 2.11006C13.3305 2.55006 14.0405 3.69006 14.0405 4.65006V7.71006C14.0405 7.89006 14.1805 8.10006 14.3405 8.18006L15.3805 8.62006L9.96055 14.0401Z"
+                                            fill="#4f46e5"></path>
+                                        <path opacity="0.4"
+                                            d="M21.1892 12.3701V13.6901C21.1892 14.5401 20.5492 14.9601 19.7592 14.6201L14.7492 12.4601C14.3492 12.3001 14.0392 12.5001 14.0392 12.9301V15.8401C14.0392 16.0701 14.1692 16.4001 14.3392 16.5601L16.6592 18.8901C16.8992 19.1301 17.0092 19.6101 16.8992 19.9401L16.4492 21.3001C16.2492 21.8901 15.5792 22.1601 15.0292 21.8901L12.6492 19.8901C12.2892 19.5801 11.6992 19.5801 11.3392 19.8901L8.95918 21.8901C8.40918 22.1701 7.73918 21.8901 7.55918 21.3001L7.10918 19.9401C6.99918 19.6001 7.10918 19.1301 7.34918 18.8901L9.66918 16.5601C9.82918 16.4001 9.95918 16.0701 9.95918 15.8401V14.0401L15.3792 8.62012L20.0492 10.6301C20.6792 10.9001 21.1892 11.6901 21.1892 12.3701Z"
+                                            fill="#4f46e5"></path>
+                                    </g>
+                                </svg>
+                            </div>
+                            <h2 class="text-base font-bold text-slate-900 dark:text-navy-50">Delivery Address Details
+                            </h2>
+                        </div>
+
+                        <table
+                            class="mt-3 w-full divide-y divide-slate-150 text-sm text-slate-600 dark:divide-navy-600 dark:text-navy-200">
+                            <tbody>
+                                <tr>
+                                    <td class="py-3 font-medium text-slate-400 dark:text-navy-300">Destination</td>
+                                    <td class="py-3 text-right font-bold text-slate-900 dark:text-navy-50">
+                                        {{ order.shipping_address.county }} — {{ order.shipping_address.town }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="py-3 font-medium text-slate-400 dark:text-navy-300">Street Address</td>
+                                    <td class="py-3 text-right text-slate-700 dark:text-navy-100">{{
+                                        order.shipping_address.address }}</td>
+                                </tr>
+                                <tr v-if="order.shipping_address.instructions">
+                                    <td class="py-3 font-medium text-slate-400 dark:text-navy-300">Instructions</td>
+                                    <td class="py-3 text-right text-xs italic text-slate-500 dark:text-navy-300">"{{
+                                        order.shipping_address.instructions }}"</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
