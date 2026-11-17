@@ -38,9 +38,9 @@ class ProductPageController extends Controller
                     'id' => $p->id,
                     'name' => $p->name,
                     'slug' => $p->slug,
-                    'price' => (float) $effective,
-                    'price_formatted' => number_format((float) $effective, 0),
-                    'primary_image' => $p->primaryImage ? ['path' => $p->primaryImage->path] : null,
+                    'price' => $p->price,
+                    'price_formatted' => number_format((float) $p->price, 0),
+                    'primary_image_url' => $p->primary_image_url,
                 ];
             });
 
@@ -85,6 +85,7 @@ class ProductPageController extends Controller
                 'images' => $product->images->map(fn ($img) => [
                     'id' => $img->id,
                     'path' => $img->path,
+                    'url' => $img->image_url,
                     'is_primary' => $img->is_primary,
                 ])->values(),
                 'category' => $product->category ? [

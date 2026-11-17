@@ -11,7 +11,7 @@ interface Banner {
     id: string;
     title: string;
     subtitle: string | null;
-    image_path: string;
+    image_url: string | null;
     link_url: string | null;
     link_text: string | null;
     sort_order: number;
@@ -45,9 +45,6 @@ function deleteBanner() {
 
     router.delete(admin_banners_destroy.url(props.banner.id), {
         preserveScroll: true,
-        onSuccess: () => {
-            // Controller already redirects to admin_banners_index with a flash message
-        },
     });
 }
 </script>
@@ -138,7 +135,17 @@ function deleteBanner() {
                     <div>
                         <span class="font-medium text-slate-700 dark:text-navy-100 block mb-2">Current Image</span>
                         <div class="overflow-hidden rounded-lg border border-slate-200 dark:border-navy-600 bg-slate-50 dark:bg-navy-900 p-2 inline-block">
-                            <img :src="`/storage/${banner.image_path}`" :alt="banner.title" class="h-32 w-auto rounded object-cover shadow-sm" />
+                            <img
+                                v-if="banner.image_url"
+                                :src="banner.image_url"
+                                :alt="banner.title"
+                                class="h-32 w-auto rounded object-cover shadow-sm"
+                            />
+                            <div v-else class="flex h-32 w-48 items-center justify-center text-slate-300 dark:text-navy-500">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="size-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                            </div>
                         </div>
                     </div>
 
@@ -189,7 +196,6 @@ function deleteBanner() {
                 <button
                     type="button"
                     class="btn border border-secondary/30 bg-secondary/10 font-medium text-secondary hover:bg-secondary/20 focus:bg-secondary/20 active:bg-secondary/25 dark:border-secondary-light/30 dark:bg-secondary-light/10 dark:text-secondary-light dark:hover:bg-secondary-light/20 dark:focus:bg-secondary-light/20 dark:active:bg-secondary-light/25"
-
                     :disabled="form.processing"
                     @click="deleteBanner"
                 >

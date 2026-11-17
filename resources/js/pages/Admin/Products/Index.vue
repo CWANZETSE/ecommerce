@@ -7,14 +7,14 @@ import { admin_products_create, admin_products_edit } from '@/routes';
 interface Category { id: string; name: string }
 interface Variation { id: string; product_id: string; stock_quantity: number }
 interface ProductRow {
-    is_featured: any;
+    is_featured: boolean;
     id: string;
     name: string;
     sku: string;
     price: string;
     is_active: boolean;
     category: Category | null;
-    primary_image: { path: string } | null;
+    primary_image_url: string | null;
     variations: Variation[];
 }
 
@@ -43,11 +43,9 @@ function totalStock(row: ProductRow): number {
 </script>
 
 <template>
-
     <Head title="Products" />
 
     <div class="p-4 sm:p-5 lg:p-6">
-        <!-- Page header -->
         <div class="flex items-center justify-between">
             <h2 class="text-base font-medium tracking-wide text-slate-800 dark:text-navy-100">
                 Products
@@ -58,7 +56,6 @@ function totalStock(row: ProductRow): number {
             </Link>
         </div>
 
-        <!-- Filters -->
         <div class="mt-4 flex flex-wrap items-center gap-2">
             <label class="relative">
                 <span class="sr-only">Search</span>
@@ -67,50 +64,39 @@ function totalStock(row: ProductRow): number {
             </label>
         </div>
 
-        <!-- Table card -->
         <div class="mt-4 overflow-hidden rounded-lg border border-slate-150 dark:border-navy-600">
             <div class="is-scrollbar-hidden min-w-full overflow-x-auto">
                 <table class="is-zebra w-full text-left">
                     <thead>
                         <tr>
-                            <th
-                                class="whitespace-nowrap rounded-l-lg bg-slate-200 px-3 py-3 font-semibold uppercase text-slate-800 dark:bg-navy-800 dark:text-navy-100 lg:px-5">
+                            <th class="whitespace-nowrap rounded-l-lg bg-slate-200 px-3 py-3 font-semibold uppercase text-slate-800 dark:bg-navy-800 dark:text-navy-100 lg:px-5">
                                 Image
                             </th>
-                            <th
-                                class="whitespace-nowrap bg-slate-200 px-4 py-3 font-semibold uppercase text-slate-800 dark:bg-navy-800 dark:text-navy-100 lg:px-5">
+                            <th class="whitespace-nowrap bg-slate-200 px-4 py-3 font-semibold uppercase text-slate-800 dark:bg-navy-800 dark:text-navy-100 lg:px-5">
                                 Name
                             </th>
-                            <th
-                                class="whitespace-nowrap bg-slate-200 px-4 py-3 font-semibold uppercase text-slate-800 dark:bg-navy-800 dark:text-navy-100 lg:px-5">
+                            <th class="whitespace-nowrap bg-slate-200 px-4 py-3 font-semibold uppercase text-slate-800 dark:bg-navy-800 dark:text-navy-100 lg:px-5">
                                 Featured
                             </th>
-                            <th
-                                class="whitespace-nowrap bg-slate-200 px-4 py-3 font-semibold uppercase text-slate-800 dark:bg-navy-800 dark:text-navy-100 lg:px-5">
+                            <th class="whitespace-nowrap bg-slate-200 px-4 py-3 font-semibold uppercase text-slate-800 dark:bg-navy-800 dark:text-navy-100 lg:px-5">
                                 SKU
                             </th>
-                            <th
-                                class="whitespace-nowrap bg-slate-200 px-4 py-3 font-semibold uppercase text-slate-800 dark:bg-navy-800 dark:text-navy-100 lg:px-5">
+                            <th class="whitespace-nowrap bg-slate-200 px-4 py-3 font-semibold uppercase text-slate-800 dark:bg-navy-800 dark:text-navy-100 lg:px-5">
                                 Category
                             </th>
-                            <th
-                                class="whitespace-nowrap bg-slate-200 px-4 py-3 font-semibold uppercase text-slate-800 dark:bg-navy-800 dark:text-navy-100 lg:px-5">
+                            <th class="whitespace-nowrap bg-slate-200 px-4 py-3 font-semibold uppercase text-slate-800 dark:bg-navy-800 dark:text-navy-100 lg:px-5">
                                 Variations
                             </th>
-                            <th
-                                class="whitespace-nowrap bg-slate-200 px-4 py-3 font-semibold uppercase text-slate-800 dark:bg-navy-800 dark:text-navy-100 lg:px-5">
+                            <th class="whitespace-nowrap bg-slate-200 px-4 py-3 font-semibold uppercase text-slate-800 dark:bg-navy-800 dark:text-navy-100 lg:px-5">
                                 Base Price
                             </th>
-                            <th
-                                class="whitespace-nowrap bg-slate-200 px-4 py-3 font-semibold uppercase text-slate-800 dark:bg-navy-800 dark:text-navy-100 lg:px-5">
+                            <th class="whitespace-nowrap bg-slate-200 px-4 py-3 font-semibold uppercase text-slate-800 dark:bg-navy-800 dark:text-navy-100 lg:px-5">
                                 Stock (total)
                             </th>
-                            <th
-                                class="whitespace-nowrap bg-slate-200 px-4 py-3 font-semibold uppercase text-slate-800 dark:bg-navy-800 dark:text-navy-100 lg:px-5">
+                            <th class="whitespace-nowrap bg-slate-200 px-4 py-3 font-semibold uppercase text-slate-800 dark:bg-navy-800 dark:text-navy-100 lg:px-5">
                                 Status
                             </th>
-                            <th
-                                class="whitespace-nowrap rounded-r-lg bg-slate-200 px-3 py-3 font-semibold uppercase text-slate-800 dark:bg-navy-800 dark:text-navy-100 lg:px-5">
+                            <th class="whitespace-nowrap rounded-r-lg bg-slate-200 px-3 py-3 font-semibold uppercase text-slate-800 dark:bg-navy-800 dark:text-navy-100 lg:px-5">
                             </th>
                         </tr>
                     </thead>
@@ -118,7 +104,7 @@ function totalStock(row: ProductRow): number {
                         <tr v-for="p in products.data" :key="p.id">
                             <td class="whitespace-nowrap rounded-l-lg px-4 py-3 sm:px-5">
                                 <div class="avatar size-10">
-                                    <img v-if="p.primary_image" :src="`/storage/${p.primary_image.path}`" :alt="p.name"
+                                    <img v-if="p.primary_image_url" :src="p.primary_image_url" :alt="p.name"
                                         class="rounded-lg object-cover" />
                                     <div v-else
                                         class="is-initial rounded-lg bg-slate-150 text-slate-500 dark:bg-navy-500 dark:text-navy-100">
@@ -134,12 +120,10 @@ function totalStock(row: ProductRow): number {
                             <td class="whitespace-nowrap px-4 py-3 sm:px-5">
                                 <div v-if="p.is_featured"
                                     class="badge space-x-2.5 rounded-full bg-success/10 text-success dark:bg-success/15">
-                                    
                                     <span>Yes</span>
                                 </div>
                                 <div v-else
                                     class="badge space-x-2.5 rounded-full bg-error/10 text-error dark:bg-error/15">
-                                    
                                     <span>No</span>
                                 </div>
                             </td>
@@ -190,7 +174,6 @@ function totalStock(row: ProductRow): number {
                 </table>
             </div>
 
-            <!-- Pagination -->
             <nav v-if="products.links.length > 3"
                 class="flex flex-wrap items-center justify-end gap-2 border-t border-slate-150 p-4 dark:border-navy-600">
                 <template v-for="(link, i) in products.links" :key="i">

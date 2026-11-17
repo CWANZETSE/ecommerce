@@ -18,15 +18,15 @@ interface Product {
     name: string;
     slug: string;
     price: string;
-    primary_image: { path: string } | null;
+    primary_image_url: string | null;
 }
 
 interface Category {
     id: string;
     name: string;
     slug: string;
-    children: { id: string; name: string; slug: string }[];
-    image_path?: string | null;
+    image_url: string | null;
+    children: { id: string; name: string; slug: string; image_url: string | null }[];
 }
 
 const props = defineProps<PageProps & {
@@ -38,7 +38,7 @@ const props = defineProps<PageProps & {
 
 function productCard(p: Product) {
     return {
-        image: p.primary_image ? `/storage/${p.primary_image.path}` : null,
+        image: p.primary_image_url,
         name: p.name,
         price: p.price,
         href: `/customer/products/${p.slug}`,
@@ -132,8 +132,6 @@ const formatMoney = (amount: number | string) =>
                 </div>
             </div>
 
-            
-
             <!-- Dots -->
             <div v-if="slideCount > 1" class="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-2">
                 <button
@@ -149,7 +147,7 @@ const formatMoney = (amount: number | string) =>
         </section>
 
         <!-- Categories Strip -->
-        <section v-if="categories.length" class="mt-10">
+        <section v-if="categories?.length" class="mt-10">
             <div class="flex items-center justify-between">
                 <h2 class="text-xl font-semibold text-slate-800 dark:text-navy-50">Shop by Category</h2>
                 <Link href="/customer/products" class="text-xs-plus font-medium text-primary hover:text-primary-focus dark:text-accent-light">
@@ -180,8 +178,8 @@ const formatMoney = (amount: number | string) =>
 
                     <div class="relative size-16 shrink-0 overflow-hidden rounded-md bg-slate-150 dark:bg-navy-900">
                         <img
-                            v-if="c.image_path ?? c.children[0]?.image_path"
-                            :src="`/storage/${c.image_path ?? c.children[0]?.image_path}`"
+                            v-if="c.image_url ?? c.children[0]?.image_url"
+                            :src="(c.image_url ?? c.children[0]?.image_url)!"
                             :alt="c.name"
                             class="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
                         />
@@ -218,8 +216,8 @@ const formatMoney = (amount: number | string) =>
                     <div>
                         <div class="relative aspect-square overflow-hidden rounded-lg bg-slate-150 dark:bg-navy-900">
                             <img
-                                v-if="p.primary_image"
-                                :src="productCard(p).image!"
+                                v-if="p.primary_image_url"
+                                :src="p.primary_image_url"
                                 :alt="p.name"
                                 class="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
                             />
@@ -279,8 +277,8 @@ const formatMoney = (amount: number | string) =>
                     <div>
                         <div class="relative aspect-square overflow-hidden rounded-lg bg-slate-150 dark:bg-navy-900">
                             <img
-                                v-if="p.primary_image"
-                                :src="productCard(p).image!"
+                                v-if="p.primary_image_url"
+                                :src="p.primary_image_url"
                                 :alt="p.name"
                                 class="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
                             />

@@ -26,6 +26,7 @@ interface Variation {
 interface ProductImage {
     id: string;
     path: string;
+    url: string | null;
     is_primary: boolean;
 }
 
@@ -56,7 +57,7 @@ interface RelatedProduct {
     slug: string;
     price: number;
     price_formatted: string;
-    primary_image: { path: string } | null;
+    primary_image_url: string | null;
 }
 
 interface ReviewRow {
@@ -82,6 +83,11 @@ const props = defineProps<Props>();
 /* ---------------- Images ---------------- */
 const selectedImage = ref<string | null>(props.product.images[0]?.path ?? null);
 
+/** Resolve the R2-backed URL for a given image path. */
+const selectedImageUrl = computed<string | null>(() => {
+    const img = props.product.images.find((i) => i.path === selectedImage.value);
+    return img?.url ?? null;
+});
 /* ---------------- Variation selection ---------------- */
 const selectedVariation = ref<Variation | null>(
     props.product.variations.length === 1
@@ -230,11 +236,11 @@ function isAttributeSelected(attributeName: string, valueId: string): boolean {
                 <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white p-3 shadow-sm dark:border-navy-600 dark:bg-navy-750">
                     <div class="aspect-square overflow-hidden rounded-xl bg-slate-100 dark:bg-navy-900">
                         <img
-                            v-if="selectedImage"
-                            :src="`/storage/${selectedImage}`"
-                            :alt="product.name"
-                            class="h-full w-full object-cover object-center transition-transform duration-500"
-                        />
+    v-if="selectedImageUrl"
+    :src="selectedImageUrl"
+    :alt="product.name"
+    class="h-full w-full object-cover object-center transition-transform duration-500"
+/>
                     </div>
                 </div>
 
@@ -252,10 +258,11 @@ function isAttributeSelected(attributeName: string, valueId: string): boolean {
                         @click="selectedImage = image.path"
                     >
                         <img
-                            :src="`/storage/${image.path}`"
-                            :alt="product.name"
-                            class="h-full w-full object-cover object-center"
-                        />
+    v-if="image.url"
+    :src="image.url"
+    :alt="product.name"
+    class="h-full w-full object-cover object-center"
+/>
                     </button>
                 </div>
             </div>
@@ -484,11 +491,11 @@ function isAttributeSelected(attributeName: string, valueId: string): boolean {
                 >
                     <div class="aspect-square overflow-hidden bg-slate-100 dark:bg-navy-900">
                         <img
-                            v-if="item.primary_image"
-                            :src="`/storage/${item.primary_image.path}`"
-                            :alt="item.name"
-                            class="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
-                        />
+    v-if="item.primary_image_url"
+    :src="item.primary_image_url"
+    :alt="item.name"
+    class="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
+/>
                     </div>
                     <div class="flex flex-1 flex-col justify-between p-4">
                         <p class="line-clamp-2 text-sm font-medium text-slate-800 transition-colors group-hover:text-primary dark:text-navy-100 dark:group-hover:text-accent-light">

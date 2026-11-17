@@ -223,7 +223,7 @@ class CartService
                     'name' => $product->name,
                     'slug' => $product->slug,
                     'primary_image' => $product->primaryImage
-                    ? ['path' => $product->primaryImage->path]
+                    ? ['path' =>$product->primary_image_url,]
                     : null,
                 ],
                 'attributes' => $variation->attributeValues->map(fn ($av) => [

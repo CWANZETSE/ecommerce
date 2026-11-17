@@ -21,7 +21,7 @@ interface CartLine {
         id: string;
         name: string;
         slug: string;
-        primary_image: { path: string } | null;  // ← added
+        primary_image_url: string | null;
     };
     attributes: { name: string; value: string }[];
 }
@@ -414,20 +414,19 @@ const formatMoney = (amount) =>
                         <li v-for="(line, i) in props.cart.items" :key="i" class="space-y-1 py-3 first:pt-0 last:pb-0">
                             <div class="flex items-start gap-3">
                                 <!-- Image -->
-                                <div
-                                    class="relative size-12 shrink-0 overflow-hidden rounded-lg bg-slate-100 dark:bg-navy-900">
-                                    <img v-if="line.product.primary_image"
-                                        :src="`/storage/${line.product.primary_image.path}`" :alt="line.product.name"
-                                        class="h-full w-full object-cover object-center" />
-                                    <div v-else
-                                        class="flex h-full w-full items-center justify-center text-slate-300 dark:text-navy-500">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="size-5" fill="none"
-                                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                        </svg>
-                                    </div>
-                                </div>
+                                <div class="relative size-12 shrink-0 overflow-hidden rounded-lg bg-slate-100 dark:bg-navy-900">
+    <img v-if="line.product.primary_image_url"
+        :src="line.product.primary_image_url" :alt="line.product.name"
+        class="h-full w-full object-cover object-center" />
+    <div v-else
+        class="flex h-full w-full items-center justify-center text-slate-300 dark:text-navy-500">
+        <svg xmlns="http://www.w3.org/2000/svg" class="size-5" fill="none"
+            viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+    </div>
+</div>
 
                                 <!-- Details -->
                                 <div class="min-w-0 flex-1">

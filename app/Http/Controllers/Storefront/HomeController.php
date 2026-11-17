@@ -15,7 +15,8 @@ class HomeController extends Controller
     public function __invoke(): Response
     {
         $featuredLimit = (int) StoreSetting::get('featured_products_limit', 8);
-    $newArrivalsLimit = (int) StoreSetting::get('new_arrivals_limit', 8);
+        $newArrivalsLimit = (int) StoreSetting::get('new_arrivals_limit', 8);
+
         return Inertia::render('Welcome', [
             'banners' => Banner::active()->get()->map(fn ($b) => [
                 'id' => $b->id,
@@ -35,7 +36,7 @@ class HomeController extends Controller
                     'name' => $p->name,
                     'slug' => $p->slug,
                     'price' => number_format($p->sale_price ?? $p->price),
-                    'primary_image' => $p->primaryImage ? ['path' => $p->primaryImage->path] : null,
+                    'primary_image' => $p->primary_image_url,
                 ]),
             'newArrivals' => Product::active()
                 ->latest()
@@ -49,10 +50,22 @@ class HomeController extends Controller
                     'price' => number_format($p->sale_price ?? $p->price),
                     'primary_image' => $p->primaryImage ? ['path' => $p->primaryImage->path] : null,
                 ]),
-            'categories' => Category::active()->roots()
-                ->with(['children' => fn ($q) => $q->active()])
+            $categories = Category::active()->roots()
+                ->with(['children' => fn ($q) => $q->active()->orderBy('sort_order')])
                 ->orderBy('sort_order')
-                ->get(),
+                ->get()
+                ->map(fn (Category $c) => [
+                    'id' => $c->id,
+                    'name' => $c->name,
+                    'slug' => $c->slug,
+                    'image_url' => $c->image_url,                       // ← accessor → Storage::url()
+                    'children' => $c->children->map(fn (Category $ch) => [
+                        'id' => $ch->id,
+                        'name' => $ch->name,
+                        'slug' => $ch->slug,
+                        'image_url' => $ch->image_url,
+                    ]),
+                ]),
         ]);
     }
 }

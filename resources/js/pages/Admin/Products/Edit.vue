@@ -13,7 +13,7 @@ import {
 interface Option { id: string; name: string }
 interface AttributeValue { id: string; value: string }
 interface Attribute { id: string; name: string; values: AttributeValue[] }
-interface ProductImage { id: string; path: string; is_primary: boolean; alt: string | null }
+interface ProductImage { id: string; path: string; url: string | null; is_primary: boolean; alt: string | null }
 interface VariationFromServer {
     id: string;
     sku: string;
@@ -323,8 +323,7 @@ function deleteImage(image: { id: string }) {
                             <div v-for="img in product.images" :key="img.id"
                                 class="group relative h-24 w-24 shrink-0 overflow-hidden rounded-lg border bg-slate-100 dark:border-navy-500 dark:bg-navy-900"
                                 :class="img.is_primary ? 'ring-2 ring-primary dark:ring-accent' : ''">
-                                <img :src="`/storage/${img.path}`" :alt="img.alt ?? product.name"
-                                    class="h-full w-full object-cover" />
+                                <img :src="img.url!" :alt="img.alt ?? product.name" class="h-full w-full object-cover" />
 
                                 <span v-if="img.is_primary"
                                     class="absolute left-1 top-1 z-10 rounded-full bg-primary/90 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white shadow-sm dark:bg-accent/90">
