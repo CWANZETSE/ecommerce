@@ -282,10 +282,10 @@ class CheckoutService
                 'response' => $stkResponse,
             ]);
 
-            $checkoutRequestId = $stkResponse['CheckoutRequestID'] ?? null;
+            $checkoutRequestId = $stkResponse['checkoutRequestId'] ?? null;
 
             if (! $checkoutRequestId) {
-                Log::error('Checkout: M-Pesa did not return a CheckoutRequestID', [
+                Log::error('Checkout: M-Pesa did not return a checkoutRequestId', [
                     'payment_id' => $payment->id,
                     'order_number' => $order->order_number,
                     'phone' => $customer['phone'],
@@ -296,7 +296,7 @@ class CheckoutService
                     'error_code' => $stkResponse['errorCode'] ?? null,
                     'error_message' => $stkResponse['errorMessage'] ?? null,
                 ]);
-                throw new \RuntimeException('M-Pesa did not return a CheckoutRequestID.');
+                throw new \RuntimeException('M-Pesa did not return a checkoutRequestId.');
             }
 
             Log::info('Checkout: M-Pesa STK accepted', [
@@ -365,7 +365,7 @@ class CheckoutService
             'order_id' => $result['order']->id,
             'order_number' => $result['order']->order_number,
             'payment_id' => $result['payment']->id,
-            'checkout_request_id' => $result['stk_response']['CheckoutRequestID'] ?? null,
+            'checkout_request_id' => $result['stk_response']['checkoutRequestId'] ?? null,
         ]);
 
         return $result;
