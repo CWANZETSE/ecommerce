@@ -50,7 +50,12 @@ interface Order {
     grand_total: string;
     payment_status: string;
     fulfilment_status: string;
-    shipping_address: { county: string; town: string; address: string; instructions?: string | null };
+    shipping_address: {
+        county: string;
+        town: string;
+        address: string;
+        instructions?: string | null;
+    };
     paid_at: string | null;
     items: OrderItem[];
     payments: Payment[];
@@ -58,7 +63,18 @@ interface Order {
 
 const props = defineProps<PageProps & { order: Order }>();
 
+/* ---------------- Normalised statuses ---------------- */
+
+const paymentStatus = computed(() =>
+    String(props.order.payment_status ?? '').toLowerCase(),
+);
+
+const fulfilmentStatus = computed(() =>
+    String(props.order.fulfilment_status ?? '').toLowerCase(),
+);
+
 /* ---------------- Review modal ---------------- */
+
 const reviewItem = ref<OrderItem | null>(null);
 const reviewForm = useForm({ rating: 5, title: '', body: '' });
 
@@ -67,38 +83,55 @@ function openReview(item: OrderItem) {
     reviewForm.reset();
     reviewForm.clearErrors();
 }
+
 function closeReview() {
+    if (reviewForm.processing) return;
+
     reviewItem.value = null;
 }
+
 function submitReview() {
     if (!reviewItem.value) return;
+
     reviewForm.post(
         `/customer/orders/${props.order.ulid}/items/${reviewItem.value.id}/review`,
-        { preserveScroll: true, onSuccess: () => { reviewItem.value = null; } },
+        {
+            preserveScroll: true,
+            onSuccess: () => {
+                reviewItem.value = null;
+            },
+        },
     );
 }
 
 /* ---------------- Status helpers ---------------- */
+
 function badgeClass(status: string): string {
-    switch (status) {
+    switch (String(status ?? '').toLowerCase()) {
         case 'paid':
         case 'delivered':
         case 'completed':
+        case 'success':
             return 'badge space-x-2 rounded-full bg-success/10 text-success dark:bg-success/15 font-semibold';
+
         case 'pending':
             return 'badge space-x-2 rounded-full bg-warning/10 text-warning dark:bg-warning/15 font-semibold';
+
         case 'processing':
-        case 'shipped':
+        case 'dispatched':
             return 'badge space-x-2 rounded-full bg-info/10 text-info dark:bg-info/15 font-semibold';
+
         case 'failed':
         case 'cancelled':
             return 'badge space-x-2 rounded-full bg-error/10 text-error dark:bg-error/15 font-semibold';
+
         default:
             return 'bg-slate-150 text-slate-600 dark:bg-navy-500 dark:text-navy-200';
     }
 }
 
 /* ---------------- Lifecycle model ---------------- */
+
 type StageTone = 'success' | 'info' | 'secondary' | 'warning' | 'error';
 
 interface Stage {
@@ -111,37 +144,91 @@ interface Stage {
     meta?: string | null;
 }
 
-const isCancelled = computed(() => {
-    const f = props.order.fulfilment_status.toLowerCase();
-    const p = props.order.payment_status.toLowerCase();
-    return f === 'cancelled' || p === 'cancelled';
-});
+/*
+|--------------------------------------------------------------------------
+| Cancellation and payment failure
+|--------------------------------------------------------------------------
+*/
 
-const reachedIndex = computed<number>(() => {
-    if (isCancelled.value) {
-        const f = props.order.fulfilment_status.toLowerCase();
-        const p = props.order.payment_status.toLowerCase();
-        if (f === 'cancelled' && p === 'paid') return 1;
-        return 0;
-    }
-    const f = props.order.fulfilment_status.toLowerCase();
-    const p = props.order.payment_status.toLowerCase();
-    if (f === 'delivered' || f === 'completed') return 4;
-    if (f === 'shipped') return 3;
-    if (f === 'processing') return 2;
-    if (p === 'paid') return 1;
-    return 0;
-});
-
-const primaryPayment = computed<Payment | undefined>(() =>
-    props.order.payments.find(p => p.status.toLowerCase() === 'success' || p.status.toLowerCase() === 'paid')
-    ?? props.order.payments[0],
+const isCancelled = computed(() =>
+    paymentStatus.value === 'cancelled' ||
+    fulfilmentStatus.value === 'cancelled',
 );
 
+const isPaymentFailed = computed(() =>
+    paymentStatus.value === 'failed',
+);
+
+/*
+|--------------------------------------------------------------------------
+| Current lifecycle position
+|--------------------------------------------------------------------------
+|
+| Fulfilment:
+| pending -> processing -> dispatched -> delivered
+|
+| Payment:
+| pending -> processing -> paid
+|
+| A paid order with pending fulfilment has reached the payment stage.
+*/
+
+const reachedIndex = computed<number>(() => {
+    const f = fulfilmentStatus.value;
+    const p = paymentStatus.value;
+
+    // Preserve the last meaningful stage when an order is cancelled.
+    if (isCancelled.value) {
+        if (p === 'paid') return 1;
+        return 0;
+    }
+
+    // Failed payment cannot progress into fulfilment.
+    if (isPaymentFailed.value) {
+        return 0;
+    }
+
+    switch (f) {
+        case 'delivered':
+            return 4;
+
+        case 'dispatched':
+            return 3;
+
+        case 'processing':
+            return 2;
+
+        case 'pending':
+        default:
+            return p === 'paid' ? 1 : 0;
+    }
+});
+
+/*
+|--------------------------------------------------------------------------
+| Primary payment
+|--------------------------------------------------------------------------
+*/
+
+const primaryPayment = computed<Payment | undefined>(() =>
+    props.order.payments.find(p =>
+        ['success', 'paid'].includes(
+            String(p.status ?? '').toLowerCase(),
+        ),
+    ) ?? props.order.payments[0],
+);
+
+/*
+|--------------------------------------------------------------------------
+| Timeline stages
+|--------------------------------------------------------------------------
+*/
+
 const stages = computed<Stage[]>(() => {
-    const paidAt = props.order.paid_at
-        ?? props.order.payments.find(p => p.paid_at)?.paid_at
-        ?? null;
+    const paidAt =
+        props.order.paid_at ??
+        props.order.payments.find(p => p.paid_at)?.paid_at ??
+        null;
 
     return [
         {
@@ -156,29 +243,45 @@ const stages = computed<Stage[]>(() => {
         {
             key: 'paid',
             label: 'Payment Verified',
-            description: props.order.payment_status === 'paid'
-                ? 'Payment confirmed. Your order is now queued for fulfilment.'
-                : 'Awaiting payment confirmation from the provider.',
+            description:
+                paymentStatus.value === 'paid'
+                    ? 'Payment confirmed. Your order is now queued for fulfilment.'
+                    : paymentStatus.value === 'processing'
+                        ? 'Your payment is currently being processed.'
+                        : paymentStatus.value === 'failed'
+                            ? 'Payment could not be completed. Please contact support if you need assistance.'
+                            : paymentStatus.value === 'cancelled'
+                                ? 'The payment was cancelled.'
+                                : 'Awaiting payment confirmation from the provider.',
             icon: ShieldCheck,
             tone: 'success',
             timestamp: paidAt,
             meta: primaryPayment.value
-                ? `${primaryPayment.value.provider}${primaryPayment.value.provider_reference ? ' · ' + primaryPayment.value.provider_reference : ''}`
+                ? `${primaryPayment.value.provider}${primaryPayment.value.provider_reference
+                    ? ' · ' + primaryPayment.value.provider_reference
+                    : ''
+                }`
                 : null,
         },
         {
             key: 'processing',
             label: 'Processing',
-            description: 'Your items are being picked and packed in the warehouse.',
+            description:
+                ['processing', 'dispatched', 'delivered'].includes(fulfilmentStatus.value)
+                    ? 'Your items are being picked and packed in the warehouse.'
+                    : 'Your order will be prepared after payment confirmation.',
             icon: Package,
             tone: 'info',
             timestamp: null,
             meta: null,
         },
         {
-            key: 'shipped',
-            label: 'Shipped',
-            description: 'Your parcel has left our warehouse and is on its way.',
+            key: 'dispatched',
+            label: 'Dispatched',
+            description:
+                ['dispatched', 'delivered'].includes(fulfilmentStatus.value)
+                    ? 'Your parcel has left our warehouse and is on its way.'
+                    : 'Your order has not yet been dispatched.',
             icon: Truck,
             tone: 'info',
             timestamp: null,
@@ -187,7 +290,10 @@ const stages = computed<Stage[]>(() => {
         {
             key: 'delivered',
             label: 'Delivered',
-            description: 'Order delivered successfully. Thank you for shopping with us!',
+            description:
+                fulfilmentStatus.value === 'delivered'
+                    ? 'Order delivered successfully. Thank you for shopping with us!'
+                    : 'Your order has not yet been delivered.',
             icon: CheckCircle2,
             tone: 'success',
             timestamp: null,
@@ -195,6 +301,8 @@ const stages = computed<Stage[]>(() => {
         },
     ];
 });
+
+/* ---------------- Timeline styling ---------------- */
 
 const tonePoint: Record<StageTone, string> = {
     success: 'border-current bg-white text-success dark:bg-navy-700 dark:text-success-light',
@@ -209,33 +317,45 @@ type StageState = 'done' | 'current' | 'future' | 'cancelled';
 const stageStates = computed<StageState[]>(() => {
     const states: StageState[] = [];
     const reached = reachedIndex.value;
+
     for (let i = 0; i < stages.value.length; i++) {
         if (isCancelled.value) {
-            if (i < reached) states.push('done');
-            else if (i === reached) states.push('cancelled');
-            else states.push('future');
+            if (i < reached) {
+                states.push('done');
+            } else {
+                states.push('future');
+            }
+        } else if (isPaymentFailed.value) {
+            states.push(i === 0 ? 'done' : 'future');
+        } else if (i < reached) {
+            states.push('done');
+        } else if (i === reached) {
+            states.push('current');
         } else {
-            if (i < reached) states.push('done');
-            else if (i === reached) states.push('current');
-            else states.push('future');
+            states.push('future');
         }
     }
+
     return states;
 });
 
 const showCancelNode = computed(() => isCancelled.value);
 </script>
 
+
 <template>
+
     <Head :title="`Order ${order.order_number}`" />
 
     <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
 
         <!-- ================= Header ================= -->
-        <div class="flex flex-col gap-4 border-b border-slate-200 pb-6 dark:border-navy-600 sm:flex-row sm:items-center sm:justify-between">
+        <div
+            class="flex flex-col gap-4 border-b border-slate-200 pb-6 dark:border-navy-600 sm:flex-row sm:items-center sm:justify-between">
             <div class="space-y-1">
                 <div class="flex items-center gap-3">
-                    <span class="flex size-12 items-center justify-center rounded-2xl bg-primary/10 text-primary shadow-xs dark:bg-accent-light/10 dark:text-accent-light">
+                    <span
+                        class="flex size-12 items-center justify-center rounded-2xl bg-primary/10 text-primary shadow-xs dark:bg-accent-light/10 dark:text-accent-light">
                         <ShoppingBag class="size-6" />
                     </span>
                     <div>
@@ -243,12 +363,14 @@ const showCancelNode = computed(() => isCancelled.value);
                             <h1 class="text-2xl font-black tracking-tight text-slate-900 dark:text-navy-50">
                                 {{ order.order_number }}
                             </h1>
-                            <span class="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary dark:bg-accent-light/15 dark:text-accent-light">
+                            <span
+                                class="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary dark:bg-accent-light/15 dark:text-accent-light">
                                 <ShieldCheck class="size-3.5" />
                                 Verified Secure Order
                             </span>
                         </div>
-                        <p class="mt-0.5 flex items-center gap-1.5 text-xs font-medium text-slate-400 dark:text-navy-300">
+                        <p
+                            class="mt-0.5 flex items-center gap-1.5 text-xs font-medium text-slate-400 dark:text-navy-300">
                             <Clock class="size-3.5" />
                             Placed on {{ order.created_at }}
                         </p>
@@ -265,7 +387,8 @@ const showCancelNode = computed(() => isCancelled.value);
         </div>
 
         <!-- ================= Unified Top Card (50/50 Split on LG) ================= -->
-        <div class="card mt-6 overflow-hidden rounded-2xl border border-slate-200/80 shadow-sm dark:border-navy-600 dark:bg-navy-750">
+        <div
+            class="card mt-6 overflow-hidden rounded-2xl border border-slate-200/80 shadow-sm dark:border-navy-600 dark:bg-navy-750">
             <div class="grid grid-cols-1 lg:grid-cols-2">
 
                 <!-- Left: Live Lifecycle Status (1/2 width on lg) -->
@@ -278,7 +401,8 @@ const showCancelNode = computed(() => isCancelled.value);
                             </h2>
                             <div class="flex items-center gap-2">
                                 <div class="inline-flex">
-                                    <button class="btn -mr-1.5 size-8 rounded-full p-0 hover:bg-slate-300/20 focus:bg-slate-300/20 active:bg-slate-300/25 dark:hover:bg-navy-300/20 dark:focus:bg-navy-300/20 dark:active:bg-navy-300/25">
+                                    <button
+                                        class="btn -mr-1.5 size-8 rounded-full p-0 hover:bg-slate-300/20 focus:bg-slate-300/20 active:bg-slate-300/25 dark:hover:bg-navy-300/20 dark:focus:bg-navy-300/20 dark:active:bg-navy-300/25">
                                         <MoreHorizontal class="size-5" />
                                     </button>
                                 </div>
@@ -287,40 +411,39 @@ const showCancelNode = computed(() => isCancelled.value);
 
                         <!-- Status chips -->
                         <div class="flex flex-wrap items-center gap-2 px-4 pb-3 sm:px-5">
-                            <div class="flex items-center space-x-2 rounded-lg border border-slate-200/60 bg-slate-50 px-3 py-1.5 text-xs dark:border-navy-600 dark:bg-navy-900">
+                            <div
+                                class="flex items-center space-x-2 rounded-lg border border-slate-200/60 bg-slate-50 px-3 py-1.5 text-xs dark:border-navy-600 dark:bg-navy-900">
                                 <span class="font-medium text-slate-400">Payment:</span>
-                                <span :class="badgeClass(order.payment_status)">{{ order.payment_status }}</span>
+                                <span :class="badgeClass(paymentStatus)">
+                                    {{ paymentStatus }}
+                                </span>
                             </div>
-                            <div class="flex items-center space-x-2 rounded-lg border border-slate-200/60 bg-slate-50 px-3 py-1.5 text-xs dark:border-navy-600 dark:bg-navy-900">
+                            <div
+                                class="flex items-center space-x-2 rounded-lg border border-slate-200/60 bg-slate-50 px-3 py-1.5 text-xs dark:border-navy-600 dark:bg-navy-900">
                                 <span class="font-medium text-slate-400">Fulfilment:</span>
-                                <span :class="badgeClass(order.fulfilment_status)">{{ order.fulfilment_status }}</span>
+                                <span :class="badgeClass(fulfilmentStatus)">
+    {{ fulfilmentStatus }}
+</span>
                             </div>
                         </div>
 
                         <!-- Vertical timeline -->
                         <ol class="timeline line-space flex-1 px-4 [--size:1.5rem] sm:px-5">
-                            <li
-                                v-for="(stage, i) in stages"
-                                :key="stage.key"
-                                class="timeline-item"
-                            >
+                            <li v-for="(stage, i) in stages" :key="stage.key" class="timeline-item">
                                 <!-- Point -->
                                 <div class="relative">
-                                    <div
-                                        class="timeline-item-point flex items-center justify-center rounded-full border"
+                                    <div class="timeline-item-point flex items-center justify-center rounded-full border"
                                         :class="stageStates[i] === 'future'
                                             ? 'border-slate-300 bg-white text-slate-300 dark:border-navy-600 dark:bg-navy-700 dark:text-navy-600'
-                                            : tonePoint[stage.tone]"
-                                    >
+                                            : tonePoint[stage.tone]">
                                         <component :is="stage.icon" class="size-3" />
                                     </div>
 
                                     <!-- Corner ping indicator on current stage -->
-                                    <span
-                                        v-if="stageStates[i] === 'current'"
-                                        class="absolute -top-px -right-px flex size-3 items-center justify-center"
-                                    >
-                                        <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-secondary opacity-80"></span>
+                                    <span v-if="stageStates[i] === 'current'"
+                                        class="absolute -top-px -right-px flex size-3 items-center justify-center">
+                                        <span
+                                            class="absolute inline-flex h-full w-full animate-ping rounded-full bg-secondary opacity-80"></span>
                                         <span class="inline-flex size-2 rounded-full bg-secondary"></span>
                                     </span>
                                 </div>
@@ -328,31 +451,24 @@ const showCancelNode = computed(() => isCancelled.value);
                                 <!-- Content -->
                                 <div class="timeline-item-content flex-1 pl-4 sm:pl-8">
                                     <div class="flex flex-col justify-between pb-2 sm:flex-row sm:pb-0">
-                                        <p class="flex items-center gap-2 pb-2 font-medium leading-none text-slate-600 dark:text-navy-100 sm:pb-0">
+                                        <p
+                                            class="flex items-center gap-2 pb-2 font-medium leading-none text-slate-600 dark:text-navy-100 sm:pb-0">
                                             {{ stage.label }}
 
-                                            <span
-                                                v-if="stageStates[i] === 'current'"
-                                                class="inline-flex items-center rounded-full bg-secondary/10 px-2 py-0.5 text-2xs font-bold uppercase tracking-wide text-secondary dark:bg-secondary-light/15 dark:text-secondary-light"
-                                            >
+                                            <span v-if="stageStates[i] === 'current'"
+                                                class="inline-flex items-center rounded-full bg-secondary/10 px-2 py-0.5 text-2xs font-bold uppercase tracking-wide text-secondary dark:bg-secondary-light/15 dark:text-secondary-light">
                                                 Current
                                             </span>
-                                            <span
-                                                v-else-if="stageStates[i] === 'done'"
-                                                class="inline-flex items-center rounded-full bg-success/10 px-2 py-0.5 text-2xs font-bold uppercase tracking-wide text-success dark:bg-success/15"
-                                            >
+                                            <span v-else-if="stageStates[i] === 'done'"
+                                                class="inline-flex items-center rounded-full bg-success/10 px-2 py-0.5 text-2xs font-bold uppercase tracking-wide text-success dark:bg-success/15">
                                                 Done
                                             </span>
-                                            <span
-                                                v-else-if="stageStates[i] === 'cancelled'"
-                                                class="inline-flex items-center rounded-full bg-error/10 px-2 py-0.5 text-2xs font-bold uppercase tracking-wide text-error dark:bg-error/15"
-                                            >
+                                            <span v-else-if="stageStates[i] === 'cancelled'"
+                                                class="inline-flex items-center rounded-full bg-error/10 px-2 py-0.5 text-2xs font-bold uppercase tracking-wide text-error dark:bg-error/15">
                                                 Cancelled here
                                             </span>
-                                            <span
-                                                v-else
-                                                class="inline-flex items-center rounded-full bg-slate-150 px-2 py-0.5 text-2xs font-bold uppercase tracking-wide text-slate-500 dark:bg-navy-600 dark:text-navy-300"
-                                            >
+                                            <span v-else
+                                                class="inline-flex items-center rounded-full bg-slate-150 px-2 py-0.5 text-2xs font-bold uppercase tracking-wide text-slate-500 dark:bg-navy-600 dark:text-navy-300">
                                                 Pending
                                             </span>
                                         </p>
@@ -360,20 +476,20 @@ const showCancelNode = computed(() => isCancelled.value);
                                         <span v-if="stage.timestamp" class="text-xs text-slate-400 dark:text-navy-300">
                                             {{ stage.timestamp }}
                                         </span>
-                                        <span v-else-if="stageStates[i] === 'future'" class="text-xs text-slate-300 dark:text-navy-500">
+                                        <span v-else-if="stageStates[i] === 'future'"
+                                            class="text-xs text-slate-300 dark:text-navy-500">
                                             Not yet
                                         </span>
                                     </div>
 
-                                    <p
-                                        class="py-1"
-                                        :class="stageStates[i] === 'future' ? 'text-slate-400 dark:text-navy-500' : 'text-slate-500 dark:text-navy-200'"
-                                    >
+                                    <p class="py-1"
+                                        :class="stageStates[i] === 'future' ? 'text-slate-400 dark:text-navy-500' : 'text-slate-500 dark:text-navy-200'">
                                         {{ stage.description }}
                                     </p>
 
                                     <div v-if="stage.meta" class="pt-1">
-                                        <span class="tag rounded-full border border-secondary/30 bg-secondary/10 text-secondary dark:border-secondary-light/30 dark:bg-secondary-light/10 dark:text-secondary-light">
+                                        <span
+                                            class="tag rounded-full border border-secondary/30 bg-secondary/10 text-secondary dark:border-secondary-light/30 dark:bg-secondary-light/10 dark:text-secondary-light">
                                             {{ stage.meta }}
                                         </span>
                                     </div>
@@ -382,20 +498,24 @@ const showCancelNode = computed(() => isCancelled.value);
 
                             <!-- Terminal: Cancelled -->
                             <li v-if="showCancelNode" class="timeline-item">
-                                <div class="timeline-item-point flex items-center justify-center rounded-full border border-current bg-white text-error dark:bg-navy-700 dark:text-error-light">
+                                <div
+                                    class="timeline-item-point flex items-center justify-center rounded-full border border-current bg-white text-error dark:bg-navy-700 dark:text-error-light">
                                     <X class="size-3" />
                                 </div>
                                 <div class="timeline-item-content flex-1 pl-4 sm:pl-8">
                                     <div class="flex flex-col justify-between pb-2 sm:flex-row sm:pb-0">
-                                        <p class="flex items-center gap-2 pb-2 font-medium leading-none text-slate-600 dark:text-navy-100 sm:pb-0">
+                                        <p
+                                            class="flex items-center gap-2 pb-2 font-medium leading-none text-slate-600 dark:text-navy-100 sm:pb-0">
                                             Order Cancelled
-                                            <span class="inline-flex items-center rounded-full bg-error/10 px-2 py-0.5 text-2xs font-bold uppercase tracking-wide text-error dark:bg-error/15">
+                                            <span
+                                                class="inline-flex items-center rounded-full bg-error/10 px-2 py-0.5 text-2xs font-bold uppercase tracking-wide text-error dark:bg-error/15">
                                                 Terminal
                                             </span>
                                         </p>
                                     </div>
                                     <p class="py-1 text-slate-500 dark:text-navy-200">
-                                        This order was cancelled before completion. If payment was captured, a refund will be processed automatically.
+                                        This order was cancelled before completion. If payment was captured, a refund
+                                        will be processed automatically.
                                     </p>
                                     <div class="pt-1">
                                         <span class="tag rounded-full border border-error/30 bg-error/10 text-error">
@@ -412,29 +532,36 @@ const showCancelNode = computed(() => isCancelled.value);
                 <div class="flex flex-col">
                     <!-- Right Top: Order Summary -->
                     <div class="border-b border-slate-150 p-6 dark:border-navy-600">
-                        <h2 class="border-b border-slate-150 pb-4 text-base font-bold text-slate-900 dark:border-navy-600 dark:text-navy-50">
+                        <h2
+                            class="border-b border-slate-150 pb-4 text-base font-bold text-slate-900 dark:border-navy-600 dark:text-navy-50">
                             Order Summary
                         </h2>
-                        <table class="mt-3 w-full divide-y divide-slate-150 text-sm text-slate-600 dark:divide-navy-600 dark:text-navy-200">
+                        <table
+                            class="mt-3 w-full divide-y divide-slate-150 text-sm text-slate-600 dark:divide-navy-600 dark:text-navy-200">
                             <tbody>
                                 <tr>
                                     <td class="py-3 text-slate-400 dark:text-navy-300">Subtotal</td>
-                                    <td class="py-3 text-right  font-semibold text-slate-800 dark:text-navy-50">KES {{ order.subtotal }}</td>
+                                    <td class="py-3 text-right  font-semibold text-slate-800 dark:text-navy-50">KES {{
+                                        order.subtotal }}</td>
                                 </tr>
                                 <tr v-if="Number(order.discount_total) > 0">
                                     <td class="py-3 font-medium text-success">
                                         Discount
-                                        <span class="rounded bg-success/10 px-1 py-0.5  text-2xs">({{ order.coupon_code }})</span>
+                                        <span class="rounded bg-success/10 px-1 py-0.5  text-2xs">({{ order.coupon_code
+                                            }})</span>
                                     </td>
                                     <td class="py-3 text-right  text-success">− KES {{ order.discount_total }}</td>
                                 </tr>
                                 <tr>
                                     <td class="py-3 text-slate-400 dark:text-navy-300">Shipping Fee</td>
-                                    <td class="py-3 text-right  font-semibold text-slate-800 dark:text-navy-50">KES {{ order.shipping_fee }}</td>
+                                    <td class="py-3 text-right  font-semibold text-slate-800 dark:text-navy-50">KES {{
+                                        order.shipping_fee }}</td>
                                 </tr>
-                                <tr class="border-t-2 border-slate-200 text-base font-black text-slate-900 dark:border-navy-600 dark:text-navy-50">
+                                <tr
+                                    class="border-t-2 border-slate-200 text-base font-black text-slate-900 dark:border-navy-600 dark:text-navy-50">
                                     <td class="py-4">Grand Total</td>
-                                    <td class="py-4 text-right  text-lg text-primary dark:text-accent-light">KES {{ order.grand_total }}</td>
+                                    <td class="py-4 text-right  text-lg text-primary dark:text-accent-light">KES {{
+                                        order.grand_total }}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -443,13 +570,16 @@ const showCancelNode = computed(() => isCancelled.value);
                     <!-- Right Bottom: Delivery Address -->
                     <div class="flex-1 p-6">
                         <div class="flex items-center space-x-2.5 border-b border-slate-150 pb-4 dark:border-navy-600">
-                            <div class="rounded-lg bg-primary/10 p-2 text-primary dark:bg-accent-light/10 dark:text-accent-light">
+                            <div
+                                class="rounded-lg bg-primary/10 p-2 text-primary dark:bg-accent-light/10 dark:text-accent-light">
                                 <MapPin class="size-5" />
                             </div>
-                            <h2 class="text-base font-bold text-slate-900 dark:text-navy-50">Delivery Address Details</h2>
+                            <h2 class="text-base font-bold text-slate-900 dark:text-navy-50">Delivery Address Details
+                            </h2>
                         </div>
 
-                        <table class="mt-3 w-full divide-y divide-slate-150 text-sm text-slate-600 dark:divide-navy-600 dark:text-navy-200">
+                        <table
+                            class="mt-3 w-full divide-y divide-slate-150 text-sm text-slate-600 dark:divide-navy-600 dark:text-navy-200">
                             <tbody>
                                 <tr>
                                     <td class="py-3 font-medium text-slate-400 dark:text-navy-300">Destination</td>
@@ -459,11 +589,13 @@ const showCancelNode = computed(() => isCancelled.value);
                                 </tr>
                                 <tr>
                                     <td class="py-3 font-medium text-slate-400 dark:text-navy-300">Street Address</td>
-                                    <td class="py-3 text-right text-slate-700 dark:text-navy-100">{{ order.shipping_address.address }}</td>
+                                    <td class="py-3 text-right text-slate-700 dark:text-navy-100">{{
+                                        order.shipping_address.address }}</td>
                                 </tr>
                                 <tr v-if="order.shipping_address.instructions">
                                     <td class="py-3 font-medium text-slate-400 dark:text-navy-300">Instructions</td>
-                                    <td class="py-3 text-right text-xs italic text-slate-500 dark:text-navy-300">"{{ order.shipping_address.instructions }}"</td>
+                                    <td class="py-3 text-right text-xs italic text-slate-500 dark:text-navy-300">"{{
+                                        order.shipping_address.instructions }}"</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -476,14 +608,17 @@ const showCancelNode = computed(() => isCancelled.value);
         <div class="mt-6 space-y-6">
 
             <!-- Order Items Table (full width) -->
-            <div class="card rounded-2xl border border-slate-200/80 p-6 shadow-sm dark:border-navy-600 dark:bg-navy-750">
+            <div
+                class="card rounded-2xl border border-slate-200/80 p-6 shadow-sm dark:border-navy-600 dark:bg-navy-750">
                 <div class="flex items-center justify-between border-b border-slate-150 pb-4 dark:border-navy-600">
                     <div class="flex items-center gap-2.5">
-                        <div class="rounded-lg bg-primary/10 p-2 text-primary dark:bg-accent-light/10 dark:text-accent-light">
+                        <div
+                            class="rounded-lg bg-primary/10 p-2 text-primary dark:bg-accent-light/10 dark:text-accent-light">
                             <PackageCheck class="size-5" />
                         </div>
                         <h2 class="text-base font-bold text-slate-900 dark:text-navy-50">
-                            Order Items <span class="ml-1 text-xs font-normal text-slate-400">({{ order.items.length }})</span>
+                            Order Items <span class="ml-1 text-xs font-normal text-slate-400">({{ order.items.length
+                                }})</span>
                         </h2>
                     </div>
                 </div>
@@ -491,7 +626,8 @@ const showCancelNode = computed(() => isCancelled.value);
                 <div class="mt-4 overflow-x-auto">
                     <table class="w-full border-collapse text-left">
                         <thead>
-                            <tr class="border-b border-slate-200 text-2xs uppercase tracking-wider text-slate-400 dark:border-navy-600 dark:text-navy-300">
+                            <tr
+                                class="border-b border-slate-200 text-2xs uppercase tracking-wider text-slate-400 dark:border-navy-600 dark:text-navy-300">
                                 <th class="px-3 py-3 font-semibold">Item &amp; Attributes</th>
                                 <th class="px-3 py-3 text-center font-semibold">Qty</th>
                                 <th class="px-3 py-3 text-right font-semibold">Unit Price</th>
@@ -500,7 +636,8 @@ const showCancelNode = computed(() => isCancelled.value);
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-150 text-sm dark:divide-navy-600">
-                            <tr v-for="item in order.items" :key="item.id" class="transition-colors hover:bg-slate-50/60 dark:hover:bg-navy-900/30">
+                            <tr v-for="item in order.items" :key="item.id"
+                                class="transition-colors hover:bg-slate-50/60 dark:hover:bg-navy-900/30">
                                 <td class="px-3 py-4">
                                     <p class="font-bold text-slate-900 dark:text-navy-50">{{ item.product_name }}</p>
                                     <p class="mt-0.5  text-2xs text-slate-400">SKU: {{ item.sku }}</p>
@@ -546,7 +683,8 @@ const showCancelNode = computed(() => isCancelled.value);
                 <div class="mt-4 overflow-x-auto">
                     <table class="w-full border-collapse text-left">
                         <thead>
-                            <tr class="border-b border-slate-200 text-2xs uppercase tracking-wider text-slate-400 dark:border-navy-600 dark:text-navy-300">
+                            <tr
+                                class="border-b border-slate-200 text-2xs uppercase tracking-wider text-slate-400 dark:border-navy-600 dark:text-navy-300">
                                 <th class="px-3 py-3 font-semibold">Provider / Ref</th>
                                 <th class="px-3 py-3 font-semibold">Status</th>
                                 <th class="px-3 py-3 font-semibold">Timestamp</th>
@@ -554,13 +692,18 @@ const showCancelNode = computed(() => isCancelled.value);
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-150 text-sm dark:divide-navy-600">
-                            <tr v-for="(p, i) in order.payments" :key="i" class="transition-colors hover:bg-slate-50/60 dark:hover:bg-navy-900/30">
+                            <tr v-for="(p, i) in order.payments" :key="i"
+                                class="transition-colors hover:bg-slate-50/60 dark:hover:bg-navy-900/30">
                                 <td class="px-3 py-3.5">
-                                    <p class="font-bold capitalize text-slate-800 dark:text-navy-100">{{ p.provider }}</p>
-                                    <p v-if="p.provider_reference" class=" text-2xs text-slate-400">Ref: {{ p.provider_reference }}</p>
+                                    <p class="font-bold capitalize text-slate-800 dark:text-navy-100">{{ p.provider }}
+                                    </p>
+                                    <p v-if="p.provider_reference" class=" text-2xs text-slate-400">Ref: {{
+                                        p.provider_reference }}</p>
                                 </td>
                                 <td class="px-3 py-3.5">
-                                    <span class="badge rounded bg-success/10 px-2.5 py-0.5 text-2xs font-bold uppercase text-success dark:bg-success/20">{{ p.status }}</span>
+                                    <span :class="badgeClass(p.status)">
+    {{ p.status }}
+</span>
                                 </td>
                                 <td class="px-3 py-3.5 text-xs text-slate-500 dark:text-navy-300">
                                     {{ p.paid_at || '—' }}
@@ -579,19 +722,22 @@ const showCancelNode = computed(() => isCancelled.value);
         <div v-if="reviewItem"
             class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs transition-opacity"
             @click.self="closeReview">
-            <div class="card w-full max-w-lg animate-in rounded-2xl border border-slate-200 p-6 shadow-2xl fade-in zoom-in-95 duration-200 dark:border-navy-600 dark:bg-navy-750">
+            <div
+                class="card w-full max-w-lg animate-in rounded-2xl border border-slate-200 p-6 shadow-2xl fade-in zoom-in-95 duration-200 dark:border-navy-600 dark:bg-navy-750">
                 <div class="flex items-center justify-between border-b border-slate-150 pb-4 dark:border-navy-600">
                     <h2 class="flex items-center gap-2 text-lg font-bold text-slate-900 dark:text-navy-50">
                         <Star class="size-5 text-warning" />
                         Rate &amp; Review Product
                     </h2>
-                    <button type="button" class="flex size-8 items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-navy-700 dark:hover:text-navy-100"
+                    <button type="button"
+                        class="flex size-8 items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-navy-700 dark:hover:text-navy-100"
                         @click="closeReview">
                         <X class="size-4" />
                     </button>
                 </div>
 
-                <div class="mt-4 rounded-xl border border-slate-150 bg-slate-50 p-3 dark:border-navy-600 dark:bg-navy-900">
+                <div
+                    class="mt-4 rounded-xl border border-slate-150 bg-slate-50 p-3 dark:border-navy-600 dark:bg-navy-900">
                     <p class="text-xs font-bold text-slate-800 dark:text-navy-100">{{ reviewItem.product_name }}</p>
                     <p class="mt-0.5  text-2xs text-slate-400">SKU: {{ reviewItem.sku }}</p>
                 </div>
@@ -603,13 +749,12 @@ const showCancelNode = computed(() => isCancelled.value);
                             <button v-for="star in 5" :key="star" type="button"
                                 class="transition-transform hover:scale-125 focus:outline-hidden"
                                 @click="reviewForm.rating = star">
-                                <Star
-                                    class="size-8"
-                                    :class="star <= reviewForm.rating ? 'fill-warning text-warning drop-shadow-xs' : 'text-slate-300 dark:text-navy-500'"
-                                />
+                                <Star class="size-8"
+                                    :class="star <= reviewForm.rating ? 'fill-warning text-warning drop-shadow-xs' : 'text-slate-300 dark:text-navy-500'" />
                             </button>
                         </div>
-                        <p v-if="reviewForm.errors.rating" class="mt-1 text-xs font-medium text-error">{{ reviewForm.errors.rating }}</p>
+                        <p v-if="reviewForm.errors.rating" class="mt-1 text-xs font-medium text-error">{{
+                            reviewForm.errors.rating }}</p>
                     </div>
 
                     <div>
