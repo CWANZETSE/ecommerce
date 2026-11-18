@@ -38,8 +38,8 @@ class ProductPageController extends Controller
                     'id' => $p->id,
                     'name' => $p->name,
                     'slug' => $p->slug,
-                    'price' => $p->price,
-                    'price_formatted' => number_format((float) $p->price, 0),
+                    'price' => $p->sale_price ?? $p->price,
+                    'price_formatted' => number_format((float) $p->sale_price ?? $p->price, 0),
                     'primary_image_url' => $p->primary_image_url,
                 ];
             });
