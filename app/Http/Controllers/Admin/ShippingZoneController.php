@@ -11,13 +11,14 @@ use Inertia\Response;
 
 class ShippingZoneController extends Controller
 {
-    public function index(Request $request): Response
+        public function index(Request $request): Response
     {
         $zones = ShippingZone::query()
             ->when($request->filled('search'), fn ($q) => $q->where('name', 'like', "%{$request->search}%"))
             ->orderBy('name')
-            ->get()
-            ->map(fn (ShippingZone $z) => [
+            ->paginate(10)
+            ->withQueryString()
+            ->through(fn (ShippingZone $z) => [
                 'id' => $z->id,
                 'name' => $z->name,
                 'fee' => $z->fee,

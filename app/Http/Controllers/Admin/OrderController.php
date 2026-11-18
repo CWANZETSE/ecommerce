@@ -35,7 +35,7 @@ class OrderController extends Controller
             ->when($request->filled('payment_status'), fn ($q) => $q->where('payment_status', $request->payment_status))
             ->when($request->filled('fulfilment_status'), fn ($q) => $q->where('fulfilment_status', $request->fulfilment_status))
             ->orderByDesc('created_at')
-            ->paginate(20)
+            ->paginate(10)
             ->withQueryString();
 
         return Inertia::render('Admin/Orders/Index', [

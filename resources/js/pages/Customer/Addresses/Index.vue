@@ -259,7 +259,7 @@ function setDefault(address: Address) {
                                 <span class="text-base font-semibold text-slate-800 dark:text-navy-50">
                                     {{ address.label ?? 'Delivery Address' }}
                                 </span>
-                                <span v-if="address.is_default" class="badge bg-primary/10 text-primary dark:bg-accent-light/10 dark:text-accent-light px-2.5 py-0.5 rounded-full text-xs font-semibold">
+                                <span v-if="address.is_default" class="badge space-x-2.5 rounded-full bg-success/10 text-success dark:bg-success/15">
                                     Default
                                 </span>
                             </div>
@@ -279,7 +279,7 @@ function setDefault(address: Address) {
                         <div class="flex sm:flex-col items-end justify-between sm:justify-start gap-2 pt-3 sm:pt-0 border-t sm:border-t-0 border-slate-150 dark:border-navy-600 text-xs">
                             <button
                                 type="button"
-                                class="font-medium text-primary hover:text-primary-focus dark:text-accent-light dark:hover:text-accent transition-colors"
+                                class="badge space-x-2.5 rounded-full bg-primary/10 text-primary dark:bg-accent-light/15 dark:text-accent-light"
                                 @click="startEdit(address)"
                             >
                                 Edit
@@ -287,14 +287,14 @@ function setDefault(address: Address) {
                             <button
                                 v-if="!address.is_default"
                                 type="button"
-                                class="font-medium text-slate-500 hover:text-slate-800 dark:text-navy-300 dark:hover:text-navy-100 transition-colors"
+                                class="badge space-x-2.5 rounded-full bg-warning/10 text-warning dark:bg-warning/15"
                                 @click="setDefault(address)"
                             >
                                 Set default
                             </button>
                             <button
                                 type="button"
-                                class="font-medium text-error hover:text-error/80 transition-colors"
+                                class="badge space-x-2.5 rounded-full bg-error/10 text-error dark:bg-error/15"
                                 @click="destroy(address)"
                             >
                                 Delete

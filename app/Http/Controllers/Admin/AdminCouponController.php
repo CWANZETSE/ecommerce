@@ -13,9 +13,12 @@ use Inertia\Response;
 
 class AdminCouponController extends Controller
 {
-    public function index(): Response
+        public function index(): Response
     {
-        $coupons = Coupon::withCount('usages')->orderByDesc('created_at')->get();
+        $coupons = Coupon::withCount('usages')
+            ->orderByDesc('created_at')
+            ->paginate(10)
+            ->withQueryString();
 
         return Inertia::render('Admin/Coupons/Index', ['coupons' => $coupons]);
     }

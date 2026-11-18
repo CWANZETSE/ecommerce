@@ -16,7 +16,7 @@ class InventoryController extends Controller
 {
     public function __construct(private InventoryService $inventory) {}
 
-    public function index(Request $request): Response
+       public function index(Request $request): Response
     {
         $filter = $request->get('filter', 'all'); // all | low | out
 
@@ -35,7 +35,7 @@ class InventoryController extends Controller
             ->orderBy('stock_quantity')
             ->orderBy('sku');
 
-        $variations = $query->paginate(30)->withQueryString();
+        $variations = $query->paginate(10)->withQueryString();
 
         return Inertia::render('Admin/Inventory/Index', [
             'variations' => $variations,

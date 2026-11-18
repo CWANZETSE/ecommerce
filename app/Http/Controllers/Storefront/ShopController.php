@@ -161,15 +161,15 @@ class ShopController extends Controller
             'products' => $products,
 
             'categories' => Category::query()
-    ->active()
-    ->roots()
-    ->with([
-        'children' => fn ($query) => $query
-            ->active()
-            ->orderBy('name'),
-    ])
-    ->orderBy('name')
-    ->get(),
+                ->active()
+                ->roots()
+                ->with([
+                    'children' => fn ($query) => $query
+                        ->active()
+                        ->orderBy('name'),
+                ])
+                ->orderBy('name')
+                ->get(),
 
             'brands' => Brand::query()
                 ->active()

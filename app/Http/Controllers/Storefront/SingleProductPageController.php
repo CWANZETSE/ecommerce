@@ -8,7 +8,7 @@ use App\Models\ProductReview;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class ProductPageController extends Controller
+class SingleProductPageController extends Controller
 {
     public function show(string $slug): Response
     {

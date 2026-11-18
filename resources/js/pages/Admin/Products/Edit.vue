@@ -362,12 +362,17 @@ function setDefaultVariation(selectedRow: VariationFormRow) {
                         + Add variation
                     </button>
                 </div>
+                <div class="alert flex rounded-lg my-2 border border-warning/30 bg-warning/10 py-4 px-4 text-warning sm:px-5">
+                  Please set the lowest-priced variation as the default, as its price is displayed on the storefront before customers select a variation.
+                </div>
 
-                <p v-if="form.errors.variations" class="mt-3 text-xs text-error">{{ form.errors.variations }}</p>
 
-                <p v-if="form.variations.length === 0" class="mt-4 text-sm text-error">
-                    No variations yet. Add at least one.
-                </p>
+                <div v-if="form.variations.length === 0" class="alert mt-2 flex space-x-2 rounded-lg border border-error px-4 py-4 text-error">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="size-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                  </svg>
+                  <p>No variations yet. Add atleast one.</p>
+                </div>
 
                 <!-- Accordion -->
                 <div class="flex flex-col space-y-3 sm:space-y-4 lg:space-y-5">
@@ -483,7 +488,7 @@ function setDefaultVariation(selectedRow: VariationFormRow) {
             type="radio"
             name="default_variation"
             :checked="row.is_default"
-            class="size-4 border-slate-400 text-primary focus:ring-primary dark:border-navy-500 dark:bg-navy-900"
+            class="form-checkbox is-outline size-5 rounded-sm border-slate-400/70 before:!bg-warning checked:!border-warning hover:!border-warning focus:!border-warning dark:border-navy-400"
             @change="setDefaultVariation(row)"
         />
         <span class="font-medium text-slate-700 dark:text-navy-100">

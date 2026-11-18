@@ -16,22 +16,25 @@ class BrandController extends Controller
 {
     public function __construct(private BrandService $brands) {}
 
-    public function index(): Response
+        public function index(): Response
     {
         $this->authorize('viewAny', Brand::class);
 
+        $brands = Brand::withCount('products')
+            ->orderBy('name')
+            ->paginate(10)
+            ->withQueryString()
+            ->through(fn (Brand $brand) => [
+                'id' => $brand->id,
+                'name' => $brand->name,
+                'slug' => $brand->slug,
+                'logo_url' => $brand->logo_path ? Storage::url($brand->logo_path) : null,
+                'is_active' => $brand->is_active,
+                'products_count' => $brand->products_count,
+            ]);
+
         return Inertia::render('Admin/Brands/Index', [
-            'brands' => Brand::withCount('products')
-                ->orderBy('name')
-                ->get()
-                ->map(fn (Brand $brand) => [
-                    'id' => $brand->id,
-                    'name' => $brand->name,
-                    'slug' => $brand->slug,
-                    'logo_url' => $brand->logo_path ? Storage::url($brand->logo_path) : null,
-                    'is_active' => $brand->is_active,
-                    'products_count' => $brand->products_count,
-                ]),
+            'brands' => $brands,
         ]);
     }
 

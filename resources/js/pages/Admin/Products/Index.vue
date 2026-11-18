@@ -3,6 +3,7 @@ import { Head, Link, router } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
 import type { PageProps } from '@/types';
 import { admin_products_create, admin_products_edit } from '@/routes';
+import Pagination from '@/components/Pagination.vue';
 
 interface Category { id: string; name: string }
 interface Variation { id: string; product_id: string; stock_quantity: number }
@@ -18,12 +19,18 @@ interface ProductRow {
     variations: Variation[];
 }
 
+// Add the full Paginator interface here
+interface Paginator<T> {
+    data: T[];
+    links: { url: string | null; label: string; active: boolean }[];
+    current_page: number;
+    from: number | null;
+    to: number | null;
+    total: number;
+}
+
 const props = defineProps<PageProps & {
-    products: {
-        data: ProductRow[];
-        links: { url: string | null; label: string; active: boolean }[];
-        current_page: number;
-    };
+    products: Paginator<ProductRow>; // Use the interface here
     categories: Category[];
     filters: Record<string, string | null>;
 }>();
@@ -64,129 +71,138 @@ function totalStock(row: ProductRow): number {
             </label>
         </div>
 
-        <div class="mt-4 overflow-hidden rounded-lg border border-slate-150 dark:border-navy-600">
-            <div class="is-scrollbar-hidden min-w-full overflow-x-auto">
-                <table class="is-zebra w-full text-left">
+        <div
+            class="mt-4 overflow-hidden rounded-2xl border border-slate-150 bg-white shadow-sm dark:border-slate-700 dark:bg-navy-800">
+            <div class="overflow-x-auto">
+                <table class="w-full border-collapse text-left text-sm">
                     <thead>
-                        <tr>
-                            <th class="whitespace-nowrap rounded-l-lg bg-slate-200 px-3 py-3 font-semibold uppercase text-slate-800 dark:bg-navy-800 dark:text-navy-100 lg:px-5">
+                        <tr
+                            class="border-b border-slate-150 bg-primary/[0.025] text-2xs uppercase tracking-wider text-slate-500 dark:border-slate-700 dark:bg-primary/[0.04] dark:text-navy-300">
+                            <th class="whitespace-nowrap border border-slate-150 px-5 py-4 font-bold dark:border-slate-700">
                                 Image
                             </th>
-                            <th class="whitespace-nowrap bg-slate-200 px-4 py-3 font-semibold uppercase text-slate-800 dark:bg-navy-800 dark:text-navy-100 lg:px-5">
+                            <th class="whitespace-nowrap border border-slate-150 px-5 py-4 font-bold dark:border-slate-700">
                                 Name
                             </th>
-                            <th class="whitespace-nowrap bg-slate-200 px-4 py-3 font-semibold uppercase text-slate-800 dark:bg-navy-800 dark:text-navy-100 lg:px-5">
+                            <th class="whitespace-nowrap border border-slate-150 px-5 py-4 font-bold dark:border-slate-700">
                                 Featured
                             </th>
-                            <th class="whitespace-nowrap bg-slate-200 px-4 py-3 font-semibold uppercase text-slate-800 dark:bg-navy-800 dark:text-navy-100 lg:px-5">
+                            <th class="whitespace-nowrap border border-slate-150 px-5 py-4 font-bold dark:border-slate-700">
                                 SKU
                             </th>
-                            <th class="whitespace-nowrap bg-slate-200 px-4 py-3 font-semibold uppercase text-slate-800 dark:bg-navy-800 dark:text-navy-100 lg:px-5">
+                            <th class="whitespace-nowrap border border-slate-150 px-5 py-4 font-bold dark:border-slate-700">
                                 Category
                             </th>
-                            <th class="whitespace-nowrap bg-slate-200 px-4 py-3 font-semibold uppercase text-slate-800 dark:bg-navy-800 dark:text-navy-100 lg:px-5">
+                            <th class="whitespace-nowrap border border-slate-150 px-5 py-4 font-bold dark:border-slate-700">
                                 Variations
                             </th>
-                            <th class="whitespace-nowrap bg-slate-200 px-4 py-3 font-semibold uppercase text-slate-800 dark:bg-navy-800 dark:text-navy-100 lg:px-5">
+                            <th class="whitespace-nowrap border border-slate-150 px-5 py-4 font-bold dark:border-slate-700">
                                 Base Price
                             </th>
-                            <th class="whitespace-nowrap bg-slate-200 px-4 py-3 font-semibold uppercase text-slate-800 dark:bg-navy-800 dark:text-navy-100 lg:px-5">
-                                Stock (total)
+                            <th class="whitespace-nowrap border border-slate-150 px-5 py-4 font-bold dark:border-slate-700">
+                                Stock (Total)
                             </th>
-                            <th class="whitespace-nowrap bg-slate-200 px-4 py-3 font-semibold uppercase text-slate-800 dark:bg-navy-800 dark:text-navy-100 lg:px-5">
+                            <th class="whitespace-nowrap border border-slate-150 px-5 py-4 font-bold dark:border-slate-700">
                                 Status
                             </th>
-                            <th class="whitespace-nowrap rounded-r-lg bg-slate-200 px-3 py-3 font-semibold uppercase text-slate-800 dark:bg-navy-800 dark:text-navy-100 lg:px-5">
+                            <th class="whitespace-nowrap border border-slate-150 px-5 py-4 text-right font-bold dark:border-slate-700">
+                                Actions
                             </th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr v-for="p in products.data" :key="p.id">
-                            <td class="whitespace-nowrap rounded-l-lg px-4 py-3 sm:px-5">
-                                <div class="avatar size-10">
+
+                    <tbody class="divide-y divide-slate-150 dark:divide-slate-150/15">
+                        <tr v-for="p in products.data" :key="p.id"
+                            class="transition-colors hover:bg-primary/[0.025] dark:hover:bg-primary/[0.05]">
+                            <td class="whitespace-nowrap border border-slate-150 px-5 py-3 dark:border-slate-700">
+                                <div
+                                    class="size-10 overflow-hidden rounded-lg border border-slate-200 bg-slate-50 dark:border-navy-500 dark:bg-navy-800">
                                     <img v-if="p.primary_image_url" :src="p.primary_image_url" :alt="p.name"
-                                        class="rounded-lg object-cover" />
+                                        class="h-full w-full object-cover" />
+
                                     <div v-else
-                                        class="is-initial rounded-lg bg-slate-150 text-slate-500 dark:bg-navy-500 dark:text-navy-100">
-                                        <span class="text-xs-plus">{{ p.name.charAt(0) }}</span>
+                                        class="flex h-full w-full items-center justify-center bg-slate-100 text-slate-500 dark:bg-navy-700 dark:text-navy-200">
+                                        <span class="text-sm font-semibold">
+                                            {{ p.name.charAt(0) }}
+                                        </span>
                                     </div>
                                 </div>
                             </td>
-                            <td class="px-4 py-3 sm:px-5">
-                                <p class="font-medium text-slate-700 dark:text-navy-100">
+
+                            <td class="border border-slate-150 px-5 py-3 dark:border-slate-700">
+                                <p class="min-w-[140px] font-semibold text-slate-700 dark:text-navy-100">
                                     {{ p.name }}
                                 </p>
                             </td>
-                            <td class="whitespace-nowrap px-4 py-3 sm:px-5">
-                                <div v-if="p.is_featured"
-                                    class="badge space-x-2.5 rounded-full bg-success/10 text-success dark:bg-success/15">
-                                    <span>Yes</span>
-                                </div>
-                                <div v-else
-                                    class="badge space-x-2.5 rounded-full bg-error/10 text-error dark:bg-error/15">
-                                    <span>No</span>
-                                </div>
+
+                            <td class="whitespace-nowrap border border-slate-150 px-5 py-3 dark:border-slate-700">
+                                <span :class="p.is_featured
+                                    ? 'bg-success/10 text-success'
+                                    : 'bg-slate-100 text-slate-500 dark:bg-navy-600 dark:text-navy-300'"
+                                    class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold">
+                                    {{ p.is_featured ? 'Yes' : 'No' }}
+                                </span>
                             </td>
-                            <td class="whitespace-nowrap px-4 py-3 text-slate-600 dark:text-navy-200 sm:px-5">
-                                <p class="text-slate-500 dark:text-navy-300">
-                                    {{ p.sku }}
-                                </p>
+
+                            <td
+                                class="whitespace-nowrap border border-slate-150 px-5 py-3 font-mono text-xs text-slate-600 dark:border-slate-700 dark:text-navy-200">
+                                {{ p.sku }}
                             </td>
-                            <td class="whitespace-nowrap px-4 py-3 text-slate-600 dark:text-navy-200 sm:px-5">
+
+                            <td
+                                class="whitespace-nowrap border border-slate-150 px-5 py-3 text-slate-600 dark:border-slate-700 dark:text-navy-200">
                                 {{ p.category?.name ?? '—' }}
                             </td>
-                            <td class="whitespace-nowrap px-4 py-3 text-slate-600 dark:text-navy-200 sm:px-5">
+
+                            <td
+                                class="whitespace-nowrap border border-slate-150 px-5 py-3 text-slate-600 dark:border-slate-700 dark:text-navy-200">
                                 {{ p.variations.length }}
                             </td>
-                            <td class="whitespace-nowrap px-4 py-3 text-slate-600 dark:text-navy-200 sm:px-5">
+
+                            <td
+                                class="whitespace-nowrap border border-slate-150 px-5 py-3 font-semibold text-slate-700 dark:border-slate-700 dark:text-navy-100">
                                 KES {{ p.price }}
                             </td>
-                            <td class="whitespace-nowrap px-4 py-3 sm:px-5">
-                                <span class="font-medium"
-                                    :class="totalStock(p) === 0 ? 'text-error' : 'text-slate-700 dark:text-navy-100'">
+
+                            <td class="whitespace-nowrap border border-slate-150 px-5 py-3 dark:border-slate-700">
+                                <span class="font-semibold" :class="totalStock(p) === 0
+                                    ? 'text-error'
+                                    : 'text-slate-700 dark:text-navy-100'">
                                     {{ totalStock(p) }}
                                 </span>
                             </td>
-                            <td class="whitespace-nowrap px-4 py-3 sm:px-5">
-                                <span v-if="p.is_active"
-                                    class="badge h-6 rounded-full bg-success/10 px-2.5 text-success dark:bg-success/15">
-                                    Active
-                                </span>
-                                <span v-else
-                                    class="badge h-6 rounded-full bg-slate-150 px-2.5 text-slate-500 dark:bg-navy-500 dark:text-navy-300">
-                                    Inactive
+
+                            <td class="whitespace-nowrap border border-slate-150 px-5 py-3 dark:border-slate-700">
+                                <span :class="p.is_active
+                                    ? 'bg-success/10 text-success'
+                                    : 'bg-slate-100 text-slate-500 dark:bg-navy-600 dark:text-navy-300'"
+                                    class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold">
+                                    {{ p.is_active ? 'Active' : 'Inactive' }}
                                 </span>
                             </td>
-                            <td class="whitespace-nowrap rounded-r-lg px-4 py-3 text-right sm:px-5">
+
+                            <td
+                                class="whitespace-nowrap border border-slate-150 px-5 py-3 text-right dark:border-slate-700">
                                 <Link :href="admin_products_edit.url(p.id)"
-                                    class="btn bg-primary/10 font-medium text-primary hover:bg-primary/20 focus:bg-primary/20 active:bg-primary/25 dark:bg-accent-light/10 dark:text-accent-light dark:hover:bg-accent-light/20 dark:focus:bg-accent-light/20 dark:active:bg-accent-light/25">
+                                    class="inline-flex h-9 items-center justify-center rounded-lg border border-primary/20 bg-primary/[0.06] px-3 text-xs font-semibold text-primary transition-colors hover:bg-primary/15 focus:bg-primary/15 active:bg-primary/20 dark:border-accent-light/20 dark:bg-accent-light/[0.06] dark:text-accent-light dark:hover:bg-accent-light/15">
                                     Edit
                                 </Link>
                             </td>
                         </tr>
 
                         <tr v-if="products.data.length === 0">
-                            <td colspan="9" class="px-4 py-8 text-center text-slate-500 dark:text-navy-300">
+                            <td colspan="10"
+                                class="border border-slate-150 px-5 py-10 text-center text-sm text-slate-400 dark:border-slate-700 dark:text-navy-300">
                                 No products found.
                             </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
-
-            <nav v-if="products.links.length > 3"
-                class="flex flex-wrap items-center justify-end gap-2 border-t border-slate-150 p-4 dark:border-navy-600">
-                <template v-for="(link, i) in products.links" :key="i">
-                    <Link v-if="link.url" :href="link.url"
-                        class="btn h-8 min-w-[2rem] rounded-lg px-3 text-xs-plus font-medium" :class="link.active
-                            ? 'bg-primary text-white dark:bg-accent'
-                            : 'border border-slate-300 text-slate-600 hover:bg-slate-100 dark:border-navy-450 dark:text-navy-200 dark:hover:bg-navy-600'
-                            " v-html="link.label" />
-                    <span v-else
-                        class="btn h-8 min-w-[2rem] cursor-not-allowed rounded-lg border border-slate-200 px-3 text-xs-plus font-medium text-slate-400 dark:border-navy-600 dark:text-navy-500"
-                        v-html="link.label" />
-                </template>
-            </nav>
+            
+            <!-- Replaced the broken <nav> with the correct prop -->
+            <Pagination :paginator="products" />
+            
         </div>
     </div>
 </template>

@@ -17,11 +17,12 @@ class AttributeController extends Controller
 {
     public function __construct(private SlugService $slugs) {}
 
-    public function index(): Response
+        public function index(): Response
     {
         $attributes = ProductAttribute::with(['values' => fn ($q) => $q->orderBy('sort_order')])
             ->orderBy('name')
-            ->get();
+            ->paginate(10)
+            ->withQueryString();
 
         return Inertia::render('Admin/Attributes/Index', [
             'attributes' => $attributes,

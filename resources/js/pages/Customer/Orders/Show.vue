@@ -438,26 +438,26 @@ const formatCurrency = (amount: number) =>
 
 
                     <div
-                        class="overflow-hidden rounded-2xl border border-slate-150 bg-white shadow-sm dark:border-slate-150/15 dark:bg-navy-800">
+                        class="overflow-hidden rounded-2xl border border-slate-150 bg-white shadow-sm dark:border-slate-700 dark:bg-navy-800">
                         <div class="overflow-x-auto">
                             <table class="w-full border-collapse text-left">
                                 <thead>
                                     <tr
-                                        class="border-b border-slate-150 bg-primary/[0.025] text-2xs uppercase tracking-wider text-slate-500 dark:border-slate-150/15 dark:bg-primary/[0.04] dark:text-navy-300">
+                                        class="border-b border-slate-150 bg-primary/[0.025] text-2xs uppercase tracking-wider text-slate-500 dark:border-slate-700 dark:bg-primary/[0.04] dark:text-navy-300">
                                         <th
-                                            class="border border-slate-150 px-5 py-4 font-bold dark:border-slate-150/15">
+                                            class="border border-slate-150 px-5 py-4 font-bold dark:border-slate-700">
                                             Item &amp; Attributes</th>
                                         <th
-                                            class="whitespace-nowrap border border-slate-150 px-4 py-4 text-center font-bold dark:border-slate-150/15">
+                                            class="whitespace-nowrap border border-slate-150 px-4 py-4 text-center font-bold dark:border-slate-700">
                                             Qty</th>
                                         <th
-                                            class="whitespace-nowrap border border-slate-150 px-4 py-4 text-right font-bold dark:border-slate-150/15">
+                                            class="whitespace-nowrap border border-slate-150 px-4 py-4 text-right font-bold dark:border-slate-700">
                                             Unit Price</th>
                                         <th
-                                            class="whitespace-nowrap border border-slate-150 px-4 py-4 text-right font-bold dark:border-slate-150/15">
+                                            class="whitespace-nowrap border border-slate-150 px-4 py-4 text-right font-bold dark:border-slate-700">
                                             Total</th>
                                         <th
-                                            class="whitespace-nowrap border border-slate-150 px-5 py-4 text-center font-bold dark:border-slate-150/15">
+                                            class="whitespace-nowrap border border-slate-150 px-5 py-4 text-center font-bold dark:border-slate-700">
                                             Action</th>
                                     </tr>
                                 </thead>
@@ -467,7 +467,7 @@ const formatCurrency = (amount: number) =>
                                         class="transition-colors duration-200 hover:bg-primary/[0.025] dark:hover:bg-primary/[0.05]">
                                         <!-- Product details -->
                                         <td
-                                            class="min-w-[220px] border border-slate-150 px-5 py-4 dark:border-slate-150/15">
+                                            class="min-w-[220px] border border-slate-150 px-5 py-4 dark:border-slate-700">
                                             <p class="font-semibold text-slate-900 dark:text-navy-50">
                                                 {{ item.product_name }}
                                             </p>
@@ -487,7 +487,7 @@ const formatCurrency = (amount: number) =>
 
                                         <!-- Quantity -->
                                         <td
-                                            class="whitespace-nowrap border border-slate-150 px-4 py-4 text-center dark:border-slate-150/15">
+                                            class="whitespace-nowrap border border-slate-150 px-4 py-4 text-center dark:border-slate-700">
                                             <span
                                                 class="badge space-x-2.5 rounded-full bg-warning/10 text-warning dark:bg-warning/15">
                                                 {{ item.quantity }}
@@ -496,19 +496,19 @@ const formatCurrency = (amount: number) =>
 
                                         <!-- Unit price -->
                                         <td
-                                            class="whitespace-nowrap border border-slate-150 px-4 py-4 text-right font-medium tabular-nums text-slate-600 dark:border-slate-150/15 dark:text-navy-200">
+                                            class="whitespace-nowrap border border-slate-150 px-4 py-4 text-right font-medium tabular-nums text-slate-600 dark:border-slate-700 dark:text-navy-200">
                                             {{ formatCurrency(item.unit_price) }}
                                         </td>
 
                                         <!-- Line total -->
                                         <td
-                                            class="whitespace-nowrap border border-slate-150 px-4 py-4 text-right font-bold tabular-nums text-slate-900 dark:border-slate-150/15 dark:text-navy-50">
+                                            class="whitespace-nowrap border border-slate-150 px-4 py-4 text-right font-bold tabular-nums text-slate-900 dark:border-slate-700 dark:text-navy-50">
                                             {{ formatCurrency(item.line_total) }}
                                         </td>
 
                                         <!-- Action -->
                                         <td
-                                            class="whitespace-nowrap border border-slate-150 px-5 py-4 text-center dark:border-slate-150/15">
+                                            class="whitespace-nowrap border border-slate-150 px-5 py-4 text-center dark:border-slate-700">
                                             <button v-if="item.can_review" type="button"
                                                 class="inline-flex items-center justify-center rounded-lg border border-slate-150/20 bg-primary/5 px-3.5 py-2 text-xs font-semibold text-primary transition-all duration-200 hover:border-slate-150 hover:bg-primary hover:text-white hover:shadow-sm dark:border-accent-light/20 dark:bg-accent-light/10 dark:text-accent-light dark:hover:border-accent dark:hover:bg-accent dark:hover:text-white"
                                                 @click="openReview(item)">

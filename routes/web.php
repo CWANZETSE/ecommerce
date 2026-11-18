@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\AttributeController;
 use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\InventoryController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\ProductController;
@@ -22,8 +23,8 @@ use App\Http\Controllers\Storefront\CartController;
 use App\Http\Controllers\Storefront\CheckoutController;
 use App\Http\Controllers\Storefront\CouponController;
 use App\Http\Controllers\Storefront\HomeController;
-use App\Http\Controllers\Storefront\ProductPageController;
 use App\Http\Controllers\Storefront\ShopController;
+use App\Http\Controllers\Storefront\SingleProductPageController;
 use App\Http\Controllers\Webhooks\MpesaCallbackController;
 use App\Http\Middleware\EnsureUserIsAdmin;
 use App\Http\Middleware\EnsureUserIsCustomer;
@@ -57,7 +58,7 @@ Route::get('/', HomeController::class)->name('home');
 Route::get('/customer/products', [ShopController::class, 'index'])
     ->name('customer_products_index');
 
-Route::get('/customer/products/{slug}', [ProductPageController::class, 'show'])
+Route::get('/customer/products/{slug}', [SingleProductPageController::class, 'show'])
     ->name('customer_products_show');
 
 /*
@@ -135,7 +136,7 @@ Route::middleware(['auth', 'verified', EnsureUserIsAdmin::class])
     ->group(function () {
 
         // Dashboard
-        Route::get('/dashboard', AdminDashboardController::class)->name('dashboard');
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
         Route::get('/reports', [ReportController::class, 'index'])->name('reports_index');
         Route::get('/reports/export/sales', [ReportController::class, 'exportSales'])->name('reports_export_sales');

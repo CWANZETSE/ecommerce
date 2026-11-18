@@ -12,17 +12,22 @@ use Inertia\Response;
 
 class BannerController extends Controller
 {
-    public function index(): Response
+        public function index(): Response
     {
-        return Inertia::render('Admin/Banners/Index', [
-            'banners' => Banner::orderBy('sort_order')->get()->map(fn (Banner $b) => [
+        $banners = Banner::orderBy('sort_order')
+            ->paginate(9)
+            ->withQueryString()
+            ->through(fn (Banner $b) => [
                 'id' => $b->id,
                 'title' => $b->title,
                 'subtitle' => $b->subtitle,
-                'image_url' => $b->image_url,          // accessor → Storage::url()
+                'image_url' => $b->image_url, // accessor → Storage::url()
                 'is_active' => $b->is_active,
                 'sort_order' => $b->sort_order,
-            ])->values(),
+            ]);
+
+        return Inertia::render('Admin/Banners/Index', [
+            'banners' => $banners,
         ]);
     }
 

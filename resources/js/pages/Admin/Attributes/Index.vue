@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Head, router, useForm } from '@inertiajs/vue3';
+import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import type { PageProps } from '@/types';
 import {
@@ -10,6 +10,7 @@ import {
     admin_attributes_values_destroy,
     admin_attributes_values_store,
 } from '@/routes';
+import Pagination from '@/components/Pagination.vue';
 
 interface AttributeValue { id: string; value: string }
 interface Attribute {
@@ -19,7 +20,16 @@ interface Attribute {
     values: AttributeValue[];
 }
 
-const props = defineProps<PageProps & { attributes: Attribute[] }>();
+interface Paginator<T> {
+    data: T[];
+    links: { url: string | null; label: string; active: boolean }[];
+    current_page: number;
+    from: number | null;
+    to: number | null;
+    total: number;
+}
+
+const props = defineProps<PageProps & { attributes: Paginator<Attribute> }>();
 
 // New attribute
 const newAttr = useForm({ name: '' });
@@ -117,8 +127,9 @@ function deleteAttribute(attribute: Attribute) {
             </div>
 
             <div class="space-y-4">
+                <!-- Added .data here to loop through the paginated items -->
                 <div
-                    v-for="attribute in props.attributes"
+                    v-for="attribute in props.attributes.data"
                     :key="attribute.id"
                     class="card overflow-hidden"
                 >
@@ -189,10 +200,17 @@ function deleteAttribute(attribute: Attribute) {
                     </div>
                 </div>
 
-                <div v-if="props.attributes.length === 0" class="card px-4 py-8 text-center text-slate-400 dark:text-navy-300">
+                <!-- Check length of .data -->
+                <div v-if="props.attributes.data.length === 0" class="card px-4 py-8 text-center text-slate-400 dark:text-navy-300">
                     No attributes yet. Create one to start building variations.
                 </div>
             </div>
+
+            <!-- Add pagination wrapper -->
+            <div class="mt-6 overflow-hidden rounded-2xl border border-slate-150 bg-white shadow-sm dark:border-slate-700 dark:bg-navy-800">
+                <Pagination :paginator="attributes" />
+            </div>
+            
         </div>
     </div>
 </template>

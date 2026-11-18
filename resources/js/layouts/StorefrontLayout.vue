@@ -13,7 +13,9 @@ import {
     MapPin,
     Star,
     LogOut,
-    User
+    User,
+    Sun,
+    Moon
 } from '@lucide/vue';
 import { admin_dashboard, customer_orders_index, customer_products_index, home } from '@/routes';
 
@@ -78,6 +80,16 @@ function logout() {
 
 /* Category dropdown */
 const categoriesOpen = ref(false);
+
+/* -------- Theme -------- */
+const isDark = ref(false);
+
+function toggleTheme() {
+    const next = !document.documentElement.classList.contains('dark');
+    document.documentElement.classList.toggle('dark', next);
+    localStorage.setItem('theme', next ? 'dark' : 'light');
+    isDark.value = next;
+}
 </script>
 
 <template>
@@ -85,13 +97,13 @@ const categoriesOpen = ref(false);
 
         <!-- Top utility bar -->
         <div
-            class="hidden border-b border-slate-150 bg-slate-100/60 text-xs text-slate-400 dark:border-navy-600 dark:bg-navy-900/50 dark:text-navy-300 md:block">
+            class="border-b border-slate-150 bg-slate-100/60 text-xs text-slate-400 dark:border-navy-600 dark:bg-navy-750 dark:text-navy-300">
             <div class="mx-auto flex h-9 w-full max-w-[1400px] items-center justify-between px-4 sm:px-6 lg:px-8">
-                <p>Free delivery on orders above KES 5,000</p>
+                <p></p>
                 <div class="flex items-center gap-4">
-                    <Link href="/customer/orders"
-                        class="transition-colors hover:text-primary dark:hover:text-accent-light">Track order</Link>
-                    <Link href="/contact" class="transition-colors hover:text-primary dark:hover:text-accent-light">Help
+
+                    <Link href="/contact" class="transition-colors hover:text-primary dark:hover:text-accent-light">
+                        Help? Call 0720705815
                     </Link>
                 </div>
             </div>
@@ -99,7 +111,7 @@ const categoriesOpen = ref(false);
 
         <!-- Sticky Header -->
         <header
-            class="sticky top-0 z-40 border-b border-slate-150 bg-white/90 backdrop-blur-md dark:border-navy-600 dark:bg-navy-750/90">
+            class="sticky top-0 z-40 border-b border-slate-150 bg-white/90 backdrop-blur-md dark:border-navy-600 dark:bg-navy-750 dark:text-navy-300">
             <div class="mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-8">
                 <div class="flex h-16 items-center gap-3">
 
@@ -135,6 +147,12 @@ const categoriesOpen = ref(false);
 
                     <!-- Right actions -->
                     <div class="ml-auto flex items-center gap-3">
+                        <button type="button"
+                            class="btn flex size-10 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-slate-100 p-0 text-slate-700 transition-colors hover:bg-slate-200 dark:border-navy-500 dark:bg-navy-700 dark:text-navy-100 dark:hover:bg-accent-light/20"
+                            :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'" @click="toggleTheme">
+                            <Sun v-if="!isDark" class="size-5 text-amber-400" />
+                            <Moon v-else class="size-5 text-amber-400" />
+                        </button>
                         <Link href="/cart"
                             class="relative flex size-10 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-slate-100 text-slate-700 transition-colors hover:bg-slate-200 dark:border-navy-500 dark:bg-navy-700 dark:text-navy-100"
                             title="Shopping Cart">
@@ -170,7 +188,7 @@ const categoriesOpen = ref(false);
                                     @mouseleave="accountOpen = false">
 
                                     <Link href="/customer/account" v-if="auth?.user?.role != 'admin'"
-                                        class="flex items-center gap-2.5 px-4 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-100 dark:text-navy-100 dark:hover:bg-navy-700">
+                                        class="flex items-center gap-2.5 px-4 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-100 dark:text-navy-100 dark:hover:bg-accent-light/20">
                                         <div
                                             class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-secondary/10 dark:bg-secondary-light/15">
                                             <span class="text-sm">✏️</span>
@@ -178,7 +196,7 @@ const categoriesOpen = ref(false);
                                     </Link>
 
                                     <Link href="/customer/orders" v-if="auth?.user?.role != 'admin'"
-                                        class="flex items-center gap-2.5 px-4 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-100 dark:text-navy-100 dark:hover:bg-navy-700">
+                                        class="flex items-center gap-2.5 px-4 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-100 dark:text-navy-100 dark:hover:bg-accent-light/20">
                                         <div
                                             class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-info/10 dark:bg-info/15">
                                             <Package class="size-4.5 text-info" />
@@ -186,7 +204,7 @@ const categoriesOpen = ref(false);
                                     </Link>
 
                                     <Link href="/customer/addresses" v-if="auth?.user?.role != 'admin'"
-                                        class="flex items-center gap-2.5 px-4 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-100 dark:text-navy-100 dark:hover:bg-navy-700">
+                                        class="flex items-center gap-2.5 px-4 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-100 dark:text-navy-100 dark:hover:bg-accent-light/20">
                                         <div
                                             class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-warning/10 dark:bg-warning/15">
                                             <span class="text-sm">🧭</span>
@@ -194,7 +212,7 @@ const categoriesOpen = ref(false);
                                     </Link>
 
                                     <Link href="/customer/reviews" v-if="auth?.user?.role != 'admin'"
-                                        class="flex items-center gap-2.5 px-4 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-100 dark:text-navy-100 dark:hover:bg-navy-700">
+                                        class="flex items-center gap-2.5 px-4 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-100 dark:text-navy-100 dark:hover:bg-accent-light/20">
                                         <div
                                             class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-warning/10 dark:bg-warning/15">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="size-4.5 text-warning"
@@ -208,7 +226,7 @@ const categoriesOpen = ref(false);
                                     </Link>
 
                                     <Link v-if="auth?.user?.role === 'admin'" :href="admin_dashboard.url()"
-                                        class="flex items-center gap-2.5 px-4 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-100 dark:text-navy-100 dark:hover:bg-navy-700">
+                                        class="flex items-center gap-2.5 px-4 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-100 dark:text-navy-100 dark:hover:bg-accent-light/20">
                                         <div
                                             class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-slate-100 dark:bg-navy-700">
                                             <Settings class="size-4.5 text-slate-400" />
@@ -260,7 +278,8 @@ const categoriesOpen = ref(false);
             </div>
 
             <!-- Secondary Navbar (Categories) -->
-            <nav class="border-t border-slate-150 bg-white/50 dark:border-navy-600 dark:bg-navy-750/50 md:block">
+            <nav
+                class="border-t border-slate-150 bg-white/50 dark:border-navy-600 dark:bg-navy-900 dark:hover:bg-accent-light/20 dark:text-navy-100 md:block">
                 <div class="mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-8">
                     <div
                         class="scrollbar-none flex h-11 items-center gap-2 overflow-x-auto whitespace-nowrap text-sm font-medium">
@@ -286,14 +305,14 @@ const categoriesOpen = ref(false);
 
                         <Link :href="customer_products_index.url()"
                             class="shrink-0 rounded-lg px-3 py-1.5 transition-colors"
-                            :class="currentPath === '/customer/products' ? 'bg-primary/10 font-semibold text-primary dark:bg-accent-light/10 dark:text-accent-light' : 'text-slate-600 hover:bg-slate-150 dark:text-navy-200 dark:hover:bg-navy-700'">
+                            :class="currentPath === '/customer/products' ? 'bg-primary/10 font-semibold text-primary dark:bg-accent-light/10 dark:text-accent-light' : 'text-slate-600 hover:bg-slate-150 dark:text-navy-200 dark:hover:bg-accent-light/20'">
                             All Products
                         </Link>
 
                         <template v-if="categories.length">
                             <template v-for="cat in categories.slice(0, 6)" :key="cat.id">
                                 <Link :href="categoryHref(cat.slug)"
-                                    class="shrink-0 rounded-lg px-3 py-1.5 text-slate-600 transition-colors hover:bg-slate-150 hover:text-slate-900 dark:text-navy-200 dark:hover:bg-navy-700 dark:hover:text-navy-50">
+                                    class="shrink-0 rounded-lg px-3 py-1.5 text-slate-600 transition-colors hover:bg-slate-150 hover:text-slate-900 dark:text-navy-200 dark:hover:bg-accent-light/20 dark:hover:text-navy-50">
                                     {{ cat.name }}
                                 </Link>
                             </template>
@@ -311,7 +330,7 @@ const categoriesOpen = ref(false);
                                     @mouseleave="categoriesOpen = false">
                                     <Link v-for="cat in categories.slice(6)" :key="cat.id"
                                         :href="categoryHref(cat.slug)"
-                                        class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 dark:text-navy-100 dark:hover:bg-navy-700">
+                                        class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 dark:text-navy-100 dark:hover:bg-accent-light/20">
                                         {{ cat.name }}
                                     </Link>
                                 </div>
@@ -344,28 +363,28 @@ const categoriesOpen = ref(false);
             aria-hidden="true"></div>
 
         <!-- Drawer Panel -->
-        <div class="fixed inset-y-0 left-0 z-50 flex w-80 max-w-[85vw] flex-col bg-white shadow-xl transition-transform duration-300 ease-in-out dark:bg-navy-750 lg:hidden"
+        <div class="fixed inset-y-0 left-0 z-50 flex w-80 max-w-[85vw] flex-col bg-white shadow-xl transition-transform duration-300 ease-in-out dark:border-navy-600 dark:bg-navy-750 dark:text-navy-300 lg:hidden"
             :class="mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'">
             <div class="flex items-center justify-between border-b border-slate-150 p-4 dark:border-navy-600">
                 <span class="font-bold text-slate-800 dark:text-navy-50">Menu</span>
                 <button type="button"
-                    class="rounded-lg p-2 text-slate-500 hover:bg-slate-100 dark:text-navy-300 dark:hover:bg-navy-700"
+                    class="rounded-lg p-2 text-slate-500 hover:bg-slate-100 dark:border-navy-600 dark:bg-navy-750 dark:text-navy-300"
                     @click="mobileMenuOpen = false">
                     <X class="size-5" />
                 </button>
             </div>
 
-            <div class="flex-1 overflow-y-auto">
+            <div class="flex-1 overflow-y-auto ">
                 <template v-if="auth?.user">
                     <div
-                        class="flex items-center gap-3 border-b border-slate-150 bg-slate-50 p-4 dark:border-navy-600 dark:bg-navy-800/50">
+                        class="flex items-center gap-3 border-b border-slate-150 bg-slate-50 p-4 dark:border-navy-600 dark:bg-navy-750 dark:text-navy-300">
                         <div
                             class="flex size-12 shrink-0 items-center justify-center rounded-full bg-primary/10 text-lg font-bold text-primary dark:bg-accent-light/10 dark:text-accent-light">
                             {{ firstName.charAt(0).toUpperCase() }}
                         </div>
                         <div class="min-w-0 flex-1">
                             <p class="truncate text-sm font-semibold text-slate-800 dark:text-navy-50">{{ auth.user.name
-                                }}</p>
+                            }}</p>
                             <p class="truncate text-xs text-slate-500 dark:text-navy-300">{{ auth.user.email }}</p>
                         </div>
                     </div>
@@ -376,29 +395,32 @@ const categoriesOpen = ref(false);
                             My Account
                         </p>
 
-                        <Link href="/customer/account" @click="mobileMenuOpen = false" v-if="auth?.user?.role != 'admin'"
-                            class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 dark:text-navy-100 dark:hover:bg-navy-700">
+                        <Link href="/customer/account" @click="mobileMenuOpen = false"
+                            v-if="auth?.user?.role != 'admin'"
+                            class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 dark:text-navy-100 dark:hover:bg-accent-light/20">
                             <User class="size-4.5 text-slate-400" /> My Account
                         </Link>
 
                         <Link href="/customer/orders" @click="mobileMenuOpen = false" v-if="auth?.user?.role != 'admin'"
-                            class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 dark:text-navy-100 dark:hover:bg-navy-700">
+                            class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 dark:text-navy-100 dark:hover:bg-accent-light/20">
                             <Package class="size-4.5 text-info" /> My Orders
                         </Link>
 
-                        <Link href="/customer/addresses" @click="mobileMenuOpen = false" v-if="auth?.user?.role != 'admin'"
-                            class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 dark:text-navy-100 dark:hover:bg-navy-700">
+                        <Link href="/customer/addresses" @click="mobileMenuOpen = false"
+                            v-if="auth?.user?.role != 'admin'"
+                            class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 dark:text-navy-100 dark:hover:bg-accent-light/20">
                             <MapPin class="size-4.5 text-warning" /> Addresses
                         </Link>
 
-                        <Link href="/customer/reviews" @click="mobileMenuOpen = false" v-if="auth?.user?.role != 'admin'"
-                            class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 dark:text-navy-100 dark:hover:bg-navy-700">
+                        <Link href="/customer/reviews" @click="mobileMenuOpen = false"
+                            v-if="auth?.user?.role != 'admin'"
+                            class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 dark:text-navy-100 dark:hover:bg-accent-light/20">
                             <Star class="size-4.5 text-warning" /> My Reviews
                         </Link>
 
                         <Link v-if="auth.user.role === 'admin'" :href="admin_dashboard.url()"
                             @click="mobileMenuOpen = false"
-                            class="mt-2 flex items-center gap-3 rounded-lg bg-slate-100 px-3 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-200 dark:bg-navy-800 dark:text-navy-100 dark:hover:bg-navy-700">
+                            class="mt-2 flex items-center gap-3 rounded-lg bg-slate-100 px-3 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-200 dark:border-navy-600 dark:bg-navy-750 dark:text-navy-300">
                             <Settings class="size-4.5 text-slate-500" /> Admin Panel
                         </Link>
                     </nav>
@@ -462,7 +484,10 @@ const categoriesOpen = ref(false);
                     </div>
 
                     <div>
-                        <h3 class="mb-3 text-sm font-semibold text-slate-700 dark:text-navy-200">Shop</h3>
+                        <h3
+                            class="mb-3 text-sm font-semibold text-slate-700 dark:text-navy-200 dark:bg-accent-light/20">
+                            Shop
+                        </h3>
                         <ul class="space-y-2">
                             <li>
                                 <Link href="/customer/products" class="hover:underline">All products</Link>

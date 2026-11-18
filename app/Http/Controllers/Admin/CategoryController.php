@@ -16,26 +16,42 @@ class CategoryController extends Controller
 {
     public function __construct(private CategoryService $categories) {}
 
-    public function index(): Response
-    {
-        $this->authorize('viewAny', Category::class);
+   
+public function index(): Response
+{
+    $this->authorize('viewAny', Category::class);
 
-        $roots = Category::roots()
-            ->with(['children' => fn ($q) => $q->withCount('products')->orderBy('sort_order')])
-            ->withCount('products')
-            ->orderBy('sort_order')
-            ->get();
+    $roots = Category::roots()
+        ->with([
+            'children' => fn ($q) => $q
+                ->withCount('products')
+                ->orderBy('sort_order'),
+        ])
+        ->withCount('products')
+        ->orderBy('sort_order')
+        ->paginate(10)
+        ->withQueryString()
+        ->through(function (Category $root) {
+            $root->setAttribute(
+                'image_url',
+                $root->image_path ? Storage::url($root->image_path) : null
+            );
 
-        // Attach public image URLs for both roots and children
-        $roots->each(function (Category $root) {
-            $root->setAttribute('image_url', $root->image_path ? Storage::url($root->image_path) : null);
             $root->children->each(function (Category $child) {
-                $child->setAttribute('image_url', $child->image_path ? Storage::url($child->image_path) : null);
+                $child->setAttribute(
+                    'image_url',
+                    $child->image_path ? Storage::url($child->image_path) : null
+                );
             });
+
+            return $root;
         });
 
-        return Inertia::render('Admin/Categories/Index', ['categories' => $roots]);
-    }
+    return Inertia::render('Admin/Categories/Index', [
+        'categories' => $roots,
+    ]);
+}
+
 
     public function create(): Response
     {

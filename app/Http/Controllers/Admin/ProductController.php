@@ -25,45 +25,52 @@ class ProductController extends Controller
         private ImageService $images,
     ) {}
 
-    public function index(Request $request): Response
-    {
-        $this->authorize('viewAny', Product::class);
+    
+public function index(Request $request): Response
+{
+    $this->authorize('viewAny', Product::class);
 
-        $products = Product::query()
-            ->with(['category:id,name', 'brand:id,name', 'primaryImage', 'variations:id,product_id,stock_quantity'])
-            ->when($request->filled('search'), fn ($q) => $q->where(function ($q) use ($request) {
-                $q->where('name', 'like', "%{$request->search}%")
-                    ->orWhere('sku', 'like', "%{$request->search}%");
-            }))
-            ->when($request->filled('category'), fn ($q) => $q->where('category_id', $request->category))
-            ->when($request->filled('status'), fn ($q) => $q->where('is_active', $request->status === 'active'))
-            ->latest()
-            ->paginate(20)
-            ->withQueryString()
-            ->through(fn (Product $p) => [
-                'id' => $p->id,
-                'name' => $p->name,
-                'sku' => $p->sku,
-                'is_active' => $p->is_active,
-                'is_featured' => $p->is_featured,
-                'category' => $p->category ? [
-                    'id' => $p->category->id,
-                    'name' => $p->category->name,
-                ] : null,
-                'primary_image_url' => $p->primary_image_url,   // accessor → Storage::url()
-                'variations' => $p->variations->map(fn ($v) => [
-                    'id' => $v->id,
-                    'product_id' => $v->product_id,
-                    'stock_quantity' => (int) $v->stock_quantity,
-                ])->values(),
-            ]);
-
-        return Inertia::render('Admin/Products/Index', [
-            'products' => $products,
-            'categories' => Category::select('id', 'name')->orderBy('name')->get(),
-            'filters' => $request->only(['search', 'category', 'status']),
+    $products = Product::query()
+        ->with([
+            'category:id,name',
+            'brand:id,name',
+            'primaryImage',
+            'variations:id,product_id,stock_quantity',
+        ])
+        ->when($request->filled('search'), fn ($q) => $q->where(function ($q) use ($request) {
+            $q->where('name', 'like', "%{$request->search}%")
+                ->orWhere('sku', 'like', "%{$request->search}%");
+        }))
+        ->when($request->filled('category'), fn ($q) => $q->where('category_id', $request->category))
+        ->when($request->filled('status'), fn ($q) => $q->where('is_active', $request->status === 'active'))
+        ->latest()
+        ->paginate(10)
+        ->withQueryString()
+        ->through(fn (Product $p) => [
+            'id' => $p->id,
+            'name' => $p->name,
+            'sku' => $p->sku,
+            'is_active' => $p->is_active,
+            'is_featured' => $p->is_featured,
+            'category' => $p->category ? [
+                'id' => $p->category->id,
+                'name' => $p->category->name,
+            ] : null,
+            'primary_image_url' => $p->primary_image_url,
+            'variations' => $p->variations->map(fn ($v) => [
+                'id' => $v->id,
+                'product_id' => $v->product_id,
+                'stock_quantity' => (int) $v->stock_quantity,
+            ])->values(),
         ]);
-    }
+
+    return Inertia::render('Admin/Products/Index', [
+        'products' => $products,
+        'categories' => Category::select('id', 'name')->orderBy('name')->get(),
+        'filters' => $request->only(['search', 'category', 'status']),
+    ]);
+}
+
 
     public function create(): Response
     {
@@ -153,22 +160,30 @@ class ProductController extends Controller
         ]);
     }
 
-    public function update(UpdateProductRequest $request, Product $product): RedirectResponse
-    {
-        $this->authorize('update', $product);
+  public function update(UpdateProductRequest $request, Product $product): RedirectResponse
+{
+    $this->authorize('update', $product);
 
-        $data = $request->validated();
-        $images = $data['images'] ?? [];
-        unset($data['images']);
-        $defaultCount = collect($data['variations'])
-            ->where('is_default', true)
-            ->count();
+    $data = $request->validated();
 
-        if ($defaultCount !== 1) {
-            throw ValidationException::withMessages([
-                'variations' => 'Exactly one variation must be selected as the default.',
-            ]);
-        }
+    $images = $data['images'] ?? [];
+    unset($data['images']);
+
+    $defaultCount = collect($data['variations'] ?? [])
+        ->filter(fn ($variation) => filter_var(
+            $variation['is_default'] ?? false,
+            FILTER_VALIDATE_BOOLEAN
+        ))
+        ->count();
+
+    if ($defaultCount !== 1) {
+        return back()->withInput()->with(
+            'error',
+            'Exactly one variation must be selected as the default.'
+        );
+    }
+
+    try {
         $this->products->update($product, $data);
 
         foreach ($images as $image) {
@@ -178,7 +193,18 @@ class ProductController extends Controller
         return redirect()
             ->route('admin_products_index')
             ->with('success', 'Product updated successfully.');
+
+    } catch (\Throwable $e) {
+        report($e);
+
+        return back()->withInput()->with(
+            'error',
+            $e instanceof \Illuminate\Validation\ValidationException
+                ? $e->validator->errors()->first()
+                : 'Unable to update product. Please try again.'
+        );
     }
+}
 
     public function destroy(Product $product): RedirectResponse
     {

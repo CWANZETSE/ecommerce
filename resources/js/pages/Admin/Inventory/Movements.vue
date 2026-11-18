@@ -109,79 +109,102 @@ const typeLabel: Record<string, string> = {
                   </div>
             
 
-            <div class="card overflow-hidden">
-               <div class="is-scrollbar-x overflow-x-auto">
-    <table class="is-zebra w-full text-left text-sm">
-        <thead>
-            <tr>
-                <th class="whitespace-nowrap rounded-l-lg bg-slate-200 px-4 py-3 font-semibold uppercase text-slate-800 dark:bg-navy-800 dark:text-navy-100 sm:px-5">
-                    When
-                </th>
-                <th class="whitespace-nowrap bg-slate-200 px-4 py-3 font-semibold uppercase text-slate-800 dark:bg-navy-800 dark:text-navy-100 sm:px-5">
-                    Type
-                </th>
-                <th class="whitespace-nowrap bg-slate-200 px-4 py-3 font-semibold uppercase text-slate-800 dark:bg-navy-800 dark:text-navy-100 sm:px-5">
-                    Change
-                </th>
-                <th class="whitespace-nowrap bg-slate-200 px-4 py-3 font-semibold uppercase text-slate-800 dark:bg-navy-800 dark:text-navy-100 sm:px-5">
-                    Before → After
-                </th>
-                <th class="whitespace-nowrap bg-slate-200 px-4 py-3 font-semibold uppercase text-slate-800 dark:bg-navy-800 dark:text-navy-100 sm:px-5">
-                    Reason
-                </th>
-                <th class="whitespace-nowrap rounded-r-lg bg-slate-200 px-4 py-3 font-semibold uppercase text-slate-800 dark:bg-navy-800 dark:text-navy-100 sm:px-5">
-                    By
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr v-for="m in movements.data" :key="m.id">
-                <td class="whitespace-nowrap rounded-l-lg px-4 py-3 text-xs text-slate-400 dark:text-navy-300 sm:px-5">
-                    {{ m.created_at }}
-                </td>
-                <td class="whitespace-nowrap px-4 py-3 font-medium text-slate-700 dark:text-navy-100 sm:px-5">
-                    {{ typeLabel[m.type] ?? m.type }}
-                </td>
-                <td class="whitespace-nowrap px-4 py-3 font-mono font-semibold sm:px-5" :class="m.quantity_change > 0 ? 'text-success' : 'text-error'">
-                    {{ m.quantity_change > 0 ? '+' : '' }}{{ m.quantity_change }}
-                </td>
-                <td class="whitespace-nowrap px-4 py-3 text-xs text-slate-500 dark:text-navy-300 sm:px-5">
-                    <span class="font-mono">{{ m.previous_quantity }}</span> → <span class="font-mono">{{ m.new_quantity }}</span>
-                </td>
-                <td class="whitespace-nowrap px-4 py-3 text-xs text-slate-500 dark:text-navy-300 sm:px-5">
-                    {{ m.reason ?? '—' }}
-                </td>
-                <td class="whitespace-nowrap rounded-r-lg px-4 py-3 text-xs text-slate-600 dark:text-navy-200 sm:px-5">
-                    {{ m.user?.name ?? 'system' }}
-                </td>
-            </tr>
-            <tr v-if="movements.data.length === 0">
-                <td colspan="6" class="px-4 py-8 text-center text-slate-400 dark:text-navy-300">
-                    No movements recorded yet.
-                </td>
-            </tr>
-        </tbody>
-    </table>
+            
+<div class="overflow-hidden rounded-2xl border border-slate-150 bg-white shadow-sm dark:border-slate-700 dark:bg-navy-800">
+    <div class="overflow-x-auto">
+        <table class="w-full border-collapse text-left text-sm">
+            <thead>
+                <tr class="border-b border-slate-150 bg-primary/[0.025] text-2xs uppercase tracking-wider text-slate-500 dark:border-slate-700 dark:bg-primary/[0.04] dark:text-navy-300">
+                    <th class="whitespace-nowrap border border-slate-150 px-5 py-4 font-bold dark:border-slate-700">
+                        When
+                    </th>
+                    <th class="whitespace-nowrap border border-slate-150 px-5 py-4 font-bold dark:border-slate-700">
+                        Type
+                    </th>
+                    <th class="whitespace-nowrap border border-slate-150 px-5 py-4 font-bold dark:border-slate-700">
+                        Change
+                    </th>
+                    <th class="whitespace-nowrap border border-slate-150 px-5 py-4 font-bold dark:border-slate-700">
+                        Before → After
+                    </th>
+                    <th class="whitespace-nowrap border border-slate-150 px-5 py-4 font-bold dark:border-slate-700">
+                        Reason
+                    </th>
+                    <th class="whitespace-nowrap border border-slate-150 px-5 py-4 font-bold dark:border-slate-700">
+                        By
+                    </th>
+                </tr>
+            </thead>
+
+            <tbody class="divide-y divide-slate-150 dark:divide-slate-150/15">
+                <tr
+                    v-for="m in movements.data"
+                    :key="m.id"
+                    class="transition-colors hover:bg-primary/[0.025] dark:hover:bg-primary/[0.05]"
+                >
+                    <td class="whitespace-nowrap border border-slate-150 px-5 py-3 text-xs text-slate-500 dark:border-slate-700 dark:text-navy-300">
+                        {{ m.created_at }}
+                    </td>
+
+                    <td class="whitespace-nowrap border border-slate-150 px-5 py-3 font-semibold text-slate-700 dark:border-slate-700 dark:text-navy-100">
+                        {{ typeLabel[m.type] ?? m.type }}
+                    </td>
+
+                    <td
+                        class="whitespace-nowrap border border-slate-150 px-5 py-3 font-mono font-bold dark:border-slate-700"
+                        :class="m.quantity_change > 0 ? 'text-success' : 'text-error'"
+                    >
+                        {{ m.quantity_change > 0 ? '+' : '' }}{{ m.quantity_change }}
+                    </td>
+
+                    <td class="whitespace-nowrap border border-slate-150 px-5 py-3 text-xs text-slate-600 dark:border-slate-700 dark:text-navy-200">
+                        <span class="font-mono font-medium">{{ m.previous_quantity }}</span>
+                        <span class="mx-1.5 text-slate-400 dark:text-navy-400">→</span>
+                        <span class="font-mono font-semibold">{{ m.new_quantity }}</span>
+                    </td>
+
+                    <td class="whitespace-nowrap border border-slate-150 px-5 py-3 text-xs text-slate-600 dark:border-slate-700 dark:text-navy-200">
+                        {{ m.reason ?? '—' }}
+                    </td>
+
+                    <td class="whitespace-nowrap border border-slate-150 px-5 py-3 text-xs font-medium text-slate-600 dark:border-slate-700 dark:text-navy-200">
+                        {{ m.user?.name ?? 'system' }}
+                    </td>
+                </tr>
+
+                <tr v-if="movements.data.length === 0">
+                    <td
+                        colspan="6"
+                        class="border border-slate-150 px-5 py-10 text-center text-sm text-slate-400 dark:border-slate-700 dark:text-navy-300"
+                    >
+                        No movements recorded yet.
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    <div
+        v-if="movements.links.length > 3"
+        class="flex flex-wrap items-center justify-between gap-3 border-t border-slate-150 px-4 py-4 dark:border-slate-700 sm:px-5"
+    >
+        <nav class="flex flex-wrap gap-1">
+            <template v-for="link in movements.links" :key="link.label">
+                <Link
+                    v-if="link.url"
+                    :href="link.url"
+                    class="inline-flex min-w-[2.25rem] items-center justify-center rounded-lg border px-3 py-2 text-xs font-semibold transition-colors"
+                    :class="link.active
+                        ? 'border-primary bg-primary text-white dark:border-accent dark:bg-accent'
+                        : 'border-slate-200 bg-white text-slate-600 hover:bg-primary/[0.05] hover:text-primary dark:border-navy-600 dark:bg-navy-800 dark:text-navy-200 dark:hover:bg-primary/[0.08]'"
+                    v-html="link.label"
+                />
+            </template>
+        </nav>
+    </div>
 </div>
 
-                <div v-if="movements.links.length > 3" class="flex items-center justify-between border-t border-slate-200 px-4 py-4 dark:border-navy-600 sm:px-5">
-                    <nav class="flex flex-wrap gap-1">
-                        <template v-for="link in movements.links" :key="link.label">
-                            <Link
-                                v-if="link.url"
-                                :href="link.url"
-                                class="btn min-w-[2rem] rounded-lg border px-3 py-1.5 text-xs font-medium"
-                                :class="
-                                    link.active
-                                        ? 'border-primary bg-primary text-white dark:border-accent dark:bg-accent'
-                                        : 'border-slate-300 bg-white text-slate-700 hover:bg-slate-100 dark:border-navy-450 dark:bg-navy-750 dark:text-navy-100 dark:hover:bg-navy-700'
-                                "
-                                v-html="link.label"
-                            />
-                        </template>
-                    </nav>
-                </div>
-            </div>
         </div>
     </div>
 </template>

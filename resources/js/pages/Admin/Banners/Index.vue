@@ -2,11 +2,11 @@
 import { Head, Link, router } from '@inertiajs/vue3';
 import type { PageProps } from '@/types';
 import {
-    admin_banners_index,
     admin_banners_create,
     admin_banners_edit,
     admin_banners_destroy,
 } from '@/routes';
+import Pagination from '@/components/Pagination.vue';
 
 interface Banner {
     id: string;
@@ -17,7 +17,16 @@ interface Banner {
     sort_order: number;
 }
 
-const props = defineProps<PageProps & { banners: Banner[] }>();
+interface Paginator<T> {
+    data: T[];
+    links: { url: string | null; label: string; active: boolean }[];
+    current_page: number;
+    from: number | null;
+    to: number | null;
+    total: number;
+}
+
+const props = defineProps<PageProps & { banners: Paginator<Banner> }>();
 
 function destroy(banner: Banner) {
     if (confirm(`Delete banner "${banner.title}"?`)) {
@@ -43,8 +52,9 @@ function destroy(banner: Banner) {
         </div>
 
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 sm:gap-5">
+            <!-- Loop through banners.data -->
             <div
-                v-for="b in banners"
+                v-for="b in banners.data"
                 :key="b.id"
                 class="card overflow-hidden flex flex-col"
             >
@@ -90,12 +100,18 @@ function destroy(banner: Banner) {
                 </div>
             </div>
 
+            <!-- Check banners.data.length -->
             <div
-                v-if="banners.length === 0"
+                v-if="banners.data.length === 0"
                 class="col-span-full card p-8 text-center text-slate-400 dark:text-navy-300"
             >
                 No banners yet.
             </div>
+        </div>
+
+        <!-- Add pagination component for the grid -->
+        <div v-if="banners.data.length > 0" class="mt-6 overflow-hidden rounded-2xl border border-slate-150 bg-white shadow-sm dark:border-slate-700 dark:bg-navy-800">
+            <Pagination :paginator="banners" />
         </div>
     </div>
 </template>
