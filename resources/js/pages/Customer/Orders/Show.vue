@@ -126,7 +126,7 @@ function badgeClass(status: string): string {
             return 'badge space-x-2.5 rounded-full bg-error/10 text-error dark:bg-error/15';
 
         default:
-            return 'badge space-x-2.5 rounded-full bg-info/10 text-info dark:bg-info/15';
+            return 'badge space-x-2.5 rounded-full bg-success/10 text-success dark:bg-success/15';
     }
 }
 
