@@ -398,7 +398,7 @@ const showCancelNode = computed(() => isCancelled.value);
             </div>
         </div>
 
-         <!-- ================= Full-width: Order Items + Payment Transactions ================= -->
+        <!-- ================= Full-width: Order Items + Payment Transactions ================= -->
         <div class="mt-6 space-y-6">
 
             <!-- Order Items Table (full width) -->
@@ -426,68 +426,138 @@ const showCancelNode = computed(() => isCancelled.value);
                             </svg>
                         </div>
                         <h2 class="text-base font-bold text-slate-900 dark:text-navy-50">
-                            Order Items <span class="ml-1 text-xs font-normal text-slate-400">({{ order.items.length
-                            }})</span>
+                            Order Items
                         </h2>
                     </div>
                 </div>
 
                 <div class="mt-4 overflow-x-auto">
-                    <table class="w-full border-collapse text-left">
-                        <thead>
-                            <tr
-                                class="border-b border-slate-200 text-2xs uppercase tracking-wider text-slate-400 dark:border-navy-600 dark:text-navy-300">
-                                <th class="px-3 py-3 font-semibold">Item &amp; Attributes</th>
-                                <th class="px-3 py-3 text-center font-semibold">Qty</th>
-                                <th class="px-3 py-3 text-right font-semibold">Unit Price</th>
-                                <th class="px-3 py-3 text-right font-semibold">Total</th>
-                                <th class="px-3 py-3 text-center font-semibold">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-150 text-sm dark:divide-navy-600">
-                            <tr v-for="item in order.items" :key="item.id"
-                                class="transition-colors hover:bg-slate-50/60 dark:hover:bg-navy-900/30">
-                                <td class="px-3 py-4">
-                                    <p class="font-bold text-slate-900 dark:text-navy-50">{{ item.product_name }}</p>
-                                    <p class="mt-0.5  text-2xs text-slate-400">SKU: {{ item.sku }}</p>
-                                    <div v-if="item.attributes.length" class="mt-1.5 flex flex-wrap gap-1">
-                                        <span v-for="(a, ai) in item.attributes" :key="ai"
-                                            class="badge rounded bg-slate-150 px-2 py-0.5 text-2xs font-medium text-slate-600 dark:bg-navy-600 dark:text-navy-200">
-                                            {{ a.name }}: {{ a.value }}
-                                        </span>
-                                    </div>
-                                </td>
-                                <td class="px-3 py-4 text-center font-bold text-slate-700 dark:text-navy-100">
-                                    {{ item.quantity }}
-                                </td>
-                                <td class="px-3 py-4 text-right  font-medium text-slate-600 dark:text-navy-200">
-                                    KES {{ item.unit_price }}
-                                </td>
-                                <td class="px-3 py-4 text-right  font-black text-slate-900 dark:text-navy-50">
-                                    KES {{ item.line_total }}
-                                </td>
-                                <td class="px-3 py-4 text-center">
-                                    <button v-if="item.can_review" type="button"
-                                        class="btn rounded-xl bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary shadow-xs transition-all hover:bg-primary hover:text-white dark:bg-accent-light/10 dark:text-accent-light dark:hover:bg-accent"
-                                        @click="openReview(item)">
-                                        Review
-                                    </button>
-                                    <span v-else class="text-2xs text-slate-400">—</span>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    
+
+<div class="overflow-hidden rounded-2xl border border-slate-150 bg-white shadow-sm dark:border-slate-150/15 dark:bg-navy-800">
+    <div class="overflow-x-auto">
+        <table class="w-full border-collapse text-left">
+            <thead>
+                <tr class="border-b border-slate-150 bg-primary/[0.025] text-2xs uppercase tracking-wider text-slate-500 dark:border-slate-150/15 dark:bg-primary/[0.04] dark:text-navy-300">
+                    <th class="border border-slate-150 px-5 py-4 font-bold dark:border-slate-150/15">Item &amp; Attributes</th>
+                    <th class="whitespace-nowrap border border-slate-150 px-4 py-4 text-center font-bold dark:border-slate-150/15">Qty</th>
+                    <th class="whitespace-nowrap border border-slate-150 px-4 py-4 text-right font-bold dark:border-slate-150/15">Unit Price</th>
+                    <th class="whitespace-nowrap border border-slate-150 px-4 py-4 text-right font-bold dark:border-slate-150/15">Total</th>
+                    <th class="whitespace-nowrap border border-slate-150 px-5 py-4 text-center font-bold dark:border-slate-150/15">Action</th>
+                </tr>
+            </thead>
+
+            <tbody class="text-sm">
+                <tr
+                    v-for="item in order.items"
+                    :key="item.id"
+                    class="transition-colors duration-200 hover:bg-primary/[0.025] dark:hover:bg-primary/[0.05]"
+                >
+                    <!-- Product details -->
+                    <td class="min-w-[220px] border border-slate-150 px-5 py-4 dark:border-slate-150/15">
+                        <p class="font-semibold text-slate-900 dark:text-navy-50">
+                            {{ item.product_name }}
+                        </p>
+
+                        <p class="mt-1 text-xs text-slate-400 dark:text-navy-300">
+                            SKU: {{ item.sku }}
+                        </p>
+
+                        <div
+                            v-if="item.attributes.length"
+                            class="mt-2 flex flex-wrap gap-1.5"
+                        >
+                            <span
+                                v-for="(a, ai) in item.attributes"
+                                :key="ai"
+                                class="inline-flex items-center rounded-md border border-slate-150 bg-primary/[0.025] px-2 py-1 text-2xs font-medium text-slate-600 dark:border-slate-150/15 dark:bg-primary/[0.06] dark:text-navy-200"
+                            >
+                                {{ a.name }}:
+                                <span class="ml-1 font-semibold">{{ a.value }}</span>
+                            </span>
+                        </div>
+                    </td>
+
+                    <!-- Quantity -->
+                    <td class="whitespace-nowrap border border-slate-150 px-4 py-4 text-center dark:border-slate-150/15">
+                        <span class="inline-flex min-w-9 items-center justify-center rounded-lg border border-slate-150 bg-primary/[0.025] px-2.5 py-1.5 text-xs font-bold text-slate-700 dark:border-slate-150/15 dark:bg-primary/[0.06] dark:text-navy-100">
+                            {{ item.quantity }}
+                        </span>
+                    </td>
+
+                    <!-- Unit price -->
+                    <td class="whitespace-nowrap border border-slate-150 px-4 py-4 text-right font-medium tabular-nums text-slate-600 dark:border-slate-150/15 dark:text-navy-200">
+                        KES {{ item.unit_price }}
+                    </td>
+
+                    <!-- Line total -->
+                    <td class="whitespace-nowrap border border-slate-150 px-4 py-4 text-right font-bold tabular-nums text-slate-900 dark:border-slate-150/15 dark:text-navy-50">
+                        KES {{ item.line_total }}
+                    </td>
+
+                    <!-- Action -->
+                    <td class="whitespace-nowrap border border-slate-150 px-5 py-4 text-center dark:border-slate-150/15">
+                        <button
+                            v-if="item.can_review"
+                            type="button"
+                            class="inline-flex items-center justify-center rounded-lg border border-slate-150/20 bg-primary/5 px-3.5 py-2 text-xs font-semibold text-primary transition-all duration-200 hover:border-slate-150 hover:bg-primary hover:text-white hover:shadow-sm dark:border-accent-light/20 dark:bg-accent-light/10 dark:text-accent-light dark:hover:border-accent dark:hover:bg-accent dark:hover:text-white"
+                            @click="openReview(item)"
+                        >
+                            Review
+                        </button>
+
+                        <span v-else class="text-xs text-slate-300 dark:text-navy-400">
+                            —
+                        </span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
                 </div>
             </div>
 
             <!-- Payment Transactions Table (full width) -->
-            <div v-if="order.payments.length"
+            <div
                 class="card rounded-2xl border border-slate-200/80 p-6 shadow-sm dark:border-navy-600 dark:bg-navy-750">
-                <div class="flex items-center gap-2.5 border-b border-slate-150 pb-4 dark:border-navy-600">
-                    <div class="rounded-lg bg-success/10 p-2 text-success">
-                        <CreditCard class="size-5" />
+                <div class="flex items-center gap-2.5">
+                    <div
+                        class="rounded-lg size-10 bg-primary/10 p-2 text-primary dark:bg-accent-light/10 dark:text-accent-light">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                            <g id="SVGRepo_iconCarrier">
+                                <!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
+                                <path opacity="0.4"
+                                    d="M18.8105 6.24998H20.1706C19.9806 5.97998 19.7806 5.72998 19.5706 5.47998L18.8105 6.24998Z"
+                                    fill="#4f46e5"></path>
+                                <path opacity="0.4"
+                                    d="M18.52 4.41982C18.27 4.20982 18.02 4.00982 17.75 3.81982V5.17982L18.52 4.41982Z"
+                                    fill="#4f46e5"></path>
+                                <path opacity="0.4"
+                                    d="M17 7.75C16.9 7.75 16.81 7.73 16.71 7.69C16.53 7.61 16.38 7.47 16.3 7.28C16.26 7.19 16.24 7.09 16.24 6.99V2.99C16.24 2.98 16.25 2.97 16.25 2.95C14.96 2.35 13.52 2 12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 10.48 21.65 9.04 21.04 7.74C21.03 7.74 21.02 7.75 21 7.75H17Z"
+                                    fill="#4f46e5"></path>
+                                <path
+                                    d="M19.5795 5.47994L22.5295 2.52994C22.8195 2.23994 22.8195 1.75994 22.5295 1.46994C22.2395 1.17994 21.7595 1.17994 21.4695 1.46994L18.5195 4.41994C18.8995 4.74994 19.2495 5.10994 19.5795 5.47994Z"
+                                    fill="#4f46e5"></path>
+                                <path
+                                    d="M17.7498 3C17.7498 2.59 17.4098 2.25 16.9998 2.25C16.5998 2.25 16.2798 2.57 16.2598 2.96C16.7798 3.21 17.2798 3.49 17.7498 3.82V3Z"
+                                    fill="#4f46e5"></path>
+                                <path
+                                    d="M21.7499 7C21.7499 6.59 21.4099 6.25 20.9999 6.25H20.1699C20.4999 6.72 20.7899 7.22 21.0299 7.74C21.4299 7.72 21.7499 7.4 21.7499 7Z"
+                                    fill="#4f46e5"></path>
+                                <path
+                                    d="M13.75 11.82L12.75 11.47V9.25H12.83C13.34 9.25 13.75 9.7 13.75 10.25C13.75 10.66 14.09 11 14.5 11C14.91 11 15.25 10.66 15.25 10.25C15.25 8.87 14.17 7.75 12.83 7.75H12.75V7.5C12.75 7.09 12.41 6.75 12 6.75C11.59 6.75 11.25 7.09 11.25 7.5V7.75H10.95C9.74001 7.75 8.75 8.77 8.75 10.03C8.75 11.49 9.6 11.96 10.25 12.19L11.25 12.54V14.76H11.17C10.66 14.76 10.25 14.31 10.25 13.76C10.25 13.35 9.91 13.01 9.5 13.01C9.09 13.01 8.75 13.35 8.75 13.76C8.75 15.14 9.83001 16.26 11.17 16.26H11.25V16.51C11.25 16.92 11.59 17.26 12 17.26C12.41 17.26 12.75 16.92 12.75 16.51V16.26H13.05C14.26 16.26 15.25 15.24 15.25 13.98C15.25 12.51 14.4 12.04 13.75 11.82ZM10.74 10.76C10.4 10.64 10.25 10.57 10.25 10.02C10.25 9.59 10.57 9.24 10.95 9.24H11.25V10.93L10.74 10.76ZM13.05 14.75H12.75V13.06L13.26 13.24C13.6 13.36 13.75 13.43 13.75 13.98C13.75 14.4 13.43 14.75 13.05 14.75Z"
+                                    fill="#4f46e5"></path>
+                            </g>
+                        </svg>
                     </div>
-                    <h2 class="text-base font-bold text-slate-900 dark:text-navy-50">Payment Transactions</h2>
+                    <h2 class="text-base font-bold text-slate-900 dark:text-navy-50">
+                        Payment
+                    </h2>
                 </div>
                 <div class="mt-4 overflow-x-auto">
                     <table class="w-full border-collapse text-left">
@@ -647,10 +717,6 @@ const showCancelNode = computed(() => isCancelled.value);
                                         <span v-if="stage.timestamp" class="text-xs text-slate-400 dark:text-navy-300">
                                             {{ stage.timestamp }}
                                         </span>
-                                        <span v-else-if="stageStates[i] === 'future'"
-                                            class="badge rounded-full bg-slate-150 text-slate-500 dark:bg-navy-500 dark:text-navy-100">
-                                            Not yet
-                                        </span>
                                     </div>
 
                                     <p class="py-1"
@@ -747,7 +813,7 @@ const showCancelNode = computed(() => isCancelled.value);
                                     <td class="py-3 font-medium text-success">
                                         Discount
                                         <span class="rounded bg-success/10 px-1 py-0.5  text-2xs">({{ order.coupon_code
-                                        }})</span>
+                                            }})</span>
                                     </td>
                                     <td class="py-3 text-right  text-success">− KES {{ order.discount_total }}</td>
                                 </tr>
