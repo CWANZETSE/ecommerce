@@ -38,26 +38,10 @@ function badgeClass(status: string): string {
         <Head title="Order Received" />
 
         <div class="mx-auto max-w-2xl px-4 py-12 text-center">
-            <!-- Success Icon Header -->
-            <div
-                class="inline-flex size-20 items-center justify-center">
-                <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" fill="none">
-                    <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                    <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                    <g id="SVGRepo_iconCarrier">
-                        <!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
-                        <path fill="#2dd4bf" fill-rule="evenodd"
-                            d="M3 10a7 7 0 019.307-6.611 1 1 0 00.658-1.889 9 9 0 105.98 7.501 1 1 0 00-1.988.22A7 7 0 113 10zm14.75-5.338a1 1 0 00-1.5-1.324l-6.435 7.28-3.183-2.593a1 1 0 00-1.264 1.55l3.929 3.2a1 1 0 001.38-.113l7.072-8z">
-                        </path>
-                    </g>
-                </svg>
-            </div>
+            
 
-            <h1 class="text-2xl font-bold text-teal-500 dark:text-teal-300">Order Placed Successfully!</h1>
-            <p class="mt-1 text-sm text-slate-400 dark:text-navy-300">
-                Order Reference: <strong class="text-primary dark:text-accent-light font-mono">{{ order.order_number
-                }}</strong>
-            </p>
+            <span class="text-2xl font-bold text-teal-500 dark:text-teal-300">Order Placed Successfully!</span>
+           
 
             <div
                 class="inline-flex size-100 items-center justify-center">
