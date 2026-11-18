@@ -435,89 +435,95 @@ const formatCurrency = (amount: number) =>
                 </div>
 
                 <div class="mt-4 overflow-x-auto">
-                    
 
-<div class="overflow-hidden rounded-2xl border border-slate-150 bg-white shadow-sm dark:border-slate-150/15 dark:bg-navy-800">
-    <div class="overflow-x-auto">
-        <table class="w-full border-collapse text-left">
-            <thead>
-                <tr class="border-b border-slate-150 bg-primary/[0.025] text-2xs uppercase tracking-wider text-slate-500 dark:border-slate-150/15 dark:bg-primary/[0.04] dark:text-navy-300">
-                    <th class="border border-slate-150 px-5 py-4 font-bold dark:border-slate-150/15">Item &amp; Attributes</th>
-                    <th class="whitespace-nowrap border border-slate-150 px-4 py-4 text-center font-bold dark:border-slate-150/15">Qty</th>
-                    <th class="whitespace-nowrap border border-slate-150 px-4 py-4 text-right font-bold dark:border-slate-150/15">Unit Price</th>
-                    <th class="whitespace-nowrap border border-slate-150 px-4 py-4 text-right font-bold dark:border-slate-150/15">Total</th>
-                    <th class="whitespace-nowrap border border-slate-150 px-5 py-4 text-center font-bold dark:border-slate-150/15">Action</th>
-                </tr>
-            </thead>
 
-            <tbody class="text-sm">
-                <tr
-                    v-for="item in order.items"
-                    :key="item.id"
-                    class="transition-colors duration-200 hover:bg-primary/[0.025] dark:hover:bg-primary/[0.05]"
-                >
-                    <!-- Product details -->
-                    <td class="min-w-[220px] border border-slate-150 px-5 py-4 dark:border-slate-150/15">
-                        <p class="font-semibold text-slate-900 dark:text-navy-50">
-                            {{ item.product_name }}
-                        </p>
+                    <div
+                        class="overflow-hidden rounded-2xl border border-slate-150 bg-white shadow-sm dark:border-slate-150/15 dark:bg-navy-800">
+                        <div class="overflow-x-auto">
+                            <table class="w-full border-collapse text-left">
+                                <thead>
+                                    <tr
+                                        class="border-b border-slate-150 bg-primary/[0.025] text-2xs uppercase tracking-wider text-slate-500 dark:border-slate-150/15 dark:bg-primary/[0.04] dark:text-navy-300">
+                                        <th
+                                            class="border border-slate-150 px-5 py-4 font-bold dark:border-slate-150/15">
+                                            Item &amp; Attributes</th>
+                                        <th
+                                            class="whitespace-nowrap border border-slate-150 px-4 py-4 text-center font-bold dark:border-slate-150/15">
+                                            Qty</th>
+                                        <th
+                                            class="whitespace-nowrap border border-slate-150 px-4 py-4 text-right font-bold dark:border-slate-150/15">
+                                            Unit Price</th>
+                                        <th
+                                            class="whitespace-nowrap border border-slate-150 px-4 py-4 text-right font-bold dark:border-slate-150/15">
+                                            Total</th>
+                                        <th
+                                            class="whitespace-nowrap border border-slate-150 px-5 py-4 text-center font-bold dark:border-slate-150/15">
+                                            Action</th>
+                                    </tr>
+                                </thead>
 
-                        <p class="mt-1 text-xs text-slate-400 dark:text-navy-300">
-                            SKU: {{ item.sku }}
-                        </p>
+                                <tbody class="text-sm">
+                                    <tr v-for="item in order.items" :key="item.id"
+                                        class="transition-colors duration-200 hover:bg-primary/[0.025] dark:hover:bg-primary/[0.05]">
+                                        <!-- Product details -->
+                                        <td
+                                            class="min-w-[220px] border border-slate-150 px-5 py-4 dark:border-slate-150/15">
+                                            <p class="font-semibold text-slate-900 dark:text-navy-50">
+                                                {{ item.product_name }}
+                                            </p>
 
-                        <div
-                            v-if="item.attributes.length"
-                            class="mt-2 flex flex-wrap gap-1.5"
-                        >
-                            <span
-                                v-for="(a, ai) in item.attributes"
-                                :key="ai"
-                                class="badge space-x-2.5 rounded-full bg-primary/10 text-primary dark:bg-accent-light/15 dark:text-accent-light"
-                            >
-                                {{ a.name }}:
-                                <span class="ml-1 font-semibold">{{ a.value }}</span>
-                            </span>
+                                            <p class="mt-1 text-xs text-slate-400 dark:text-navy-300">
+                                                SKU: {{ item.sku }}
+                                            </p>
+
+                                            <div v-if="item.attributes.length" class="mt-2 flex flex-wrap gap-1.5">
+                                                <span v-for="(a, ai) in item.attributes" :key="ai"
+                                                    class="badge space-x-2.5 rounded-full bg-primary/10 text-primary dark:bg-accent-light/15 dark:text-accent-light">
+                                                    {{ a.name }}:
+                                                    <span class="ml-1 font-semibold">{{ a.value }}</span>
+                                                </span>
+                                            </div>
+                                        </td>
+
+                                        <!-- Quantity -->
+                                        <td
+                                            class="whitespace-nowrap border border-slate-150 px-4 py-4 text-center dark:border-slate-150/15">
+                                            <span
+                                                class="badge space-x-2.5 rounded-full bg-warning/10 text-warning dark:bg-warning/15">
+                                                {{ item.quantity }}
+                                            </span>
+                                        </td>
+
+                                        <!-- Unit price -->
+                                        <td
+                                            class="whitespace-nowrap border border-slate-150 px-4 py-4 text-right font-medium tabular-nums text-slate-600 dark:border-slate-150/15 dark:text-navy-200">
+                                            {{ formatCurrency(item.unit_price) }}
+                                        </td>
+
+                                        <!-- Line total -->
+                                        <td
+                                            class="whitespace-nowrap border border-slate-150 px-4 py-4 text-right font-bold tabular-nums text-slate-900 dark:border-slate-150/15 dark:text-navy-50">
+                                            {{ formatCurrency(item.line_total) }}
+                                        </td>
+
+                                        <!-- Action -->
+                                        <td
+                                            class="whitespace-nowrap border border-slate-150 px-5 py-4 text-center dark:border-slate-150/15">
+                                            <button v-if="item.can_review" type="button"
+                                                class="inline-flex items-center justify-center rounded-lg border border-slate-150/20 bg-primary/5 px-3.5 py-2 text-xs font-semibold text-primary transition-all duration-200 hover:border-slate-150 hover:bg-primary hover:text-white hover:shadow-sm dark:border-accent-light/20 dark:bg-accent-light/10 dark:text-accent-light dark:hover:border-accent dark:hover:bg-accent dark:hover:text-white"
+                                                @click="openReview(item)">
+                                                Review
+                                            </button>
+
+                                            <span v-else class="text-xs text-slate-300 dark:text-navy-400">
+                                                —
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
-                    </td>
-
-                    <!-- Quantity -->
-                    <td class="whitespace-nowrap border border-slate-150 px-4 py-4 text-center dark:border-slate-150/15">
-                        <span class="badge space-x-2.5 rounded-full bg-warning/10 text-warning dark:bg-warning/15">
-                            {{ item.quantity }}
-                        </span>
-                    </td>
-
-                    <!-- Unit price -->
-                    <td class="whitespace-nowrap border border-slate-150 px-4 py-4 text-right font-medium tabular-nums text-slate-600 dark:border-slate-150/15 dark:text-navy-200">
-                         {{ formatCurrency(item.unit_price )}}
-                    </td>
-
-                    <!-- Line total -->
-                    <td class="whitespace-nowrap border border-slate-150 px-4 py-4 text-right font-bold tabular-nums text-slate-900 dark:border-slate-150/15 dark:text-navy-50">
-                         {{ formatCurrency(item.line_total) }}
-                    </td>
-
-                    <!-- Action -->
-                    <td class="whitespace-nowrap border border-slate-150 px-5 py-4 text-center dark:border-slate-150/15">
-                        <button
-                            v-if="item.can_review"
-                            type="button"
-                            class="inline-flex items-center justify-center rounded-lg border border-slate-150/20 bg-primary/5 px-3.5 py-2 text-xs font-semibold text-primary transition-all duration-200 hover:border-slate-150 hover:bg-primary hover:text-white hover:shadow-sm dark:border-accent-light/20 dark:bg-accent-light/10 dark:text-accent-light dark:hover:border-accent dark:hover:bg-accent dark:hover:text-white"
-                            @click="openReview(item)"
-                        >
-                            Review
-                        </button>
-
-                        <span v-else class="text-xs text-slate-300 dark:text-navy-400">
-                            —
-                        </span>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-</div>
+                    </div>
 
 
                 </div>
@@ -591,7 +597,7 @@ const formatCurrency = (amount: number) =>
                                     {{ p.paid_at || '—' }}
                                 </td>
                                 <td class="px-3 py-3.5 text-right  font-bold text-slate-900 dark:text-navy-50">
-                                     {{ formatCurrency(p.amount) }}
+                                    {{ formatCurrency(p.amount) }}
                                 </td>
                             </tr>
                         </tbody>
@@ -640,7 +646,8 @@ const formatCurrency = (amount: number) =>
                                         </g>
                                     </svg>
                                 </div>
-                                <h2 class="text-base font-bold text-slate-900 dark:text-navy-50">Lifecycle Status History
+                                <h2 class="text-base font-bold text-slate-900 dark:text-navy-50">Lifecycle Status
+                                    History
                                 </h2>
                             </div>
                             <div class="flex items-center gap-2">
@@ -763,28 +770,28 @@ const formatCurrency = (amount: number) =>
                                     <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
                                     <g id="SVGRepo_iconCarrier">
                                         <!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
+                                        <path
+                                            d="M22 6.00008V8.42008C22 10.0001 21 11.0001 19.42 11.0001H16V4.01008C16 2.90008 16.91 1.99008 18.02 2.00008C19.11 2.01008 20.11 2.45008 20.83 3.17008C21.55 3.90008 22 4.90008 22 6.00008Z"
+                                            fill="#4f46e5"></path>
                                         <path opacity="0.4"
-                                            d="M12 20C16.4183 20 20 16.4183 20 12C20 7.58172 16.4183 4 12 4C7.58172 4 4 7.58172 4 12C4 16.4183 7.58172 20 12 20Z"
+                                            d="M2 7V21C2 21.83 2.94 22.3 3.6 21.8L5.31 20.52C5.71 20.22 6.27 20.26 6.63 20.62L8.29 22.29C8.68 22.68 9.32 22.68 9.71 22.29L11.39 20.61C11.74 20.26 12.3 20.22 12.69 20.52L14.4 21.8C15.06 22.29 16 21.82 16 21V4C16 2.9 16.9 2 18 2H7H6C3 2 2 3.79 2 6V7Z"
                                             fill="#4f46e5"></path>
                                         <path
-                                            d="M12.0009 15.1199C13.724 15.1199 15.1209 13.723 15.1209 11.9999C15.1209 10.2768 13.724 8.87988 12.0009 8.87988C10.2777 8.87988 8.88086 10.2768 8.88086 11.9999C8.88086 13.723 10.2777 15.1199 12.0009 15.1199Z"
+                                            d="M12 12.2598H9C8.59 12.2598 8.25 12.5998 8.25 13.0098C8.25 13.4198 8.59 13.7598 9 13.7598H12C12.41 13.7598 12.75 13.4198 12.75 13.0098C12.75 12.5998 12.41 12.2598 12 12.2598Z"
                                             fill="#4f46e5"></path>
                                         <path
-                                            d="M12.75 2V4.04H12.74C12.5 4.01 12.25 4 12 4C11.75 4 11.5 4.01 11.26 4.04H11.25V2C11.25 1.59 11.59 1.25 12 1.25C12.41 1.25 12.75 1.59 12.75 2Z"
+                                            d="M9 9.75977H12C12.41 9.75977 12.75 9.41977 12.75 9.00977C12.75 8.59977 12.41 8.25977 12 8.25977H9C8.59 8.25977 8.25 8.59977 8.25 9.00977C8.25 9.41977 8.59 9.75977 9 9.75977Z"
                                             fill="#4f46e5"></path>
                                         <path
-                                            d="M4 12C4 12.25 4.01 12.51 4.04 12.75H2C1.59 12.75 1.25 12.41 1.25 12C1.25 11.59 1.59 11.25 2 11.25H4.04C4.01 11.49 4 11.75 4 12Z"
+                                            d="M5.9707 8.00977C5.4107 8.00977 4.9707 8.45977 4.9707 9.00977C4.9707 9.55977 5.4207 10.0098 5.9707 10.0098C6.5207 10.0098 6.9707 9.55977 6.9707 9.00977C6.9707 8.45977 6.5207 8.00977 5.9707 8.00977Z"
                                             fill="#4f46e5"></path>
                                         <path
-                                            d="M12.75 19.96V22C12.75 22.41 12.41 22.75 12 22.75C11.59 22.75 11.25 22.41 11.25 22V19.96H11.26C11.5 19.99 11.75 20 12 20C12.25 20 12.5 19.99 12.74 19.96H12.75Z"
-                                            fill="#4f46e5"></path>
-                                        <path
-                                            d="M22.7509 12C22.7509 12.41 22.4109 12.75 22.0009 12.75H19.9609C19.9909 12.51 20.0009 12.25 20.0009 12C20.0009 11.75 19.9909 11.49 19.9609 11.25H22.0009C22.4109 11.25 22.7509 11.59 22.7509 12Z"
+                                            d="M5.9707 12.0098C5.4107 12.0098 4.9707 12.4598 4.9707 13.0098C4.9707 13.5598 5.4207 14.0098 5.9707 14.0098C6.5207 14.0098 6.9707 13.5598 6.9707 13.0098C6.9707 12.4598 6.5207 12.0098 5.9707 12.0098Z"
                                             fill="#4f46e5"></path>
                                     </g>
                                 </svg>
                             </div>
-                            <h2 class="text-base font-bold text-slate-900 dark:text-navy-50">Delivery Address Details
+                            <h2 class="text-base font-bold text-slate-900 dark:text-navy-50">Invoice Summary
                             </h2>
                         </div>
                         <table
@@ -799,9 +806,10 @@ const formatCurrency = (amount: number) =>
                                     <td class="py-3 font-medium text-success">
                                         Discount
                                         <span class="rounded bg-success/10 px-1 py-0.5  text-2xs">({{ order.coupon_code
-                                            }})</span>
+                                        }})</span>
                                     </td>
-                                    <td class="py-3 text-right  text-success">−  {{ formatCurrency(order.discount_total) }}</td>
+                                    <td class="py-3 text-right  text-success">− {{ formatCurrency(order.discount_total)
+                                        }}</td>
                                 </tr>
                                 <tr>
                                     <td class="py-3 text-slate-400 dark:text-navy-300">Shipping Fee</td>
@@ -844,6 +852,12 @@ const formatCurrency = (amount: number) =>
                         <table
                             class="mt-3 w-full divide-y divide-slate-150 text-sm text-slate-600 dark:divide-navy-600 dark:text-navy-200">
                             <tbody>
+                                <tr>
+                                    <td class="py-3 font-medium text-slate-400 dark:text-navy-300">Owner</td>
+                                    <td class="py-3 text-right font-bold text-slate-900 dark:text-navy-50">
+                                        {{ order.user.name }}
+                                    </td>
+                                </tr>
                                 <tr>
                                     <td class="py-3 font-medium text-slate-400 dark:text-navy-300">Destination</td>
                                     <td class="py-3 text-right font-bold text-slate-900 dark:text-navy-50">

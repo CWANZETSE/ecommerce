@@ -37,6 +37,7 @@ class OrderController extends Controller
         return Inertia::render('Customer/Orders/Show', [
             'order' => [
                 'ulid' => $order->ulid,
+                'user'=>$order->user,
                 'order_number' => $order->order_number,
                 'created_at' => $order->created_at->toDateTimeString(),
                 'subtotal' => $order->subtotal,
