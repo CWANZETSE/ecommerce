@@ -340,6 +340,9 @@ const stageStates = computed<StageState[]>(() => {
 });
 
 const showCancelNode = computed(() => isCancelled.value);
+
+const formatCurrency = (amount: number) =>
+    new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'Ksh' }).format(amount);
 </script>
 
 
@@ -391,7 +394,7 @@ const showCancelNode = computed(() => isCancelled.value);
             </div>
             <div class="flex items-center gap-3">
                 <Link href="/customer/orders"
-                    class="btn inline-flex items-center gap-2 rounded-xl bg-slate-100 px-4 py-2.5 text-xs font-semibold text-slate-700 shadow-xs transition-all hover:bg-slate-200 dark:bg-navy-700 dark:text-navy-100 dark:hover:bg-navy-600">
+                    class="btn bg-primary/10 font-medium text-primary hover:bg-primary/20 focus:bg-primary/20 active:bg-primary/25 dark:bg-accent-light/10 dark:text-accent-light dark:hover:bg-accent-light/20 dark:focus:bg-accent-light/20 dark:active:bg-accent-light/25">
                     <ArrowLeft class="size-4" />
                     Back to orders
                 </Link>
@@ -487,12 +490,12 @@ const showCancelNode = computed(() => isCancelled.value);
 
                     <!-- Unit price -->
                     <td class="whitespace-nowrap border border-slate-150 px-4 py-4 text-right font-medium tabular-nums text-slate-600 dark:border-slate-150/15 dark:text-navy-200">
-                        KES {{ item.unit_price }}
+                         {{ formatCurrency(item.unit_price )}}
                     </td>
 
                     <!-- Line total -->
                     <td class="whitespace-nowrap border border-slate-150 px-4 py-4 text-right font-bold tabular-nums text-slate-900 dark:border-slate-150/15 dark:text-navy-50">
-                        KES {{ item.line_total }}
+                         {{ formatCurrency(item.line_total) }}
                     </td>
 
                     <!-- Action -->
@@ -588,7 +591,7 @@ const showCancelNode = computed(() => isCancelled.value);
                                     {{ p.paid_at || '—' }}
                                 </td>
                                 <td class="px-3 py-3.5 text-right  font-bold text-slate-900 dark:text-navy-50">
-                                    KES {{ p.amount }}
+                                     {{ formatCurrency(p.amount) }}
                                 </td>
                             </tr>
                         </tbody>
@@ -789,8 +792,8 @@ const showCancelNode = computed(() => isCancelled.value);
                             <tbody>
                                 <tr>
                                     <td class="py-3 text-slate-400 dark:text-navy-300">Subtotal</td>
-                                    <td class="py-3 text-right  font-semibold text-slate-800 dark:text-navy-50">KES {{
-                                        order.subtotal }}</td>
+                                    <td class="py-3 text-right  font-semibold text-slate-800 dark:text-navy-50"> {{
+                                        formatCurrency(order.subtotal) }}</td>
                                 </tr>
                                 <tr v-if="Number(order.discount_total) > 0">
                                     <td class="py-3 font-medium text-success">
@@ -798,18 +801,18 @@ const showCancelNode = computed(() => isCancelled.value);
                                         <span class="rounded bg-success/10 px-1 py-0.5  text-2xs">({{ order.coupon_code
                                             }})</span>
                                     </td>
-                                    <td class="py-3 text-right  text-success">− KES {{ order.discount_total }}</td>
+                                    <td class="py-3 text-right  text-success">−  {{ formatCurrency(order.discount_total) }}</td>
                                 </tr>
                                 <tr>
                                     <td class="py-3 text-slate-400 dark:text-navy-300">Shipping Fee</td>
-                                    <td class="py-3 text-right  font-semibold text-slate-800 dark:text-navy-50">KES {{
-                                        order.shipping_fee }}</td>
+                                    <td class="py-3 text-right  font-semibold text-slate-800 dark:text-navy-50"> {{
+                                        formatCurrency(order.shipping_fee) }}</td>
                                 </tr>
                                 <tr
                                     class="border-t-2 border-slate-200 text-base font-black text-slate-900 dark:border-navy-600 dark:text-navy-50">
                                     <td class="py-4">Grand Total</td>
-                                    <td class="py-4 text-right  text-lg text-primary dark:text-accent-light">KES {{
-                                        order.grand_total }}</td>
+                                    <td class="py-4 text-right  text-lg text-primary dark:text-accent-light"> {{
+                                        formatCurrency(order.grand_total) }}</td>
                                 </tr>
                             </tbody>
                         </table>
