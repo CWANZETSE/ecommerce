@@ -41,7 +41,7 @@ class CartController extends Controller
             return back()->with('error', $e->getMessage());
         }
 
-        return back()->with('success', 'Added to cart.');
+        return redirect()->route('cart_index')->with('success', 'Added to cart successfully.');
     }
 
     public function update(Request $request, CartItem $item): RedirectResponse

@@ -151,82 +151,95 @@ const formatMoney = (amount) =>
 
             <!-- Horizontally scrollable table on narrow viewports -->
             <div class="is-scrollbar-x overflow-x-auto">
-                <table class="w-full text-left text-sm">
-                    <thead class="border-b border-slate-200 bg-slate-50 text-slate-700 dark:border-navy-600 dark:bg-navy-900 dark:text-navy-100">
-                        <tr>
-                            <th class="px-4 py-3.5 font-medium sm:px-5">Product</th>
-                            <th class="px-4 py-3.5 font-medium sm:px-5">Qty</th>
-                            <th class="px-4 py-3.5 text-right font-medium sm:px-5">Price</th>
-                            <th class="px-4 py-3.5 text-right font-medium sm:px-5">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-100 dark:divide-navy-600">
-                        <tr
-                            v-for="line in props.cart!.items"
-                            :key="line.id"
-                            class="hover:bg-slate-50 dark:hover:bg-navy-900/50"
+                <div class="w-full overflow-x-auto rounded-xl border border-slate-100">
+    <table class="w-full min-w-[650px] table-fixed border-collapse text-left text-sm">
+        <thead>
+            <tr class="bg-primary/5 text-2xs uppercase tracking-wider text-primary/60">
+                <th class="w-[40%] border-b border-r border-slate-100 px-4 py-3.5 font-semibold sm:px-5">
+                    Product
+                </th>
+                <th class="w-[20%] border-b border-r border-slate-100 px-4 py-3.5 font-semibold sm:px-5">
+                    Qty
+                </th>
+                <th class="w-[20%] border-b border-r border-slate-100 px-4 py-3.5 text-right font-semibold sm:px-5">
+                    Price
+                </th>
+                <th class="w-[20%] border-b border-slate-100 px-4 py-3.5 text-right font-semibold sm:px-5 ">
+                    Actions
+                </th>
+            </tr>
+        </thead>
+
+        <tbody class="divide-y divide-slate-100">
+            <tr
+                v-for="line in props.cart!.items"
+                :key="line.id"
+                class="transition-colors hover:bg-primary/5"
+            >
+                <!-- Product -->
+                <td class="border-r border-slate-100 px-4 py-4 sm:px-5">
+                    <div class="min-w-0 space-y-1.5">
+                        <Link
+                            :href="`/customer/products/${line.product.slug}`"
+                            class="block truncate text-sm font-semibold text-primary transition-colors hover:text-primary/70"
                         >
-                            <!-- Product -->
-                            <td class="px-4 py-4 sm:px-5">
-                                <div class="min-w-[12rem] max-w-xs space-y-1.5">
-                                    <Link
-                                        :href="`/customer/products/${line.product.slug}`"
-                                        class="block truncate text-sm font-semibold text-slate-900 transition-colors hover:text-primary dark:text-navy-50 dark:hover:text-accent-light"
-                                    >
-                                        {{ line.product.name }}
-                                    </Link>
-                                    <p class="font-mono text-xs text-slate-400 dark:text-navy-300">
-                                        SKU: {{ line.sku }}
-                                    </p>
-                                    <div v-if="line.attributes.length" class="flex flex-wrap gap-1.5 pt-1">
-                                        <span
-                                            v-for="(attr, i) in line.attributes"
-                                            :key="i"
-                                            class="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-600 dark:bg-navy-800 dark:text-navy-200"
-                                        >
-                                            {{ attr.name }}: {{ attr.value }}
-                                        </span>
-                                    </div>
-                                </div>
-                            </td>
+                            {{ line.product.name }}
+                        </Link>
 
-                            <!-- Quantity -->
-                            <td class="px-4 py-4 sm:px-5">
-                                <input
-                                    :value="line.quantity"
-                                    type="number"
-                                    min="1"
-                                    :max="Math.min(99, line.stock_quantity)"
-                                    class="form-input w-16 rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-center text-sm text-slate-800 transition-colors hover:border-slate-300 focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-navy-600 dark:bg-navy-900 dark:text-navy-100 dark:hover:border-navy-500 dark:focus:border-accent dark:focus:ring-accent/20"
-                                    @change="(e) => updateQty(line, (e.target as HTMLInputElement).value)"
-                                />
-                            </td>
+                        <p class="truncate font-mono text-xs text-primary/50">
+                            SKU: {{ line.sku }}
+                        </p>
 
-                            <!-- Price -->
-                            <td class="px-4 py-4 text-right sm:px-5">
-                                <div class="whitespace-nowrap">
-                                    <p class="text-base font-bold text-slate-900 dark:text-navy-50">
-                                        KES {{ formatMoney(line.line_total) }}
-                                    </p>
-                                    <p class="text-xs text-slate-400 dark:text-navy-300">
-                                        @ KES {{ formatMoney(line.unit_price) }}
-                                    </p>
-                                </div>
-                            </td>
+                        <div v-if="line.attributes.length" class="flex flex-wrap gap-1.5 pt-1">
+                            <span
+                                v-for="(attr, i) in line.attributes"
+                                :key="i"
+                                class="badge space-x-2.5 rounded-full bg-primary/10 text-primary dark:bg-accent-light/15 dark:text-accent-light"
+                            >
+                                {{ attr.name }}: {{ attr.value }}
+                            </span>
+                        </div>
+                    </div>
+                </td>
 
-                            <!-- Actions -->
-                            <td class="px-4 py-4 text-right sm:px-5">
-                                <button
-                                    type="button"
-                                    class="btn border border-secondary/30 bg-secondary/10 font-medium text-secondary hover:bg-secondary/20 focus:bg-secondary/20 active:bg-secondary/25 dark:border-secondary-light/30 dark:bg-secondary-light/10 dark:text-secondary-light dark:hover:bg-secondary-light/20 dark:focus:bg-secondary-light/20 dark:active:bg-secondary-light/25"
-                                    @click="removeLine(line)"
-                                >
-                                    Remove
-                                </button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <!-- Quantity -->
+                <td class="border-r border-slate-100 px-4 py-4 sm:px-5">
+                    <input
+                        :value="line.quantity"
+                        type="number"
+                        min="1"
+                        :max="Math.min(99, line.stock_quantity)"
+                        class="form-input w-16 max-w-full rounded-lg border border-slate-100 bg-transparent px-2 py-1.5 text-center text-sm text-primary transition-colors hover:border-primary/30 focus:border-primary focus:ring-2 focus:ring-primary/20"
+                        @change="(e) => updateQty(line, (e.target as HTMLInputElement).value)"
+                    />
+                </td>
+
+                <!-- Price -->
+                <td class="border-r border-slate-100 px-4 py-4 text-right sm:px-5">
+                    <div class="whitespace-nowrap">
+                        <p class="text-base font-bold text-primary">
+                            KES {{ formatMoney(line.line_total) }}
+                        </p>
+                        <p class="text-xs text-primary/50">
+                            @ KES {{ formatMoney(line.unit_price) }}
+                        </p>
+                    </div>
+                </td>
+
+                <!-- Actions -->
+                <td class="px-4 py-4 text-right sm:px-5">
+                    <button
+                        type="button"
+                        class="inline-flex items-center rounded-lg border border-secondary/30 bg-secondary/10 px-3 py-2 text-xs font-semibold text-secondary transition-colors hover:bg-secondary/20 focus:outline-none focus:ring-2 focus:ring-secondary/20 active:bg-secondary/25 dark:border-secondary-light/30 dark:bg-secondary-light/10 dark:text-secondary-light dark:hover:bg-secondary-light/20"
+                        @click="removeLine(line)"
+                    >
+                        Remove
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
             </div>
         </div>
     </section>
