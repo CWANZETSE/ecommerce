@@ -126,7 +126,7 @@ function badgeClass(status: string): string {
             return 'badge space-x-2.5 rounded-full bg-error/10 text-error dark:bg-error/15';
 
         default:
-            return 'bg-slate-150 text-slate-600 dark:bg-navy-500 dark:text-navy-200';
+            return 'badge space-x-2.5 rounded-full bg-info/10 text-info dark:bg-info/15';
     }
 }
 
@@ -567,7 +567,7 @@ const formatCurrency = (amount: number) =>
                         <thead>
                             <tr
                                 class="border-b border-slate-200 text-2xs uppercase tracking-wider text-slate-400 dark:border-navy-600 dark:text-navy-300">
-                                <th class="px-3 py-3 font-semibold">Provider / Ref</th>
+                                <th class="px-3 py-3 font-semibold">Provider</th>
                                 <th class="px-3 py-3 font-semibold">Status</th>
                                 <th class="px-3 py-3 font-semibold">Timestamp</th>
                                 <th class="px-3 py-3 text-right font-semibold">Amount</th>
@@ -579,7 +579,7 @@ const formatCurrency = (amount: number) =>
                                 <td class="px-3 py-3.5">
                                     <p class="font-bold capitalize text-slate-800 dark:text-navy-100">{{ p.provider }}
                                     </p>
-                                    <p v-if="p.provider_reference" class=" text-2xs text-slate-400">Ref: {{
+                                    <p v-if="p.provider_reference" class=" text-2xs text-slate-400">{{
                                         p.provider_reference }}</p>
                                 </td>
                                 <td class="px-3 py-3.5">
