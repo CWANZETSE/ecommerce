@@ -53,7 +53,7 @@ function badgeClass(status: string): string {
                 </svg>
             </div>
 
-            <span class="text-2xl font-bold text-teal-500 dark:text-teal-300">Order Placed Successfully!</span>
+            <h1 class="text-2xl font-bold text-teal-500 dark:text-teal-300">Order Placed Successfully!</h1>
            
 
             <div
