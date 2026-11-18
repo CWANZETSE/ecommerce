@@ -112,18 +112,18 @@ function badgeClass(status: string): string {
         case 'delivered':
         case 'completed':
         case 'success':
-            return 'badge space-x-2 rounded-full bg-success/10 text-success dark:bg-success/15 font-semibold';
+            return 'badge space-x-2.5 rounded-full bg-success/10 text-success dark:bg-success/15';
 
         case 'pending':
-            return 'badge space-x-2 rounded-full bg-warning/10 text-warning dark:bg-warning/15 font-semibold';
+            return 'badge space-x-2.5 rounded-full bg-warning/10 text-warning dark:bg-warning/15';
 
         case 'processing':
         case 'dispatched':
-            return 'badge space-x-2 rounded-full bg-info/10 text-info dark:bg-info/15 font-semibold';
+            return 'badge space-x-2.5 rounded-full bg-info/10 text-info dark:bg-info/15';
 
         case 'failed':
         case 'cancelled':
-            return 'badge space-x-2 rounded-full bg-error/10 text-error dark:bg-error/15 font-semibold';
+            return 'badge space-x-2.5 rounded-full bg-error/10 text-error dark:bg-error/15';
 
         default:
             return 'bg-slate-150 text-slate-600 dark:bg-navy-500 dark:text-navy-200';
@@ -470,7 +470,7 @@ const showCancelNode = computed(() => isCancelled.value);
                             <span
                                 v-for="(a, ai) in item.attributes"
                                 :key="ai"
-                                class="inline-flex items-center rounded-md border border-slate-150 bg-primary/[0.025] px-2 py-1 text-2xs font-medium text-slate-600 dark:border-slate-150/15 dark:bg-primary/[0.06] dark:text-navy-200"
+                                class="badge space-x-2.5 rounded-full bg-primary/10 text-primary dark:bg-accent-light/15 dark:text-accent-light"
                             >
                                 {{ a.name }}:
                                 <span class="ml-1 font-semibold">{{ a.value }}</span>
@@ -480,7 +480,7 @@ const showCancelNode = computed(() => isCancelled.value);
 
                     <!-- Quantity -->
                     <td class="whitespace-nowrap border border-slate-150 px-4 py-4 text-center dark:border-slate-150/15">
-                        <span class="inline-flex min-w-9 items-center justify-center rounded-lg border border-slate-150 bg-primary/[0.025] px-2.5 py-1.5 text-xs font-bold text-slate-700 dark:border-slate-150/15 dark:bg-primary/[0.06] dark:text-navy-100">
+                        <span class="badge space-x-2.5 rounded-full bg-warning/10 text-warning dark:bg-warning/15">
                             {{ item.quantity }}
                         </span>
                     </td>
@@ -637,7 +637,7 @@ const showCancelNode = computed(() => isCancelled.value);
                                         </g>
                                     </svg>
                                 </div>
-                                <h2 class="text-base font-bold text-slate-900 dark:text-navy-50">Lifecycle Status
+                                <h2 class="text-base font-bold text-slate-900 dark:text-navy-50">Lifecycle Status History
                                 </h2>
                             </div>
                             <div class="flex items-center gap-2">
@@ -650,23 +650,6 @@ const showCancelNode = computed(() => isCancelled.value);
                             </div>
                         </div>
 
-                        <!-- Status chips -->
-                        <div class="flex flex-wrap items-center gap-2 px-4 pb-3 sm:px-5">
-                            <div
-                                class="flex items-center space-x-2 rounded-lg border border-slate-200/60 bg-slate-50 px-3 py-1.5 text-xs dark:border-navy-600 dark:bg-navy-900">
-                                <span class="font-medium text-slate-400">Payment:</span>
-                                <span :class="badgeClass(paymentStatus)">
-                                    {{ paymentStatus }}
-                                </span>
-                            </div>
-                            <div
-                                class="flex items-center space-x-2 rounded-lg border border-slate-200/60 bg-slate-50 px-3 py-1.5 text-xs dark:border-navy-600 dark:bg-navy-900">
-                                <span class="font-medium text-slate-400">Fulfilment:</span>
-                                <span :class="badgeClass(fulfilmentStatus)">
-                                    {{ fulfilmentStatus }}
-                                </span>
-                            </div>
-                        </div>
 
                         <!-- Vertical timeline -->
                         <ol class="timeline line-space flex-1 px-4 [--size:1.5rem] sm:px-5">
@@ -697,19 +680,19 @@ const showCancelNode = computed(() => isCancelled.value);
                                             {{ stage.label }}
 
                                             <span v-if="stageStates[i] === 'current'"
-                                                class="inline-flex items-center rounded-full bg-secondary/10 px-2 py-0.5 text-2xs font-bold uppercase tracking-wide text-secondary dark:bg-secondary-light/15 dark:text-secondary-light">
+                                                class="badge space-x-2.5 rounded-full bg-warning/10 text-warning dark:bg-warning/15">
                                                 Current
                                             </span>
                                             <span v-else-if="stageStates[i] === 'done'"
-                                                class="inline-flex items-center rounded-full bg-success/10 px-2 py-0.5 text-2xs font-bold uppercase tracking-wide text-success dark:bg-success/15">
+                                                class="badge space-x-2.5 rounded-full bg-success/10 text-success dark:bg-success/15">
                                                 Done
                                             </span>
                                             <span v-else-if="stageStates[i] === 'cancelled'"
-                                                class="inline-flex items-center rounded-full bg-error/10 px-2 py-0.5 text-2xs font-bold uppercase tracking-wide text-error dark:bg-error/15">
+                                                class="badge space-x-2.5 rounded-full bg-error/10 text-error dark:bg-error/15">
                                                 Cancelled here
                                             </span>
                                             <span v-else
-                                                class="inline-flex items-center rounded-full bg-slate-150 px-2 py-0.5 text-2xs font-bold uppercase tracking-wide text-slate-500 dark:bg-navy-600 dark:text-navy-300">
+                                                class="badge space-x-2.5 rounded-full bg-slate-100 text-slate-400 dark:bg-warning/15">
                                                 Pending
                                             </span>
                                         </p>
@@ -726,7 +709,7 @@ const showCancelNode = computed(() => isCancelled.value);
 
                                     <div v-if="stage.meta" class="pt-1">
                                         <span
-                                            class="tag rounded-full border border-secondary/30 bg-secondary/10 text-secondary dark:border-secondary-light/30 dark:bg-secondary-light/10 dark:text-secondary-light">
+                                            class="badge space-x-2.5 rounded-full bg-primary/10 text-primary dark:bg-accent-light/15 dark:text-accent-light">
                                             {{ stage.meta }}
                                         </span>
                                     </div>
