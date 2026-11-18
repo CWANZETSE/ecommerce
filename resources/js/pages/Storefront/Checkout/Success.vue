@@ -40,7 +40,7 @@ function badgeClass(status: string): string {
         <div class="mx-auto max-w-2xl px-4 py-12 text-center">
             <!-- Success Icon Header -->
             <div
-                class="inline-flex size-20 items-center justify-center rounded-3xl bg-success/10 text-success dark:bg-success/20 mb-5 shadow-inner">
+                class="inline-flex size-20 items-center justify-center">
                 <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" fill="none">
                     <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
                     <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
@@ -53,21 +53,21 @@ function badgeClass(status: string): string {
                 </svg>
             </div>
 
-            <h1 class="text-2xl font-bold text-teal-500 dark:text-teal-300">Order Received Successfully!</h1>
+            <h1 class="text-2xl font-bold text-teal-500 dark:text-teal-300">Order Placed Successfully!</h1>
             <p class="mt-1 text-sm text-slate-400 dark:text-navy-300">
                 Order Reference: <strong class="text-primary dark:text-accent-light font-mono">{{ order.order_number
                 }}</strong>
             </p>
 
             <div
-                class="inline-flex size-100 items-center justify-center rounded-3xl bg-success/10 text-success dark:bg-success/20 mb-5 shadow-inner">
+                class="inline-flex size-100 items-center justify-center">
                 <SuccessSVG />
             </div>
 
 
 
             <!-- Action Button -->
-            <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <div class="mt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Link href="/customer/products"
                     class="btn inline-flex items-center space-x-2 bg-primary font-medium text-white hover:bg-primary-focus focus:bg-primary-focus dark:bg-accent dark:hover:bg-accent-focus px-6 py-3 rounded-xl shadow-lg transition-all duration-200">
                     <ShoppingBag class="size-4" />
