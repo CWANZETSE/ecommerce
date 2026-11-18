@@ -19,6 +19,7 @@ interface VariationFromServer {
     sku: string;
     price: string | null;
     sale_price: string | null;
+    is_default: boolean;
     stock_quantity: number;
     low_stock_threshold: number | null;
     attribute_values: { id: string; value: string; attribute: { name: string } }[];
@@ -31,8 +32,6 @@ interface Product {
     brand_id: string | null;
     short_description: string | null;
     description: string | null;
-    price: string;
-    sale_price: string | null;
     is_active: boolean;
     is_featured: boolean;
     images: ProductImage[];
@@ -45,6 +44,7 @@ interface VariationFormRow {
     price: number | null;
     sale_price: number | null;
     stock_quantity: number;
+    is_default: boolean;
     low_stock_threshold: number | null;
     selected: Record<string, string>;
 }
@@ -63,22 +63,28 @@ const form = useForm({
     brand_id: props.product.brand_id ?? '',
     short_description: props.product.short_description ?? '',
     description: props.product.description ?? '',
-    price: Number(props.product.price),
-    sale_price: props.product.sale_price ? Number(props.product.sale_price) : null,
     is_active: props.product.is_active,
     is_featured: props.product.is_featured,
     show_on_homepage: false,
     images: [] as File[],
     variations: props.product.variations.map((v): VariationFormRow => {
         const selected: Record<string, string> = {};
+
         for (const av of v.attribute_values) {
             selected[av.attribute.name] = av.id;
         }
+
         return {
             id: v.id,
             sku: v.sku,
-            price: v.price ? Number(v.price) : null,
-            sale_price: v.sale_price ? Number(v.sale_price) : null,
+            price: v.price !== null ? Number(v.price) : null,
+            sale_price: v.sale_price !== null ? Number(v.sale_price) : null,
+
+            // Normalize database boolean values.
+            is_default: v.is_default === true
+                || v.is_default === 1
+                || v.is_default === '1',
+
             stock_quantity: v.stock_quantity,
             low_stock_threshold: v.low_stock_threshold,
             selected,
@@ -103,6 +109,7 @@ function addVariation() {
         sku: '',
         price: null,
         sale_price: null,
+        is_default: false,
         stock_quantity: 0,
         low_stock_threshold: null,
         selected: {},
@@ -134,6 +141,7 @@ function submit() {
                 sku: row.sku,
                 price: row.price,
                 sale_price: row.sale_price,
+                is_default: Boolean(row.is_default),
                 stock_quantity: row.stock_quantity,
                 low_stock_threshold: row.low_stock_threshold,
                 attribute_value_ids: Object.values(row.selected),
@@ -187,6 +195,13 @@ function deleteImage(image: { id: string }) {
         },
     );
 }
+function setDefaultVariation(selectedRow: VariationFormRow) {
+    form.variations.forEach((row) => {
+        row.is_default = row === selectedRow;
+    });
+}
+
+
 </script>
 
 <template>
@@ -263,20 +278,6 @@ function deleteImage(image: { id: string }) {
                         </label>
                     </div>
 
-                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                        <label class="block">
-                            <span class="font-medium text-slate-700 dark:text-navy-100">Base price (KES)</span>
-                            <input v-model.number="form.price" type="number" step="0.01"
-                                class="form-input mt-1.5 w-full rounded-lg border border-slate-300 bg-transparent px-3 py-2 placeholder:text-slate-400/70 hover:border-slate-400 focus:border-primary dark:border-navy-450 dark:hover:border-navy-400 dark:focus:border-accent"
-                                placeholder="0.00" />
-                        </label>
-                        <label class="block">
-                            <span class="font-medium text-slate-700 dark:text-navy-100">Base sale price</span>
-                            <input v-model.number="form.sale_price" type="number" step="0.01"
-                                class="form-input mt-1.5 w-full rounded-lg border border-slate-300 bg-transparent px-3 py-2 placeholder:text-slate-400/70 hover:border-slate-400 focus:border-primary dark:border-navy-450 dark:hover:border-navy-400 dark:focus:border-accent"
-                                placeholder="0.00" />
-                        </label>
-                    </div>
 
                     <div class="flex flex-wrap items-center gap-6 pt-2">
                         <label class="inline-flex items-center space-x-2">
@@ -323,7 +324,8 @@ function deleteImage(image: { id: string }) {
                             <div v-for="img in product.images" :key="img.id"
                                 class="group relative h-24 w-24 shrink-0 overflow-hidden rounded-lg border bg-slate-100 dark:border-navy-500 dark:bg-navy-900"
                                 :class="img.is_primary ? 'ring-2 ring-primary dark:ring-accent' : ''">
-                                <img :src="img.url!" :alt="img.alt ?? product.name" class="h-full w-full object-cover" />
+                                <img :src="img.url!" :alt="img.alt ?? product.name"
+                                    class="h-full w-full object-cover" />
 
                                 <span v-if="img.is_primary"
                                     class="absolute left-1 top-1 z-10 rounded-full bg-primary/90 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white shadow-sm dark:bg-accent/90">
@@ -415,8 +417,8 @@ function deleteImage(image: { id: string }) {
                         <!-- Body (grid trick for smooth collapse) -->
                         <div :id="`variation-${variationKey(index, row)}-panel`"
                             class="grid transition-[grid-template-rows,opacity] duration-300 ease-in-out" :class="expandedVariation === variationKey(index, row)
-                                    ? 'grid-rows-[1fr] opacity-100'
-                                    : 'grid-rows-[0fr] opacity-0'
+                                ? 'grid-rows-[1fr] opacity-100'
+                                : 'grid-rows-[0fr] opacity-0'
                                 ">
                             <div class="overflow-hidden">
                                 <div
@@ -428,7 +430,8 @@ function deleteImage(image: { id: string }) {
                                                 d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
                                             </path>
                                         </svg>
-                                        <div class="flex-1">Variant stock levels can be adjusted by navigating to Inventory → Adjust Stock.</div>
+                                        <div class="flex-1">Variant stock levels can be adjusted by navigating to
+                                            Inventory → Adjust Stock.</div>
                                     </div>
 
                                     <div class="w-1.5 bg-warning"></div>
@@ -442,12 +445,25 @@ function deleteImage(image: { id: string }) {
                                                 class="form-input mt-1 w-full rounded-lg border border-slate-300 bg-transparent px-2.5 py-1.5 text-sm dark:border-navy-450 dark:bg-navy-900" />
                                         </div>
                                         <div>
-                                            <label
-                                                class="text-xs font-medium text-slate-600 dark:text-navy-300">Price</label>
-                                            <input v-model.number="row.price" type="number" step="0.01"
-                                                class="form-input mt-1 w-full rounded-lg border border-slate-300 bg-transparent px-2.5 py-1.5 text-sm dark:border-navy-450 dark:bg-navy-900"
-                                                placeholder="Inherit" />
-                                        </div>
+    <label class="text-xs font-medium text-slate-600 dark:text-navy-300">
+        Price (KES) <span class="text-error">*</span>
+    </label>
+    <input
+        v-model.number="row.price"
+        type="number"
+        min="0.01"
+        step="0.01"
+        required
+        class="form-input mt-1 w-full rounded-lg border border-slate-300 bg-transparent px-2.5 py-1.5 text-sm dark:border-navy-450 dark:bg-navy-900"
+        placeholder="0.00"
+    />
+    <p
+        v-if="form.errors[`variations.${index}.price`]"
+        class="mt-1 text-xs text-error"
+    >
+        {{ form.errors[`variations.${index}.price`] }}
+    </p>
+</div>
                                         <div>
                                             <label class="text-xs font-medium text-slate-600 dark:text-navy-300">Sale
                                                 price</label>
@@ -461,6 +477,20 @@ function deleteImage(image: { id: string }) {
                                             <input v-model.number="row.low_stock_threshold" type="number"
                                                 class="form-input mt-1 w-full rounded-lg border border-slate-300 bg-transparent px-2.5 py-1.5 text-sm dark:border-navy-450 dark:bg-navy-900" />
                                         </div>
+                                        <div>
+    <label class="inline-flex cursor-pointer items-center gap-2">
+        <input
+            type="radio"
+            name="default_variation"
+            :checked="row.is_default"
+            class="size-4 border-slate-400 text-primary focus:ring-primary dark:border-navy-500 dark:bg-navy-900"
+            @change="setDefaultVariation(row)"
+        />
+        <span class="font-medium text-slate-700 dark:text-navy-100">
+            Default variation
+        </span>
+    </label>
+</div>
                                     </div>
 
                                     <div class="mt-4 space-y-3">

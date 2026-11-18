@@ -26,8 +26,6 @@ class UpdateProductRequest extends FormRequest
             'brand_id' => ['nullable', 'uuid', Rule::exists('brands', 'id')],
             'short_description' => ['nullable', 'string', 'max:500'],
             'description' => ['nullable', 'string'],
-            'price' => ['required', 'numeric', 'min:0'],
-            'sale_price' => ['nullable', 'numeric', 'min:0', 'lt:price'],
             'is_active' => ['boolean'],
             'is_featured' => ['boolean'],
             'seo_title' => ['nullable', 'string', 'max:255'],
@@ -39,12 +37,16 @@ class UpdateProductRequest extends FormRequest
             'variations' => ['required', 'array', 'min:1'],
             'variations.*.id' => ['nullable', 'uuid'],
             'variations.*.sku' => ['required', 'string', 'max:100', 'distinct'],
-            'variations.*.price' => ['nullable', 'numeric', 'min:0'],
+            'variations.*.price' => ['required', 'numeric', 'min:0'],
             'variations.*.sale_price' => ['nullable', 'numeric', 'min:0'],
             'variations.*.stock_quantity' => ['required', 'integer', 'min:0'],
             'variations.*.low_stock_threshold' => ['nullable', 'integer', 'min:0'],
             'variations.*.attribute_value_ids' => ['required', 'array', 'min:1'],
             'variations.*.attribute_value_ids.*' => ['uuid', Rule::exists('product_attribute_values', 'id')],
+            'variations.*.is_default' => [
+                'required',
+                'boolean',
+            ],
         ];
     }
 
@@ -156,13 +158,6 @@ class UpdateProductRequest extends FormRequest
 
             'brand_id.exists' => 'The brand you selected no longer exists.',
 
-            'price.required' => 'Please enter a base price.',
-            'price.numeric' => 'The base price must be a number.',
-            'price.min' => 'The base price cannot be negative.',
-
-            'sale_price.numeric' => 'The sale price must be a number.',
-            'sale_price.lt' => 'The sale price must be lower than the base price.',
-
             'seo_title.max' => 'The SEO title is too long — keep it under 255 characters.',
             'seo_description.max' => 'The SEO description is too long — keep it under 500 characters.',
 
@@ -178,6 +173,7 @@ class UpdateProductRequest extends FormRequest
             'variations.*.sku.required' => 'Every variation needs a SKU.',
             'variations.*.sku.distinct' => 'Two variations have the same SKU — they must be unique.',
 
+            'variations.*.price.required' => 'Please enter variant price.',
             'variations.*.price.numeric' => 'Variation prices must be numbers.',
             'variations.*.price.min' => 'Variation prices cannot be negative.',
 
@@ -204,8 +200,6 @@ class UpdateProductRequest extends FormRequest
             'sku' => 'product SKU',
             'category_id' => 'category',
             'brand_id' => 'brand',
-            'price' => 'base price',
-            'sale_price' => 'sale price',
             'seo_title' => 'SEO title',
             'seo_description' => 'SEO description',
             'variations' => 'variations',

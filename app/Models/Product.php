@@ -17,20 +17,30 @@ class Product extends Model
 
     protected $fillable = [
         'category_id', 'brand_id', 'name', 'slug', 'sku',
-        'short_description', 'description', 'price', 'sale_price',
+        'short_description', 'description',
         'is_active', 'is_featured', 'seo_title', 'seo_description', 'show_on_homepage',
     ];
 
     protected function casts(): array
     {
         return [
-            'price' => 'decimal:2',
-            'sale_price' => 'decimal:2',
             'is_active' => 'boolean',
+            'is_default' => 'boolean',
             'is_featured' => 'boolean',
             'show_on_homepage' => 'boolean',
         ];
     }
+
+    public function defaultVariation(): HasOne
+{
+    return $this->hasOne(ProductVariation::class)
+        ->where('is_default', true);
+}
+
+public function getDisplayPriceAttribute(): string
+{
+    return $this->defaultVariation?->effective_price ?? '0.00';
+}
 
     public function category(): BelongsTo
     {

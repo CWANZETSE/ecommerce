@@ -264,7 +264,6 @@ function isAttributeSelected(attributeName: string, valueId: string): boolean {
                     </span>
                     <span class="font-mono text-xs text-slate-400 dark:text-navy-300">SKU: {{ product.sku }}</span>
                 </div>
-
                 <h1 class="mt-3 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl dark:text-navy-50">
                     {{ product.name }}
                 </h1>

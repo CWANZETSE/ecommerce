@@ -18,43 +18,73 @@ class HomeController extends Controller
         $newArrivalsLimit = (int) StoreSetting::get('new_arrivals_limit', 8);
 
         return Inertia::render('Welcome', [
-            'banners' => Banner::active()->get()->map(fn ($b) => [
-                'id' => $b->id,
-                'title' => $b->title,
-                'subtitle' => $b->subtitle,
-                'image_url' => $b->image_url,
-                'link_url' => $b->link_url,
-                'link_text' => $b->link_text,
-            ])->values(),
+            'banners' => Banner::active()
+                ->get()
+                ->map(fn ($b) => [
+                    'id' => $b->id,
+                    'title' => $b->title,
+                    'subtitle' => $b->subtitle,
+                    'image_url' => $b->image_url,
+                    'link_url' => $b->link_url,
+                    'link_text' => $b->link_text,
+                ])
+                ->values(),
 
             'featured' => Product::active()
                 ->where('is_featured', true)
-                ->with('primaryImage')
+                ->with([
+                    'primaryImage',
+                    'defaultVariation',
+                ])
                 ->limit($featuredLimit)
                 ->get()
                 ->map(fn (Product $p) => [
                     'id' => $p->id,
                     'name' => $p->name,
                     'slug' => $p->slug,
-                    'price' => number_format((float) ($p->sale_price ?? $p->price), 0),
-                    'primary_image_url' => $p->primary_image_url,   // ← accessor → Storage::url()
-                ]),
+                    'price' => number_format(
+                        (float) (
+                            $p->defaultVariation?->sale_price
+                            ?? $p->defaultVariation?->price
+                            ?? 0
+                        ),
+                        0
+                    ),
+                    'primary_image_url' => $p->primary_image_url,
+                ])
+                ->values(),
 
             'newArrivals' => Product::active()
                 ->latest()
-                ->with('primaryImage')
+                ->with([
+                    'primaryImage',
+                    'defaultVariation',
+                ])
                 ->limit($newArrivalsLimit)
                 ->get()
                 ->map(fn (Product $p) => [
                     'id' => $p->id,
                     'name' => $p->name,
                     'slug' => $p->slug,
-                    'price' => number_format((float) ($p->sale_price ?? $p->price), 0),
-                    'primary_image_url' => $p->primary_image_url,   // ← was `primary_image: {path}` — now matches Vue interface
-                ]),
+                    'price' => number_format(
+                        (float) (
+                            $p->defaultVariation?->sale_price
+                            ?? $p->defaultVariation?->price
+                            ?? 0
+                        ),
+                        0
+                    ),
+                    'primary_image_url' => $p->primary_image_url,
+                ])
+                ->values(),
 
-            'categories' => Category::active()->roots()
-                ->with(['children' => fn ($q) => $q->active()->orderBy('sort_order')])
+            'categories' => Category::active()
+                ->roots()
+                ->with([
+                    'children' => fn ($q) => $q
+                        ->active()
+                        ->orderBy('sort_order'),
+                ])
                 ->orderBy('sort_order')
                 ->get()
                 ->map(fn (Category $c) => [
@@ -62,13 +92,16 @@ class HomeController extends Controller
                     'name' => $c->name,
                     'slug' => $c->slug,
                     'image_url' => $c->image_url,
-                    'children' => $c->children->map(fn (Category $ch) => [
-                        'id' => $ch->id,
-                        'name' => $ch->name,
-                        'slug' => $ch->slug,
-                        'image_url' => $ch->image_url,
-                    ])->values(),
-                ]),
+                    'children' => $c->children
+                        ->map(fn (Category $ch) => [
+                            'id' => $ch->id,
+                            'name' => $ch->name,
+                            'slug' => $ch->slug,
+                            'image_url' => $ch->image_url,
+                        ])
+                        ->values(),
+                ])
+                ->values(),
         ]);
     }
 }

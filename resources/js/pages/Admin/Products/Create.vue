@@ -1,10 +1,19 @@
+
 <script setup lang="ts">
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import type { PageProps } from '@/types';
 import { admin_products_index, admin_products_store } from '@/routes';
 
-interface Option { id: string; name: string }
-interface Attribute { id: string; name: string; values: { id: string; value: string }[] }
+interface Option {
+    id: string;
+    name: string;
+}
+
+interface Attribute {
+    id: string;
+    name: string;
+    values: { id: string; value: string }[];
+}
 
 interface VariationFormRow {
     id: string | null;
@@ -12,11 +21,12 @@ interface VariationFormRow {
     price: number | null;
     sale_price: number | null;
     stock_quantity: number;
+    is_default: boolean;
     low_stock_threshold: number | null;
     selected: Record<string, string>;
 }
 
-const props = defineProps<PageProps & {
+defineProps<PageProps & {
     categories: Option[];
     brands: Option[];
     attributes: Attribute[];
@@ -29,8 +39,6 @@ const form = useForm({
     brand_id: '',
     short_description: '',
     description: '',
-    price: 0,
-    sale_price: null as number | null,
     is_active: true,
     is_featured: false,
     images: [] as File[],
@@ -44,16 +52,36 @@ function addVariation() {
         price: null,
         sale_price: null,
         stock_quantity: 0,
+        is_default: form.variations.length === 0,
         low_stock_threshold: null,
         selected: {},
     });
 }
 
 function removeVariation(index: number) {
+    const wasDefault = form.variations[index].is_default;
+
     form.variations.splice(index, 1);
+
+    // Automatically select another default if the default was removed.
+    if (wasDefault && form.variations.length > 0) {
+        form.variations[0].is_default = true;
+    }
 }
 
-function toggleAttribute(row: VariationFormRow, attributeName: string, valueId: string) {
+function setDefaultVariation(selectedRow: VariationFormRow) {
+    form.variations.forEach((row) => {
+        row.is_default = row === selectedRow;
+    });
+
+    form.clearErrors('variations');
+}
+
+function toggleAttribute(
+    row: VariationFormRow,
+    attributeName: string,
+    valueId: string,
+) {
     if (row.selected[attributeName] === valueId) {
         delete row.selected[attributeName];
     } else {
@@ -61,7 +89,32 @@ function toggleAttribute(row: VariationFormRow, attributeName: string, valueId: 
     }
 }
 
+function validateVariations(): boolean {
+    if (form.variations.length === 0) {
+        form.errors.variations = 'At least one variation is required.';
+        return false;
+    }
+
+    const defaultCount = form.variations.filter(
+        (row) => row.is_default === true,
+    ).length;
+
+    if (defaultCount !== 1) {
+        form.errors.variations =
+            'Select exactly one variation as the default variation.';
+        return false;
+    }
+
+    form.clearErrors('variations');
+
+    return true;
+}
+
 function submit() {
+    if (!validateVariations()) {
+        return;
+    }
+
     form
         .transform((data) => ({
             ...data,
@@ -70,6 +123,7 @@ function submit() {
                 sku: row.sku,
                 price: row.price,
                 sale_price: row.sale_price,
+                is_default: row.is_default === true,
                 stock_quantity: row.stock_quantity,
                 low_stock_threshold: row.low_stock_threshold,
                 attribute_value_ids: Object.values(row.selected),
@@ -78,6 +132,7 @@ function submit() {
         .post(admin_products_store.url());
 }
 </script>
+
 
 <template>
 
@@ -156,24 +211,7 @@ function submit() {
                         </label>
                     </div>
 
-                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                        <label class="block">
-                            <span class="font-medium text-slate-700 dark:text-navy-100">Base price (KES)</span>
-                            <input v-model.number="form.price" type="number" step="0.01"
-                                class="form-input mt-1.5 w-full rounded-lg border border-slate-300 bg-transparent px-3 py-2 placeholder:text-slate-400/70 hover:border-slate-400 focus:border-primary dark:border-navy-450 dark:hover:border-navy-400 dark:focus:border-accent"
-                                placeholder="0.00" />
-                            <p class="mt-1 text-xs text-slate-400 dark:text-navy-300">Used when a variation has no price
-                                set.</p>
-                            <p v-if="form.errors.price" class="mt-1 text-xs text-error">{{ form.errors.price }}</p>
-                        </label>
-                        <label class="block">
-                            <span class="font-medium text-slate-700 dark:text-navy-100">Base sale price
-                                (optional)</span>
-                            <input v-model.number="form.sale_price" type="number" step="0.01"
-                                class="form-input mt-1.5 w-full rounded-lg border border-slate-300 bg-transparent px-3 py-2 placeholder:text-slate-400/70 hover:border-slate-400 focus:border-primary dark:border-navy-450 dark:hover:border-navy-400 dark:focus:border-accent"
-                                placeholder="0.00" />
-                        </label>
-                    </div>
+                    
 
                     <div class="flex flex-wrap items-center gap-6 pt-2">
                         <label class="inline-flex items-center space-x-2">
@@ -196,18 +234,16 @@ function submit() {
                     </label>
 
                     <label class="block">
-                        <!-- Create the toolbar container -->
-<div id="toolbar">
-  <button class="ql-bold">Bold</button>
-  <button class="ql-italic">Italic</button>
-</div>
-
-
-                        <span class="font-medium text-slate-700 dark:text-navy-100">Description</span>
-                        <textarea v-model="form.description" rows="6"
-                            class="form-textarea mt-1.5 w-full rounded-lg border border-slate-300 bg-transparent p-2.5 placeholder:text-slate-400/70 hover:border-slate-400 focus:border-primary dark:border-navy-450 dark:hover:border-navy-400 dark:focus:border-accent"
-                            placeholder="Enter full description..."></textarea>
-                    </label>
+    <span class="font-medium text-slate-700 dark:text-navy-100">
+        Description
+    </span>
+    <textarea
+        v-model="form.description"
+        rows="6"
+        class="form-textarea mt-1.5 w-full rounded-lg border border-slate-300 bg-transparent p-2.5 placeholder:text-slate-400/70 hover:border-slate-400 focus:border-primary dark:border-navy-450 dark:hover:border-navy-400 dark:focus:border-accent"
+        placeholder="Enter full description..."
+    ></textarea>
+</label>
 
                     <div class="block">
                         <input type="file" multiple accept="image/*"
@@ -248,34 +284,95 @@ function submit() {
                         </button>
                     </div>
 
-                    <div class="mt-3 grid gap-3 sm:grid-cols-5">
-                        <div>
-                            <label class="text-xs font-medium text-slate-600 dark:text-navy-300">SKU</label>
-                            <input v-model="row.sku"
-                                class="form-input mt-1 w-full rounded-lg border border-slate-300 bg-transparent px-2.5 py-1.5 text-sm dark:border-navy-450 dark:bg-navy-900" />
-                        </div>
-                        <div>
-                            <label class="text-xs font-medium text-slate-600 dark:text-navy-300">Price</label>
-                            <input v-model.number="row.price" type="number" step="0.01"
-                                class="form-input mt-1 w-full rounded-lg border border-slate-300 bg-transparent px-2.5 py-1.5 text-sm dark:border-navy-450 dark:bg-navy-900"
-                                placeholder="Inherit" />
-                        </div>
-                        <div>
-                            <label class="text-xs font-medium text-slate-600 dark:text-navy-300">Sale price</label>
-                            <input v-model.number="row.sale_price" type="number" step="0.01"
-                                class="form-input mt-1 w-full rounded-lg border border-slate-300 bg-transparent px-2.5 py-1.5 text-sm dark:border-navy-450 dark:bg-navy-900" />
-                        </div>
-                        <div>
-                            <label class="text-xs font-medium text-slate-600 dark:text-navy-300">Stock</label>
-                            <input v-model.number="row.stock_quantity" type="number"
-                                class="form-input mt-1 w-full rounded-lg border border-slate-300 bg-transparent px-2.5 py-1.5 text-sm dark:border-navy-450 dark:bg-navy-900" />
-                        </div>
-                        <div>
-                            <label class="text-xs font-medium text-slate-600 dark:text-navy-300">Low stock</label>
-                            <input v-model.number="row.low_stock_threshold" type="number"
-                                class="form-input mt-1 w-full rounded-lg border border-slate-300 bg-transparent px-2.5 py-1.5 text-sm dark:border-navy-450 dark:bg-navy-900" />
-                        </div>
-                    </div>
+                    
+<div class="mt-3 grid gap-3 sm:grid-cols-3 lg:grid-cols-6">
+    <div>
+        <label class="text-xs font-medium text-slate-600 dark:text-navy-300">
+            SKU <span class="text-error">*</span>
+        </label>
+        <input
+            v-model="row.sku"
+            required
+            class="form-input mt-1 w-full rounded-lg border border-slate-300 bg-transparent px-2.5 py-1.5 text-sm dark:border-navy-450 dark:bg-navy-900"
+            placeholder="Variation SKU"
+        />
+    </div>
+
+    <div>
+        <label class="text-xs font-medium text-slate-600 dark:text-navy-300">
+            Price (KES) <span class="text-error">*</span>
+        </label>
+        <input
+            v-model.number="row.price"
+            type="number"
+            min="0.01"
+            step="0.01"
+            required
+            class="form-input mt-1 w-full rounded-lg border border-slate-300 bg-transparent px-2.5 py-1.5 text-sm dark:border-navy-450 dark:bg-navy-900"
+            placeholder="0.00"
+        />
+        <p
+            v-if="form.errors[`variations.${index}.price`]"
+            class="mt-1 text-xs text-error"
+        >
+            {{ form.errors[`variations.${index}.price`] }}
+        </p>
+    </div>
+
+    <div>
+        <label class="text-xs font-medium text-slate-600 dark:text-navy-300">
+            Sale price (KES)
+        </label>
+        <input
+            v-model.number="row.sale_price"
+            type="number"
+            min="0.01"
+            step="0.01"
+            class="form-input mt-1 w-full rounded-lg border border-slate-300 bg-transparent px-2.5 py-1.5 text-sm dark:border-navy-450 dark:bg-navy-900"
+            placeholder="Optional"
+        />
+    </div>
+
+    <div>
+        <label class="text-xs font-medium text-slate-600 dark:text-navy-300">
+            Stock
+        </label>
+        <input
+            v-model.number="row.stock_quantity"
+            type="number"
+            min="0"
+            class="form-input mt-1 w-full rounded-lg border border-slate-300 bg-transparent px-2.5 py-1.5 text-sm dark:border-navy-450 dark:bg-navy-900"
+        />
+    </div>
+
+    <div>
+        <label class="text-xs font-medium text-slate-600 dark:text-navy-300">
+            Low stock threshold
+        </label>
+        <input
+            v-model.number="row.low_stock_threshold"
+            type="number"
+            min="0"
+            class="form-input mt-1 w-full rounded-lg border border-slate-300 bg-transparent px-2.5 py-1.5 text-sm dark:border-navy-450 dark:bg-navy-900"
+        />
+    </div>
+
+    <div class="flex items-end pb-1">
+        <label class="inline-flex cursor-pointer items-center gap-2">
+            <input
+                type="radio"
+                :name="`default_variation`"
+                :checked="row.is_default"
+                class="size-4 border-slate-400 text-primary focus:ring-primary dark:border-navy-500 dark:bg-navy-900"
+                @change="setDefaultVariation(row)"
+            />
+            <span class="text-sm font-medium text-slate-700 dark:text-navy-100">
+                Default variation
+            </span>
+        </label>
+    </div>
+</div>
+
 
                     <div class="mt-4 space-y-3">
                         <div v-for="attr in attributes" :key="attr.id">

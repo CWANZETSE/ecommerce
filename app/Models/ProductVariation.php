@@ -13,7 +13,7 @@ class ProductVariation extends Model
     use HasUuids,HasFactory;
 
     protected $fillable = [
-        'product_id', 'sku', 'price', 'sale_price', 'stock_quantity', 'low_stock_threshold',
+        'product_id', 'sku', 'price', 'sale_price','is_default', 'stock_quantity', 'low_stock_threshold',
     ];
 
     protected function casts(): array

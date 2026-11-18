@@ -14,6 +14,7 @@ use App\Services\ImageService;
 use App\Services\ProductService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -32,7 +33,7 @@ class ProductController extends Controller
             ->with(['category:id,name', 'brand:id,name', 'primaryImage', 'variations:id,product_id,stock_quantity'])
             ->when($request->filled('search'), fn ($q) => $q->where(function ($q) use ($request) {
                 $q->where('name', 'like', "%{$request->search}%")
-                  ->orWhere('sku', 'like', "%{$request->search}%");
+                    ->orWhere('sku', 'like', "%{$request->search}%");
             }))
             ->when($request->filled('category'), fn ($q) => $q->where('category_id', $request->category))
             ->when($request->filled('status'), fn ($q) => $q->where('is_active', $request->status === 'active'))
@@ -43,7 +44,6 @@ class ProductController extends Controller
                 'id' => $p->id,
                 'name' => $p->name,
                 'sku' => $p->sku,
-                'price' => $p->price,
                 'is_active' => $p->is_active,
                 'is_featured' => $p->is_featured,
                 'category' => $p->category ? [
@@ -84,6 +84,16 @@ class ProductController extends Controller
         $images = $data['images'] ?? [];
         unset($data['images']);
 
+        $defaultCount = collect($data['variations'])
+            ->where('is_default', true)
+            ->count();
+
+        if ($defaultCount !== 1) {
+            throw ValidationException::withMessages([
+                'variations' => 'Exactly one variation must be selected as the default.',
+            ]);
+        }
+
         $product = $this->products->create($data);
 
         foreach ($images as $image) {
@@ -110,8 +120,6 @@ class ProductController extends Controller
                 'brand_id' => $product->brand_id,
                 'short_description' => $product->short_description,
                 'description' => $product->description,
-                'price' => $product->price,
-                'sale_price' => $product->sale_price,
                 'is_active' => $product->is_active,
                 'is_featured' => $product->is_featured,
                 'show_on_homepage' => $product->show_on_homepage,
@@ -127,6 +135,7 @@ class ProductController extends Controller
                     'sku' => $v->sku,
                     'price' => $v->price,
                     'sale_price' => $v->sale_price,
+                    'is_default' => $v->is_default,
                     'stock_quantity' => (int) $v->stock_quantity,
                     'low_stock_threshold' => $v->low_stock_threshold,
                     'attribute_values' => $v->attributeValues->map(fn ($av) => [
@@ -151,7 +160,15 @@ class ProductController extends Controller
         $data = $request->validated();
         $images = $data['images'] ?? [];
         unset($data['images']);
+        $defaultCount = collect($data['variations'])
+            ->where('is_default', true)
+            ->count();
 
+        if ($defaultCount !== 1) {
+            throw ValidationException::withMessages([
+                'variations' => 'Exactly one variation must be selected as the default.',
+            ]);
+        }
         $this->products->update($product, $data);
 
         foreach ($images as $image) {

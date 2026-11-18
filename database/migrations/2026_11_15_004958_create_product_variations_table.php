@@ -14,6 +14,7 @@ return new class extends Migration
             $table->string('sku')->unique();
             $table->decimal('price', 12, 2)->nullable();
             $table->decimal('sale_price', 12, 2)->nullable();
+            $table->boolean('is_default')->default(false);
             $table->integer('stock_quantity')->default(0);
             $table->unsignedInteger('low_stock_threshold')->nullable();
             $table->timestamps();
