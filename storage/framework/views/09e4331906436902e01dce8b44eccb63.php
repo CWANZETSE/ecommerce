@@ -4,26 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Receipt <?php echo e($order->order_number); ?></title>
- <?php
-    $geologicaRegular = storage_path('fonts/Geologica.ttf');
-    $geologicaBold = storage_path('fonts/Geologica-Bold.ttf');
-?>
-    <style>
-        <?php if($geologicaRegular && $geologicaBold): ?>
-            @font-face {
-                font-family: "Geologica";
-                src: url("<?php echo e($geologicaRegular); ?>") format("truetype");
-                font-weight: 400;
-                font-style: normal;
-            }
 
-            @font-face {
-                font-family: "Geologica";
-                src: url("<?php echo e($geologicaBold); ?>") format("truetype");
-                font-weight: 700;
-                font-style: normal;
-            }
-        <?php endif; ?>
+    <style>
+
 
         @page {
             margin: 15px 20px;
@@ -42,13 +25,13 @@
         div,
         span,
         strong {
-            font-family: "Geologica", sans-serif;
+            font-family: "DejaVu Sans", sans-serif;
         }
 
         body {
-            font-family: "Geologica", sans-serif;
+            font-family: "DejaVu Sans", sans-serif;
             color: #111827;
-            font-size: 10px;
+            font-size: 12px;
             line-height: 1.35;
             font-weight: 400;
         }
@@ -66,7 +49,7 @@
         }
 
         .store-name {
-            font-size: 15px;
+            font-size: 20px;
             font-weight: 700;
             color: #111827;
             margin: 0;

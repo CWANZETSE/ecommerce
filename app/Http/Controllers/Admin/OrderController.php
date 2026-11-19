@@ -13,6 +13,7 @@ use App\Services\InventoryService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 use Inertia\Inertia;
@@ -169,64 +170,67 @@ class OrderController extends Controller
     }
 
     public function orderPrintReceipt(Order $order)
-{
-    if ($order->payment_status !== OrderPaymentStatus::Paid) {
-        return back()->with('error', 'Receipt cannot be generated for unpaid invoice');
+    {
+        if ($order->payment_status !== OrderPaymentStatus::Paid) {
+            return back()->with('error', 'Receipt cannot be generated for unpaid invoice');
+        }
+
+        $order->load(['items', 'payments']);
+
+        $settings = StoreSetting::public()
+            ->pluck('value', 'key')
+            ->toArray();
+
+        $pdf = Pdf::loadView('admin.orders.receipt-pdf', [
+            'order' => $order,
+            'settings' => $settings,
+        ]);
+
+        return $pdf->download('receipt-'.$order->order_number.'.pdf');
     }
-
-    $order->load(['items', 'payments']);
-
-    $settings = StoreSetting::public()
-        ->pluck('value', 'key')
-        ->toArray();
-
-    $pdf = Pdf::loadView('admin.orders.receipt-pdf', [
-        'order' => $order,
-        'settings' => $settings,
-    ])->setPaper('a4', 'portrait')
-    ->setOptions([
-        'defaultFont' => 'Geologica',
-        'isFontSubsettingEnabled' => true,
-        'isRemoteEnabled' => true,
-    ]);
-
-    return $pdf->download('receipt-' . $order->order_number . '.pdf');
-}
 
     public function updateFulfilment(Request $request, Order $order): RedirectResponse
     {
         $data = $request->validate([
-            'status' => ['required', 'in:'.implode(',', array_column(OrderFulfilmentStatus::cases(), 'value'))],
+            'status' => ['required', 'string'],
             'note' => ['nullable', 'string', 'max:500'],
-        ], [
-            'status.required' => 'Choose a fulfilment status.',
-            'status.in' => 'That status is not valid.',
         ]);
 
-        $new = OrderFulfilmentStatus::from($data['status']);
-        $previous = $order->fulfilment_status;
+        $newStatus = OrderFulfilmentStatus::tryFrom($data['status']);
+        $currentStatus = $order->fulfilment_status;
 
-        if ($previous === $new) {
-            return back()->with('info', 'Status unchanged.');
+        if (! $newStatus) {
+            return back()->with('error', 'Invalid status selected.');
         }
 
-        // Disallow moving to processing before payment confirmed
-        if ($new !== OrderFulfilmentStatus::Pending
-            && $order->payment_status !== OrderPaymentStatus::Paid
-            && $new !== OrderFulfilmentStatus::Cancelled) {
-            return back()->with('error', 'This order is not yet paid — cannot move to '.$new->value.'.');
+        // 1. Check against the Enum rules
+        if (! $currentStatus->canTransitionTo($newStatus)) {
+            return back()->with('error', "Cannot transition from {$currentStatus->label()} to {$newStatus->label()}.");
         }
 
-        $order->update(['fulfilment_status' => $new]);
-        $order->recordStatus($previous->value, $new->value, 'fulfilment', $data['note'] ?? null);
+        // 2. If cancelling, ensure payment logic is respected
+        if ($newStatus === OrderFulfilmentStatus::Cancelled) {
+            // Run your existing cancellation logic (restock, notify, etc.)
+            return $this->cancel($order);
+        }
 
+        // 3. Update the status and log history
+        DB::transaction(function () use ($order, $currentStatus, $newStatus, $data) {
+            $order->update(['fulfilment_status' => $newStatus]);
+            $order->recordStatus(
+                $currentStatus->value,
+                $newStatus->value,
+                'fulfilment',
+                $data['note'] ?? null
+            );
+        });
         return back()->with('success', 'Fulfilment status updated.');
     }
 
     public function addNote(Request $request, Order $order): RedirectResponse
     {
         $data = $request->validate([
-            'note' => ['required', 'string', 'max:1000'],
+            'note' => ['required', 'string', 'max:200'],
         ]);
 
         $order->recordStatus(

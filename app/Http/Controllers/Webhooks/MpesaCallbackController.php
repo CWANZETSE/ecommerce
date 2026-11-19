@@ -210,9 +210,7 @@ class MpesaCallbackController extends Controller
             ]);
 
             try {
-                Notification::route('mail', $order->customer_email)
-                    ->notify(new OrderPaidNotification($order));
-
+                \App\Events\OrderPaidEvent::dispatch($order);
                 Log::info('M-Pesa callback: OrderPaidNotification queued/sent', [
                     'order_id' => $order->id,
                     'email' => $order->customer_email,
@@ -257,11 +255,7 @@ class MpesaCallbackController extends Controller
 
         if ($order) {
             try {
-                Notification::route('mail', $order->customer_email)
-                    ->notify(new PaymentFailedNotification(
-                        $order,
-                        $resultDesc ?: 'Payment was not completed.',
-                    ));
+                \App\Events\PaymentFailedEvent::dispatch($order, $resultDesc);
 
                 Log::info('M-Pesa callback: PaymentFailedNotification sent', [
                     'order_id' => $order->id,

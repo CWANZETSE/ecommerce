@@ -382,7 +382,7 @@ function badgeClass(status: string): string {
                                             </span>
                                         </td>
                                         <td
-                                            class="whitespace-nowrap border border-slate-150 px-5 flex items-center gap-1 py-3.5 align-middle text-xs text-slate-400 dark:border-slate-700 dark:text-navy-300">
+                                            class="min-w-[220px] border border-slate-150 px-5 py-3.5 align-middle dark:border-slate-700">
                                             <span
                                                 class="badge space-x-1 rounded-full bg-primary/10 text-primary dark:bg-accent-light/15 dark:text-accent-light">
                                                 <HistoryIcon class="size-3" />
@@ -722,15 +722,6 @@ function badgeClass(status: string): string {
                         </button>
                     </form>
                 </div>
-
-                <!-- Cancel Order -->
-                <button v-if="order.fulfilment_status !== 'cancelled' && order.fulfilment_status !== 'delivered'"
-                    type="button"
-                    class="flex w-full items-center justify-center gap-2 rounded-xl border border-error/20 bg-error/5 px-4 py-3 text-sm font-semibold text-error transition hover:border-error/40 hover:bg-error/10 focus:ring-2 focus:ring-error/10 dark:bg-error/10 dark:hover:bg-error/15 sm:col-span-2 xl:col-span-1"
-                    @click="cancelOrder">
-                    <Ban class="size-4" />
-                    Cancel order
-                </button>
             </aside>
         </div>
     </div>

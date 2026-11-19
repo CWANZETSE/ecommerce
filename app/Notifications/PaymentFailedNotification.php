@@ -31,7 +31,7 @@ class PaymentFailedNotification extends Notification implements ShouldQueue
             ->line("Reason: {$this->reason}")
             ->line('Your order is still open. You can try paying again or contact us if the issue persists.')
             ->line("Order total: KES {$this->order->grand_total}")
-            ->line('If money was deducted from your account, it will be reversed by M-Pesa within 48 hours.');
+            ->line('If money was deducted from your account, it will be reversed within 48 hours.');
     }
 
     public function toArray(object $notifiable): array

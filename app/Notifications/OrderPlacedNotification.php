@@ -16,33 +16,18 @@ class OrderPlacedNotification extends Notification implements ShouldQueue
 
     public function via(object $notifiable): array
     {
-        return ['mail'];
+        return ['mail', 'database'];
     }
 
     public function toMail(object $notifiable): MailMessage
     {
-        $order = $this->order;
-
-        $mail = (new MailMessage)
-            ->subject("Order received — {$order->order_number}")
-            ->greeting("Hi {$order->customer_name},")
-            ->line("Thanks for your order! We've received order {$order->order_number} for KES {$order->grand_total}.")
-            ->line('We\'ve sent an M-Pesa payment prompt to your phone. Enter your PIN to complete payment.');
-
-        foreach ($order->items as $item) {
-            $mail->line("• {$item->product_name} — {$item->sku} × {$item->quantity} = KES {$item->line_total}");
-        }
-
-        $address = $order->shipping_address;
-        $mail->line("Delivery to: {$address['county']} — {$address['town']}, {$address['address']}");
-
-        if (! empty($address['instructions'])) {
-            $mail->line("Instructions: {$address['instructions']}");
-        }
-
-        $mail->line('You will receive another email once payment is confirmed.');
-
-        return $mail;
+        return (new MailMessage)
+            ->subject("Order Received — {$this->order->order_number}")
+            ->greeting("Hi {$this->order->customer_name},")
+            ->line("Thank you for your order! We have received your order for KES {$this->order->grand_total}.")
+            ->line("We have sent an M-Pesa payment prompt to your phone. Please enter your PIN to complete the payment.")
+            ->action('View Order', url("/customer/orders/{$this->order->ulid}"))
+            ->line("If you do not receive the prompt, please try again or contact support.");
     }
 
     public function toArray(object $notifiable): array
@@ -50,6 +35,7 @@ class OrderPlacedNotification extends Notification implements ShouldQueue
         return [
             'order_ulid' => $this->order->ulid,
             'order_number' => $this->order->order_number,
+            'sms_message' => "Order {$this->order->order_number} received. Please check your phone for the M-Pesa prompt to complete payment.",
         ];
     }
 }
