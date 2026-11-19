@@ -318,17 +318,10 @@ const formatMoney = (amount: number | string) =>
                             <!-- Sale Badge -->
                             <span
                                 v-if="p.sale_price !== null"
-                                class="absolute left-2 top-2 z-10 rounded-full bg-error px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-white shadow-sm"
+                                class="absolute left-2 top-2 z-10 badge space-x-2.5 rounded-full bg-warning/10 text-warning dark:bg-warning/15"
                             >
                                 Sale
                             </span>
-
-                            <!-- Featured Badge -->
-                            <div class="absolute right-2 top-2">
-                                <span class="badge rounded-full bg-primary/90 px-2 py-0.5 text-xs text-white backdrop-blur-sm">
-                                    Featured
-                                </span>
-                            </div>
                         </div>
 
                         <div class="mt-4 px-1">
@@ -433,14 +426,14 @@ const formatMoney = (amount: number | string) =>
                             <!-- Sale Badge -->
                             <span
                                 v-if="p.sale_price !== null"
-                                class="absolute left-2 top-2 z-10 rounded-full bg-error px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-white shadow-sm"
+                                class="absolute left-2 top-2 z-10 badge space-x-2.5 rounded-full bg-warning/10 text-warning dark:bg-warning/15"
                             >
                                 Sale
                             </span>
 
                             <!-- New Badge -->
                             <div class="absolute right-2 top-2">
-                                <span class="badge rounded-full bg-success/90 px-2 py-0.5 text-xs text-white backdrop-blur-sm">
+                                <span class="badge space-x-2.5 rounded-full bg-primary/10 text-primary dark:bg-accent-light/15 dark:text-accent-light">
                                     New
                                 </span>
                             </div>
