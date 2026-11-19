@@ -229,6 +229,7 @@ Route::middleware(['auth', 'verified', EnsureUserIsAdmin::class])
         // Orders
         Route::get('/orders', [AdminOrderController::class, 'index'])->name('orders_index');
         Route::get('/orders/{order:ulid}', [AdminOrderController::class, 'show'])->name('orders_show');
+        Route::get('/orders/receipt/{order:ulid}', [AdminOrderController::class, 'showReceipt'])->name('orders_show_receipt');
         Route::patch('/orders/{order:ulid}/fulfilment', [AdminOrderController::class, 'updateFulfilment'])
             ->name('orders_fulfilment');
         Route::post('/orders/{order:ulid}/notes', [AdminOrderController::class, 'addNote'])

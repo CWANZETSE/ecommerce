@@ -1,11 +1,9 @@
+
 <script setup lang="ts">
-import { Form, Head } from '@inertiajs/vue3';
+import CreativeDesignSVG from '@/components/SVG/creativeDesignSVG.vue';
 import InputError from '@/components/InputError.vue';
-import TextLink from '@/components/TextLink.vue';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Spinner } from '@/components/ui/spinner';
+import { Form, Head, Link } from '@inertiajs/vue3';
+import { ShoppingBag } from '@lucide/vue';
 import { login } from '@/routes';
 import { email } from '@/routes/password';
 
@@ -24,43 +22,161 @@ defineProps<{
 <template>
     <Head title="Forgot password" />
 
-    <div
-        v-if="status"
-        class="mb-4 text-center text-sm font-medium text-green-600"
-    >
-        {{ status }}
-    </div>
-
-    <div class="space-y-6">
-        <Form v-bind="email.form()" v-slot="{ errors, processing }">
-            <div class="grid gap-2">
-                <Label for="email">Email address</Label>
-                <Input
-                    id="email"
-                    type="email"
-                    name="email"
-                    autocomplete="off"
-                    v-focus
-                    placeholder="email@example.com"
+    <div class="flex min-h-screen grow bg-slate-50 dark:bg-navy-900">
+        <!-- Brand Logo Top Left -->
+        <div class="fixed top-0 z-10 hidden p-6 lg:block lg:px-12">
+            <Link href="/" class="flex shrink-0 items-center gap-2.5">
+                <img
+                    v-if="$page.props.store_logo_url"
+                    :src="$page.props.store_logo_url"
+                    :alt="$page.props.store_name"
+                    class="h-30 w-auto object-contain"
                 />
-                <InputError :message="errors.email" />
-            </div>
 
-            <div class="my-6 flex items-center justify-start">
-                <Button
-                    class="w-full"
-                    :disabled="processing"
-                    data-test="email-password-reset-link-button"
+                <span
+                    v-else
+                    class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary font-bold text-white shadow-md dark:bg-accent"
                 >
-                    <Spinner v-if="processing" />
-                    Email password reset link
-                </Button>
-            </div>
-        </Form>
+                    <ShoppingBag class="size-4.5" />
+                </span>
 
-        <div class="space-x-1 text-center text-sm text-muted-foreground">
-            <span>Or, return to</span>
-            <TextLink :href="login()">log in</TextLink>
+                <span class="hidden text-lg font-bold text-slate-800 dark:text-navy-50 sm:inline">
+                    {{ $page.props.store_name }}
+                </span>
+            </Link>
         </div>
+
+        <!-- Left Illustration Section -->
+        <div class="hidden w-full place-items-center bg-slate-100/50 dark:bg-navy-950/50 lg:grid">
+            <div class="w-full max-w-lg p-6 text-center">
+                <div class="mb-6 inline-flex rounded-3xl bg-primary/10 p-4 dark:bg-accent/10">
+                    <CreativeDesignSVG />
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Forgot Password Section -->
+        <main
+            class="ml-auto flex w-full flex-col items-center justify-between bg-white shadow-2xl dark:bg-navy-700 lg:max-w-md"
+        >
+            <div class="flex w-full max-w-sm grow flex-col justify-center p-5">
+                <!-- Header -->
+                <div class="text-center">
+                    <!-- Mobile Brand Logo -->
+                    <div class="flex justify-center lg:hidden">
+                        <Link href="/" class="flex items-center justify-center gap-2.5">
+                            <img
+                                v-if="$page.props.store_logo_url"
+                                :src="$page.props.store_logo_url"
+                                :alt="$page.props.store_name"
+                                class="h-30 w-auto object-contain"
+                            />
+
+                            <span
+                                v-else
+                                class="flex size-14 shrink-0 items-center justify-center rounded-xl bg-primary text-2xl font-bold text-white dark:bg-accent"
+                            >
+                                <ShoppingBag class="size-6" />
+                            </span>
+                        </Link>
+                    </div>
+
+                    <div class="mt-4 lg:mt-0">
+                        <h2 class="text-2xl font-semibold text-slate-600 dark:text-navy-100">
+                            Forgot Password?
+                        </h2>
+
+                        <p class="mt-1 text-sm text-slate-400 dark:text-navy-300">
+                            Enter your email to receive a password reset link
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Status Message -->
+                <div
+                    v-if="status"
+                    class="mt-6 rounded-lg bg-success/10 px-3 py-2.5 text-center text-sm font-medium text-success"
+                >
+                    {{ status }}
+                </div>
+
+                <!-- Forgot Password Form -->
+                <Form
+                    v-bind="email.form()"
+                    v-slot="{ errors, processing }"
+                    class="mt-8 space-y-4"
+                >
+                    <!-- Email -->
+                    <div>
+                        <label class="relative flex">
+                            <input
+                                id="email"
+                                type="email"
+                                name="email"
+                                required
+                                autocomplete="email"
+                                v-focus
+                                placeholder="Email address"
+                                class="form-input peer w-full rounded-lg bg-slate-150 px-3 py-2.5 pl-9 text-slate-700 ring-primary/50 placeholder:text-slate-400 hover:bg-slate-200 focus:ring-3 dark:bg-navy-900/90 dark:text-navy-100 dark:ring-accent/50 dark:placeholder:text-navy-300 dark:hover:bg-navy-900 dark:focus:bg-navy-900"
+                            />
+
+                            <span
+                                class="pointer-events-none absolute flex h-full w-10 items-center justify-center text-slate-400 peer-focus:text-primary dark:text-navy-300 dark:peer-focus:text-accent"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    class="size-5 transition-colors duration-200"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="1.5"
+                                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                                    />
+                                </svg>
+                            </span>
+                        </label>
+
+                        <InputError :message="errors.email" />
+                    </div>
+
+                    <!-- Submit -->
+                    <button
+                        type="submit"
+                        :disabled="processing"
+                        data-test="email-password-reset-link-button"
+                        class="btn mt-6 h-10 w-full bg-primary font-medium text-white transition-colors hover:bg-primary-focus focus:bg-primary-focus active:bg-primary-focus/90 disabled:opacity-50 dark:bg-accent dark:hover:bg-accent-focus"
+                    >
+                        {{ processing ? 'Sending…' : 'Email Password Reset Link' }}
+                    </button>
+                </Form>
+
+                <!-- Back to Login -->
+                <div class="mt-6 text-center text-xs-plus">
+                    <p class="text-slate-400 dark:text-navy-300">
+                        Remember your password?
+
+                        <Link
+                            :href="login()"
+                            class="ml-1 font-medium text-primary transition-colors hover:text-primary-focus dark:text-accent-light dark:hover:text-accent"
+                        >
+                            Sign In
+                        </Link>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="my-5 flex justify-center text-xs text-slate-400 dark:text-navy-300">
+                <Link href="#" class="hover:underline">Privacy Notice</Link>
+
+                <div class="mx-3 my-1 w-px bg-slate-200 dark:border-navy-500"></div>
+
+                <Link href="#" class="hover:underline">Terms of Service</Link>
+            </div>
+        </main>
     </div>
 </template>

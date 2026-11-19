@@ -266,7 +266,7 @@ function setDefaultVariation(selectedRow: VariationFormRow) {
                                 <option v-for="c in categories" :key="c.id" :value="c.id">{{ c.name }}</option>
                             </select>
                             <p v-if="form.errors.category_id" class="mt-1 text-xs text-error">{{ form.errors.category_id
-                                }}</p>
+                            }}</p>
                         </label>
                         <label class="block">
                             <span class="font-medium text-slate-700 dark:text-navy-100">Brand</span>
@@ -362,16 +362,21 @@ function setDefaultVariation(selectedRow: VariationFormRow) {
                         + Add variation
                     </button>
                 </div>
-                <div class="alert flex rounded-lg my-2 border border-warning/30 bg-warning/10 py-4 px-4 text-warning sm:px-5">
-                  Please set the lowest-priced variation as the default, as its price is displayed on the storefront before customers select a variation.
+                <div
+                    class="alert flex rounded-lg my-2 border border-primary/30 bg-primary/10 py-4 px-4 text-primary/70 sm:px-5">
+                    Set the lowest-priced variation as the default, as its price is displayed on the storefront before
+                    customers select a variation.
                 </div>
 
 
-                <div v-if="form.variations.length === 0" class="alert mt-2 flex space-x-2 rounded-lg border border-error px-4 py-4 text-error">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="size-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-                  </svg>
-                  <p>No variations yet. Add atleast one.</p>
+                <div v-if="form.variations.length === 0"
+                    class="alert mt-2 flex space-x-2 rounded-lg border border-error px-4 py-4 text-error">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="size-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd"
+                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                            clip-rule="evenodd"></path>
+                    </svg>
+                    <p>No variations yet. Add atleast one.</p>
                 </div>
 
                 <!-- Accordion -->
@@ -450,25 +455,18 @@ function setDefaultVariation(selectedRow: VariationFormRow) {
                                                 class="form-input mt-1 w-full rounded-lg border border-slate-300 bg-transparent px-2.5 py-1.5 text-sm dark:border-navy-450 dark:bg-navy-900" />
                                         </div>
                                         <div>
-    <label class="text-xs font-medium text-slate-600 dark:text-navy-300">
-        Price (KES) <span class="text-error">*</span>
-    </label>
-    <input
-        v-model.number="row.price"
-        type="number"
-        min="0.01"
-        step="0.01"
-        required
-        class="form-input mt-1 w-full rounded-lg border border-slate-300 bg-transparent px-2.5 py-1.5 text-sm dark:border-navy-450 dark:bg-navy-900"
-        placeholder="0.00"
-    />
-    <p
-        v-if="form.errors[`variations.${index}.price`]"
-        class="mt-1 text-xs text-error"
-    >
-        {{ form.errors[`variations.${index}.price`] }}
-    </p>
-</div>
+                                            <label class="text-xs font-medium text-slate-600 dark:text-navy-300">
+                                                Price (KES) <span class="text-error">*</span>
+                                            </label>
+                                            <input v-model.number="row.price" type="number" min="0.01" step="0.01"
+                                                required
+                                                class="form-input mt-1 w-full rounded-lg border border-slate-300 bg-transparent px-2.5 py-1.5 text-sm dark:border-navy-450 dark:bg-navy-900"
+                                                placeholder="0.00" />
+                                            <p v-if="form.errors[`variations.${index}.price`]"
+                                                class="mt-1 text-xs text-error">
+                                                {{ form.errors[`variations.${index}.price`] }}
+                                            </p>
+                                        </div>
                                         <div>
                                             <label class="text-xs font-medium text-slate-600 dark:text-navy-300">Sale
                                                 price</label>
@@ -483,35 +481,45 @@ function setDefaultVariation(selectedRow: VariationFormRow) {
                                                 class="form-input mt-1 w-full rounded-lg border border-slate-300 bg-transparent px-2.5 py-1.5 text-sm dark:border-navy-450 dark:bg-navy-900" />
                                         </div>
                                         <div>
-    <label class="inline-flex cursor-pointer items-center gap-2">
-        <input
-            type="radio"
-            name="default_variation"
-            :checked="row.is_default"
-            class="form-checkbox is-outline size-5 rounded-sm border-slate-400/70 before:!bg-warning checked:!border-warning hover:!border-warning focus:!border-warning dark:border-navy-400"
-            @change="setDefaultVariation(row)"
-        />
-        <span class="font-medium text-slate-700 dark:text-navy-100">
-            Default variation
-        </span>
-    </label>
-</div>
-                                    </div>
-
-                                    <div class="mt-4 space-y-3">
-                                        <div v-for="attr in attributes" :key="attr.id">
-                                            <p class="text-xs font-medium text-slate-500 dark:text-navy-300">{{
-                                                attr.name }}</p>
-                                            <div class="mt-1.5 flex flex-wrap gap-1.5">
-                                                <button v-for="val in attr.values" :key="val.id" type="button"
-                                                    class="btn rounded-full bg-slate-150 font-medium text-slate-800 focus:bg-slate-200 active:bg-slate-200/80 dark:bg-navy-500 dark:text-navy-50 dark:hover:bg-navy-450 dark:focus:bg-navy-450 dark:active:bg-navy-450/90"
-                                                    :class="row.selected[attr.name] === val.id ? 'border-primary bg-primary/10 text-primary dark:border-accent dark:bg-accent/10 dark:text-accent-light' : 'border-slate-300 bg-white hover:bg-slate-100 dark:border-navy-500 dark:bg-navy-800 dark:hover:bg-navy-700'"
-                                                    @click="toggleAttribute(row, attr.name, val.id)">
-                                                    {{ val.value }}
-                                                </button>
-                                            </div>
+                                            <label class="inline-flex cursor-pointer items-center gap-2">
+                                                <input type="radio" name="default_variation" :checked="row.is_default"
+                                                    class="form-checkbox is-outline size-5 rounded-sm border-slate-400/70 before:!bg-warning checked:!border-warning hover:!border-warning focus:!border-warning dark:border-navy-400"
+                                                    @change="setDefaultVariation(row)" />
+                                                <span class="font-medium text-slate-700 dark:text-navy-100">
+                                                    Default variation
+                                                </span>
+                                            </label>
                                         </div>
                                     </div>
+
+                                    <div class="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-3">
+    <div
+        v-for="attr in attributes"
+        :key="attr.id"
+        class="min-w-0 rounded-lg border border-slate-200/60 p-3 dark:border-navy-500/40"
+    >
+        <p class="text-xs font-medium text-slate-500 dark:text-navy-300">
+            {{ attr.name }}
+        </p>
+
+        <div class="mt-1.5 flex flex-wrap gap-1.5">
+            <button
+                v-for="val in attr.values"
+                :key="val.id"
+                type="button"
+                class="btn rounded-full border font-medium transition-colors"
+                :class="
+                    row.selected[attr.name] === val.id
+                        ? 'border-primary bg-primary/10 text-primary dark:border-accent dark:bg-accent/10 dark:text-accent-light'
+                        : 'border-slate-300 bg-white text-slate-800 hover:bg-slate-100 dark:border-navy-500 dark:bg-navy-800 dark:text-navy-50 dark:hover:bg-navy-700'
+                "
+                @click="toggleAttribute(row, attr.name, val.id)"
+            >
+                {{ val.value }}
+            </button>
+        </div>
+    </div>
+</div>
 
                                     <p v-if="form.errors[`variations.${index}.sku`]" class="mt-2 text-xs text-error">
                                         {{ form.errors[`variations.${index}.sku`] }}

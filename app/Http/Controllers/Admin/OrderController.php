@@ -7,6 +7,7 @@ use App\Enums\OrderPaymentStatus;
 use App\Enums\StockMovementType;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Models\StoreSetting;
 use App\Notifications\OrderCancelledNotification;
 use App\Services\InventoryService;
 use Illuminate\Http\RedirectResponse;
@@ -106,6 +107,61 @@ class OrderController extends Controller
             'fulfilmentStatuses' => array_map(fn ($s) => ['value' => $s->value, 'label' => ucfirst($s->value)], OrderFulfilmentStatus::cases()),
         ]);
     }
+
+   public function showReceipt(Order $order): Response|RedirectResponse
+{
+    if ($order->payment_status !== OrderPaymentStatus::Paid) {
+        return back()->with('error', 'Receipt cannot be generated for unpaid invoice');
+    }
+
+    $order->load(['items', 'payments']);
+
+    return Inertia::render('Admin/Orders/Receipt', [
+        'order' => [
+            'id' => $order->id,
+            'ulid' => $order->ulid,
+            'order_number' => $order->order_number,
+            'customer_name' => $order->customer_name,
+            'customer_email' => $order->customer_email,
+            'customer_phone' => $order->customer_phone,
+            'shipping_address' => $order->shipping_address,
+            'subtotal' => $order->subtotal,
+            'shipping_fee' => $order->shipping_fee,
+            'grand_total' => $order->grand_total,
+            'payment_status' => $order->payment_status->value,
+            'fulfilment_status' => $order->fulfilment_status->value,
+            'paid_at' => $order->paid_at?->toDateTimeString(),
+            'cancelled_at' => $order->cancelled_at?->toDateTimeString(),
+            'created_at' => $order->created_at->toDateTimeString(),
+
+            'items' => $order->items->map(fn ($i) => [
+                'id' => $i->id,
+                'product_name' => $i->product_name,
+                'sku' => $i->sku,
+                'attributes' => $i->attributes,
+                'unit_price' => $i->unit_price,
+                'quantity' => $i->quantity,
+                'line_total' => $i->line_total,
+            ])->values(),
+
+            'payments' => $order->payments->map(fn ($p) => [
+                'id' => $p->id,
+                'ulid' => $p->ulid,
+                'provider' => $p->provider->value,
+                'amount' => $p->amount,
+                'status' => $p->status->value,
+                'provider_reference' => $p->provider_reference,
+                'checkout_request_id' => $p->checkout_request_id,
+                'failure_reason' => $p->failure_reason,
+                'paid_at' => $p->paid_at?->toDateTimeString(),
+                'created_at' => $p->created_at->toDateTimeString(),
+            ])->values(),
+        ],
+        'settings' => StoreSetting::public()
+        ->pluck('value', 'key')
+        ->toArray(),
+    ]);
+}
 
     public function updateFulfilment(Request $request, Order $order): RedirectResponse
     {

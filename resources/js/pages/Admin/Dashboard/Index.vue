@@ -68,12 +68,13 @@ const revenueOptions = computed(() => ({
     fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.45, opacityTo: 0.05, stops: [20, 100, 100, 100] } },
     xaxis: { categories: props.charts.revenue_trend.map(d => d.date), labels: { style: { colors: '#94a3b8' } } },
     yaxis: { labels: { formatter: (val: number) => `KES ${val.toFixed(0)}`, style: { colors: '#94a3b8' } } },
-    grid: { borderColor: '#e2e8f0', strokeDashArray: 4 },
+    grid: {  show: true, borderColor: '#818cf8', strokeDashArray: 4 },
     tooltip: { y: { formatter: (val: number) => `KES ${val.toFixed(2)}` } }
 }));
 
 // 2. Order Status Donut
-// 2. Order Status Donut
+
+// 2. Order Status Bar Chart
 
 const orderStatusData = computed(() =>
     props.charts.order_status.map((item) => ({
@@ -82,18 +83,29 @@ const orderStatusData = computed(() =>
     }))
 );
 
-const orderStatusSeries = computed(() =>
-    orderStatusData.value.map((item) => item.count)
-);
+const orderStatusSeries = computed(() => [
+    {
+        name: 'Orders',
+        data: orderStatusData.value.map((item) => item.count),
+    },
+]);
 
 const orderStatusOptions = computed(() => ({
     chart: {
-        type: 'donut',
-        height: 320,
+        type: 'bar' as const,
+        height: 250,
         fontFamily: 'Geologica',
+        toolbar: { show: false },
     },
 
-    labels: orderStatusData.value.map((item) => item.status),
+    plotOptions: {
+        bar: {
+            horizontal: false,
+            columnWidth: '55%',
+            borderRadius: 5,
+            distributed: true,
+        },
+    },
 
     colors: orderStatusData.value.map((item) =>
         getStatusColor(item.status)
@@ -101,48 +113,53 @@ const orderStatusOptions = computed(() => ({
 
     dataLabels: {
         enabled: true,
-        formatter: (_percentage: number, opts: any) =>
-            opts.w.globals.series[opts.seriesIndex],
+        formatter: (value: number) => value.toString(),
         style: {
             fontSize: '12px',
             fontWeight: 600,
         },
-        dropShadow: {
-            enabled: false,
+    },
+
+    xaxis: {
+        categories: orderStatusData.value.map((item) => item.status),
+        labels: {
+            style: {
+                colors: '#94a3b8',
+                fontSize: '11px',
+            },
         },
+        axisBorder: {
+            show: false,
+        },
+        axisTicks: {
+            show: false,
+        },
+    },
+
+    yaxis: {
+        min: 0,
+        forceNiceScale: true,
+        labels: {
+            formatter: (value: number) => Math.round(value).toString(),
+            style: {
+                colors: '#94a3b8',
+            },
+        },
+    },
+
+    grid: {
+         show: false,
+        borderColor: '#e2e8f0',
+        strokeDashArray: 4,
     },
 
     legend: {
-        show: true,
-        position: 'bottom',
-        horizontalAlign: 'left',
-        formatter: (seriesName: string, opts: any) => {
-            const count = opts.w.globals.series[opts.seriesIndex];
-            return `${seriesName} (${count})`;
-        },
+        show: false,
     },
 
-    plotOptions: {
-        pie: {
-            minAngleToShowLabel: 0,
-            donut: {
-                size: '75%',
-                labels: {
-                    show: true,
-                    name: {
-                        show: true,
-                    },
-                    value: {
-                        show: true,
-                        formatter: (value: string) => value,
-                    },
-                    total: {
-                        show: true,
-                        label: 'Orders',
-                        formatter: () => props.stats.total_orders.toString(),
-                    },
-                },
-            },
+    tooltip: {
+        y: {
+            formatter: (value: number) => `${value} orders`,
         },
     },
 }));
@@ -234,7 +251,7 @@ const paymentOptions = computed(() => ({
         <div class="flex flex-col gap-4 py-5 sm:flex-row sm:items-center sm:justify-between lg:py-6">
             <div>
                 <h2 class="text-xl font-medium text-slate-800 dark:text-navy-50 lg:text-2xl">Dashboard Overview</h2>
-                <p class="mt-1 text-xs text-slate-400 dark:text-navy-300">Showing data from {{ filters.from }} to {{
+                <p class="badge space-x-2.5 rounded-full bg-primary/10 text-primary dark:bg-accent-light/15 dark:text-accent-light">Showing data from {{ filters.from }} to {{
                     filters.to }}</p>
             </div>
             <div class="flex items-center gap-2">
@@ -460,7 +477,7 @@ const paymentOptions = computed(() => ({
                         </svg></div>
                     <h2 class="text-base font-bold text-slate-900 dark:text-navy-50"> Order Fulfillment</h2>
                 </div>
-                <VueApexCharts type="donut" height="250" :options="orderStatusOptions" :series="orderStatusSeries" />
+                <VueApexCharts type="bar" height="250" :options="orderStatusOptions" :series="orderStatusSeries" />
             
             </div>
 
