@@ -151,20 +151,20 @@ const formatMoney = (amount) =>
 
             <!-- Horizontally scrollable table on narrow viewports -->
             <div class="is-scrollbar-x overflow-x-auto">
-                <div class="w-full overflow-x-auto rounded-xl border border-slate-100">
-    <table class="w-full min-w-[650px] table-fixed border-collapse text-left text-sm">
+                <div class="w-full overflow-x-auto rounded-xl border border-slate-100 dark:border-navy-600">
+    <table class="w-full min-w-[650px] table-fixed border-collapse text-left text-sm dark:border-navy-600">
         <thead>
-            <tr class="bg-primary/5 text-2xs uppercase tracking-wider text-primary/60">
-                <th class="w-[40%] border-b border-r border-slate-100 px-4 py-3.5 font-semibold sm:px-5">
+            <tr class="bg-primary/5 text-2xs uppercase tracking-wider text-primary/60 dark:border-navy-600">
+                <th class="w-[40%] border-b border-r dark:border-navy-600 border-slate-100 px-4 py-3.5 font-semibold sm:px-5">
                     Product
                 </th>
-                <th class="w-[20%] border-b border-r border-slate-100 px-4 py-3.5 font-semibold sm:px-5">
+                <th class="w-[20%] border-b border-r border-slate-100 dark:border-navy-600 px-4 py-3.5 font-semibold sm:px-5">
                     Qty
                 </th>
-                <th class="w-[20%] border-b border-r border-slate-100 px-4 py-3.5 text-right font-semibold sm:px-5">
+                <th class="w-[20%] border-b border-r border-slate-100 dark:border-navy-600 px-4 py-3.5 text-right font-semibold sm:px-5">
                     Price
                 </th>
-                <th class="w-[20%] border-b border-slate-100 px-4 py-3.5 text-right font-semibold sm:px-5 ">
+                <th class="w-[20%] border-b border-slate-100 px-4 py-3.5 dark:border-navy-600 text-right font-semibold sm:px-5 ">
                     Actions
                 </th>
             </tr>
@@ -174,10 +174,10 @@ const formatMoney = (amount) =>
             <tr
                 v-for="line in props.cart!.items"
                 :key="line.id"
-                class="transition-colors hover:bg-primary/5"
+                class="transition-colors hover:bg-primary/5 dark:border-navy-600"
             >
                 <!-- Product -->
-                <td class="border-r border-slate-100 px-4 py-4 sm:px-5">
+                <td class="border-r border-slate-100 px-4 py-4 sm:px-5 dark:border-navy-600">
                     <div class="min-w-0 space-y-1.5">
                         <Link
                             :href="`/customer/products/${line.product.slug}`"
@@ -203,19 +203,19 @@ const formatMoney = (amount) =>
                 </td>
 
                 <!-- Quantity -->
-                <td class="border-r border-slate-100 px-4 py-4 sm:px-5">
+                <td class="border-r border-slate-100 px-4 py-4 sm:px-5 dark:border-navy-600">
                     <input
                         :value="line.quantity"
                         type="number"
                         min="1"
                         :max="Math.min(99, line.stock_quantity)"
-                        class="form-input w-16 max-w-full rounded-lg border border-slate-100 bg-transparent px-2 py-1.5 text-center text-sm text-primary transition-colors hover:border-primary/30 focus:border-primary focus:ring-2 focus:ring-primary/20"
+                        class="form-input w-16 max-w-full rounded-lg border border-slate-100 bg-transparent px-2 py-1.5 text-center text-sm text-primary transition-colors hover:border-primary/30 focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-navy-600"
                         @change="(e) => updateQty(line, (e.target as HTMLInputElement).value)"
                     />
                 </td>
 
                 <!-- Price -->
-                <td class="border-r border-slate-100 px-4 py-4 text-right sm:px-5">
+                <td class="border-r border-slate-100 px-4 py-4 text-right sm:px-5 dark:border-navy-600">
                     <div class="whitespace-nowrap">
                         <p class="text-base font-bold text-primary">
                             KES {{ formatMoney(line.line_total) }}
@@ -227,7 +227,7 @@ const formatMoney = (amount) =>
                 </td>
 
                 <!-- Actions -->
-                <td class="px-4 py-4 text-right sm:px-5">
+                <td class="px-4 py-4 text-right sm:px-5 dark:border-navy-600">
                     <button
                         type="button"
                         class="inline-flex items-center rounded-lg border border-secondary/30 bg-secondary/10 px-3 py-2 text-xs font-semibold text-secondary transition-colors hover:bg-secondary/20 focus:outline-none focus:ring-2 focus:ring-secondary/20 active:bg-secondary/25 dark:border-secondary-light/30 dark:bg-secondary-light/10 dark:text-secondary-light dark:hover:bg-secondary-light/20"
