@@ -33,7 +33,7 @@ unset($__defined_vars, $__key, $__value); ?>
         copied: false,
         async copyToClipboard() {
             try {
-                await window.copyToClipboard('<?php echo e($request->fullUrl()); ?>');
+                await window.copyToClipboard(<?php echo e(Illuminate\Support\Js::from($request->fullUrl())); ?>);
                 this.copied = true;
                 setTimeout(() => { this.copied = false }, 3000);
             } catch (err) {

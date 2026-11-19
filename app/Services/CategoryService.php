@@ -23,7 +23,12 @@ class CategoryService
             }
 
             $category = Category::create($data);
-            $this->log('category.created', $category, $data);
+$this->log(
+    'category.created',
+    $category,
+    $data,
+    "Created category \"{$category->name}\""
+);
 
             return $category;
         });
@@ -44,29 +49,43 @@ class CategoryService
             }
 
             $category->update($data);
-            $this->log('category.updated', $category, $data);
+$this->log(
+    'category.updated',
+    $category,
+    $data,
+    "Updated category \"{$category->name}\""
+);
 
             return $category->fresh();
         });
     }
 
     public function delete(Category $category): void
-    {
-        DB::transaction(function () use ($category) {
-            if ($category->image_path) {
-                Storage::disk('public')->delete($category->image_path);
-            }
+{
+    DB::transaction(function () use ($category) {
+        $name = $category->name;
 
-            $this->log('category.deleted', $category, ['name' => $category->name]);
-            $category->delete();
-        });
-    }
+        if ($category->image_path) {
+            Storage::disk('public')->delete($category->image_path);
+        }
 
-    private function log(string $action, Category $subject, array $props = []): void
+        $this->log(
+            'category.deleted',
+            $category,
+            ['name' => $name],
+            "Deleted category \"{$name}\""
+        );
+
+        $category->delete();
+    });
+}
+
+    private function log(string $action, Category $subject, array $props = [], ?string $description = null): void
     {
         ActivityLog::create([
             'user_id' => Auth::id(),
             'action' => $action,
+            'description' => $description,
             'subject_type' => Category::class,
             'subject_id' => $subject->id,
             'properties' => $props,

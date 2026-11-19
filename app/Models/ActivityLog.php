@@ -12,7 +12,7 @@ class ActivityLog extends Model
 
     public $timestamps = false;
 
-    protected $fillable = ['user_id', 'action', 'subject_type', 'subject_id', 'properties', 'ip', 'created_at'];
+    protected $fillable = ['user_id', 'action', 'subject_type', 'subject_id','description', 'properties', 'ip', 'created_at'];
 
     protected function casts(): array
     {

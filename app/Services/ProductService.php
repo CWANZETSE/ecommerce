@@ -25,11 +25,16 @@ class ProductService
             $product = Product::create($data);
             $this->syncVariations($product, $variations);
 
-            $this->log('product.created', $product, [
-                'name' => $product->name,
-                'sku' => $product->sku,
-                'variation_count' => count($variations),
-            ]);
+            $this->log(
+                'product.created',
+                $product,
+                [
+                    'name' => $product->name,
+                    'sku' => $product->sku,
+                    'variation_count' => count($variations),
+                ],
+                "Created product \"{$product->name}\" ({$product->sku})"
+            );
 
             return $product;
         });
@@ -48,11 +53,17 @@ class ProductService
             $product->update($data);
             $this->syncVariations($product, $variations);
 
-            $this->log('product.updated', $product, [
-                'name' => $product->name,
-                'sku' => $product->sku,
-                'variation_count' => count($variations),
-            ]);
+            // update
+            $this->log(
+                'product.updated',
+                $product,
+                [
+                    'name' => $product->name,
+                    'sku' => $product->sku,
+                    'variation_count' => count($variations),
+                ],
+                "Updated product \"{$product->name}\" ({$product->sku})"
+            );
 
             return $product->fresh(['variations.attributeValues', 'images']);
         });
@@ -61,7 +72,12 @@ class ProductService
     public function delete(Product $product): void
     {
         DB::transaction(function () use ($product) {
-            $this->log('product.deleted', $product, ['name' => $product->name]);
+            $this->log(
+                'product.deleted',
+                $product,
+                ['name' => $product->name],
+                "Deleted product \"{$product->name}\""
+            );
             $product->delete();
         });
     }
@@ -80,7 +96,7 @@ class ProductService
                 $variation->update($row);
             } else {
                 if (empty($row['sku'])) {
-                    $row['sku'] = strtoupper($product->sku . '-' . Str::random(4));
+                    $row['sku'] = strtoupper($product->sku.'-'.Str::random(4));
                 }
                 $row['product_id'] = $product->id;
                 $variation = ProductVariation::create($row);
@@ -126,11 +142,12 @@ class ProductService
         }
     }
 
-    private function log(string $action, Product $subject, array $props = []): void
+    private function log(string $action, Product $subject, array $props = [], ?string $description = null): void
     {
         ActivityLog::create([
             'user_id' => Auth::id(),
             'action' => $action,
+            'description' => $description,
             'subject_type' => Product::class,
             'subject_id' => $subject->id,
             'properties' => $props,

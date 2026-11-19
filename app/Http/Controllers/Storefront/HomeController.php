@@ -34,7 +34,7 @@ class HomeController extends Controller
                 ->where('is_featured', true)
                 ->with([
                     'primaryImage',
-                    'defaultVariation',
+                    'defaultVariation:id,product_id,price,sale_price,is_default',
                 ])
                 ->limit($featuredLimit)
                 ->get()
@@ -42,14 +42,15 @@ class HomeController extends Controller
                     'id' => $p->id,
                     'name' => $p->name,
                     'slug' => $p->slug,
-                    'price' => number_format(
-                        (float) (
-                            $p->defaultVariation?->sale_price
-                            ?? $p->defaultVariation?->price
-                            ?? 0
-                        ),
-                        0
-                    ),
+
+                    'price' => (float) ($p->defaultVariation?->price ?? 0),
+
+                    'sale_price' => $p->defaultVariation?->sale_price !== null
+                        && $p->defaultVariation?->price !== null
+                        && (float) $p->defaultVariation->sale_price < (float) $p->defaultVariation->price
+                            ? (float) $p->defaultVariation->sale_price
+                            : null,
+
                     'primary_image_url' => $p->primary_image_url,
                 ])
                 ->values(),
@@ -58,7 +59,7 @@ class HomeController extends Controller
                 ->latest()
                 ->with([
                     'primaryImage',
-                    'defaultVariation',
+                    'defaultVariation:id,product_id,price,sale_price,is_default',
                 ])
                 ->limit($newArrivalsLimit)
                 ->get()
@@ -66,14 +67,15 @@ class HomeController extends Controller
                     'id' => $p->id,
                     'name' => $p->name,
                     'slug' => $p->slug,
-                    'price' => number_format(
-                        (float) (
-                            $p->defaultVariation?->sale_price
-                            ?? $p->defaultVariation?->price
-                            ?? 0
-                        ),
-                        0
-                    ),
+
+                    'price' => (float) ($p->defaultVariation?->price ?? 0),
+
+                    'sale_price' => $p->defaultVariation?->sale_price !== null
+                        && $p->defaultVariation?->price !== null
+                        && (float) $p->defaultVariation->sale_price < (float) $p->defaultVariation->price
+                            ? (float) $p->defaultVariation->sale_price
+                            : null,
+
                     'primary_image_url' => $p->primary_image_url,
                 ])
                 ->values(),

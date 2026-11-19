@@ -68,32 +68,41 @@ class DashboardController extends Controller
             ->get();
 
         // 2. Order Status Breakdown (Ensure ALL Enums are displayed)
-        $rawOrderStatus = Order::whereBetween('created_at', [$from, $to])
-            ->select('fulfilment_status', DB::raw('count(*) as count'))
-            ->groupBy('fulfilment_status')
-            ->pluck('count', 'fulfilment_status')
-            ->toArray();
+        // 2. Order Status Breakdown
 
-        $orderStatusBreakdown = collect(OrderFulfilmentStatus::cases())->map(function ($status) use ($rawOrderStatus) {
-            return [
-                'status' => ucfirst($status->value),
-                'count' => $rawOrderStatus[$status->value] ?? 0, // Defaults to 0 if not found in DB
-            ];
-        });
+$rawOrderStatus = Order::whereBetween('created_at', [$from, $to])
+    ->select('fulfilment_status', DB::raw('COUNT(*) as count'))
+    ->groupBy('fulfilment_status')
+    ->pluck('count', 'fulfilment_status')
+    ->toArray();
+
+$orderStatusBreakdown = collect(OrderFulfilmentStatus::cases())
+    ->map(function ($status) use ($rawOrderStatus) {
+        return [
+            'status' => ucfirst($status->value),
+            'count' => (int) ($rawOrderStatus[$status->value] ?? 0),
+        ];
+    })
+    ->values();
+        
 
         // 3. Payment Status Breakdown (Ensure ALL Enums are displayed)
-        $rawPaymentStatus = Order::whereBetween('created_at', [$from, $to])
-            ->select('payment_status', DB::raw('count(*) as count'))
-            ->groupBy('payment_status')
-            ->pluck('count', 'payment_status')
-            ->toArray();
+        // 3. Payment Status Breakdown
 
-        $paymentStatusBreakdown = collect(OrderPaymentStatus::cases())->map(function ($status) use ($rawPaymentStatus) {
-            return [
-                'status' => ucfirst($status->value),
-                'count' => $rawPaymentStatus[$status->value] ?? 0, // Defaults to 0 if not found in DB
-            ];
-        });
+$rawPaymentStatus = Order::whereBetween('created_at', [$from, $to])
+    ->select('payment_status', DB::raw('COUNT(*) as count'))
+    ->groupBy('payment_status')
+    ->pluck('count', 'payment_status')
+    ->toArray();
+
+$paymentStatusBreakdown = collect(OrderPaymentStatus::cases())
+    ->map(function ($status) use ($rawPaymentStatus) {
+        return [
+            'status' => ucfirst($status->value),
+            'count' => (int) ($rawPaymentStatus[$status->value] ?? 0),
+        ];
+    })
+    ->values();
 
         // 4. Recent Orders
         $recentOrders = Order::latest()->take(5)->get()->map(fn ($o) => [
@@ -126,7 +135,7 @@ class DashboardController extends Controller
             ->map(fn ($log) => [
                 'id' => $log->id,
                 'action' => $log->action,
-                'description' => $log->properties['description'] ?? $log->action,
+                'description' => $log->description,
                 'user_name' => $log->user?->name ?? 'System',
                 'created_at' => $log->created_at->diffForHumans(),
             ]);

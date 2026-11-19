@@ -23,7 +23,12 @@ class BrandService
             }
 
             $brand = Brand::create($data);
-            $this->log('brand.created', $brand, $data);
+            $this->log(
+                'brand.created',
+                $brand,
+                $data,
+                "Created brand \"{$brand->name}\""
+            );
 
             return $brand;
         });
@@ -45,7 +50,12 @@ class BrandService
             }
 
             $brand->update($data);
-            $this->log('brand.updated', $brand, $data);
+            $this->log(
+                'brand.updated',
+                $brand,
+                $data,
+                "Updated brand \"{$brand->name}\""
+            );
 
             return $brand->fresh();
         });
@@ -57,17 +67,23 @@ class BrandService
             if ($brand->logo_path) {
                 Storage::disk('public')->delete($brand->logo_path);
             }
-
-            $this->log('brand.deleted', $brand, ['name' => $brand->name]);
+            $name = $brand->name;
+            $this->log(
+                'brand.deleted',
+                $brand,
+                ['name' => $name],
+                "Deleted brand \"{$name}\""
+            );
             $brand->delete();
         });
     }
 
-    private function log(string $action, Brand $subject, array $props = []): void
+    private function log(string $action, Brand $subject, array $props = [], ?string $description = null): void
     {
         ActivityLog::create([
             'user_id' => Auth::id(),
             'action' => $action,
+            'description' => $description,
             'subject_type' => Brand::class,
             'subject_id' => $subject->id,
             'properties' => $props,

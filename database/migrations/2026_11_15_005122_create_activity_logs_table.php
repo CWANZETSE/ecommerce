@@ -12,6 +12,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->foreignUuid('user_id')->nullable()->constrained('users')->nullOnDelete();
             $table->string('action');
+            $table->string('description')->nullable();
             $table->string('subject_type')->nullable();
             $table->uuid('subject_id')->nullable();
             $table->json('properties')->nullable();
