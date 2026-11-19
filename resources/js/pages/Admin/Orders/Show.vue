@@ -28,6 +28,7 @@ import {
     NotebookPen,
     Plus,
     Ban,
+    HistoryIcon,
 } from '@lucide/vue';
 import MenuSVG from '@/components/SVG/menuSVG.vue';
 import PackageSVG from '@/components/SVG/packageSVG.vue';
@@ -258,7 +259,7 @@ function badgeClass(status: string): string {
                                                 class="badge space-x-2.5 rounded-full bg-warning/10 text-warning dark:bg-warning/15">
                                                 <span>{{ a.name }}:</span>
                                                 <span class="font-semibold text-slate-500 dark:text-navy-100">{{ a.value
-                                                }}</span>
+                                                    }}</span>
                                             </span>
                                         </div>
                                     </td>
@@ -319,8 +320,8 @@ function badgeClass(status: string): string {
                                 </p>
                             </div>
                         </div>
-                        <div class="flex size-9 items-center justify-center rounded-full bg-primary/10 text-primary">
-                            <History class="size-4" />
+                        <div class="">
+
                         </div>
                     </div>
 
@@ -337,9 +338,12 @@ function badgeClass(status: string): string {
                                         <th class="border border-slate-150 px-5 py-4 font-bold dark:border-slate-700">
                                             Status / Note
                                         </th>
+                                        <th class="border border-slate-150 px-5 py-4 font-bold dark:border-slate-700">
+                                            User
+                                        </th>
                                         <th
                                             class="whitespace-nowrap border border-slate-150 px-5 py-4 font-bold dark:border-slate-700">
-                                            Date
+                                            DateTime
                                         </th>
                                     </tr>
                                 </thead>
@@ -368,12 +372,21 @@ function badgeClass(status: string): string {
 
                                             <p v-if="h.note"
                                                 class=" text-sm italic leading-relaxed text-slate-400 dark:bg-primary/[0.05] dark:text-navy-300">
-                                                Admin Note: &ldquo;{{ h.note }}&rdquo;
+                                                &ldquo;{{ h.note }}&rdquo;
                                             </p>
                                         </td>
-
                                         <td
-                                            class="whitespace-nowrap border border-slate-150 px-5 py-3.5 align-middle text-xs text-slate-400 dark:border-slate-700 dark:text-navy-300">
+                                            class="whitespace-nowrap border border-slate-150 px-5 py-3.5 align-top dark:border-slate-700">
+                                            <span class="text-slate-400 text-sm">
+                                                {{ h?.user?.name??'System' }}
+                                            </span>
+                                        </td>
+                                        <td
+                                            class="whitespace-nowrap border border-slate-150 px-5 flex items-center gap-1 py-3.5 align-middle text-xs text-slate-400 dark:border-slate-700 dark:text-navy-300">
+                                            <span
+                                                class="badge space-x-1 rounded-full bg-primary/10 text-primary dark:bg-accent-light/15 dark:text-accent-light">
+                                                <HistoryIcon class="size-3" />
+                                            </span>
                                             {{ h.created_at }}
                                         </td>
                                     </tr>

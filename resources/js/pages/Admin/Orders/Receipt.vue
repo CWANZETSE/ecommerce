@@ -6,13 +6,18 @@
         <!-- Page Header -->
         <div class="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
             <div class="flex items-start gap-3">
-                <div>
-                    <h2 class="text-xl font-semibold text-slate-800 dark:text-navy-50">
-                        Order Receipt
-                    </h2>
-                    <p class="mt-1 text-sm text-slate-500 dark:text-navy-300">
-                        Receipt for order {{ order.order_number }}
-                    </p>
+                <div class="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                    <ReceiptSVG />
+                </div>
+
+                <div class="space-y-1">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <h2 class="text-xl font-semibold tracking-tight text-slate-800 dark:text-navy-50 lg:text-2xl">
+                            Order Receipt
+                        </h2>
+                    </div>
+
+
                 </div>
             </div>
 
@@ -25,22 +30,23 @@
 
         <!-- Order Content -->
         <div
-            class="grid items-start gap-5 bg-white shadow-sm dark:border-slate-700 dark:bg-navy-800 xl:grid-cols-3 lg:gap-6">
+    class="mx-auto w-full max-w-full grid border border-white items-start gap-5 bg-white  dark:border-slate-700 dark:bg-navy-800 xl:grid-cols-3 lg:gap-6">
             <!-- Main Content -->
             <div
-                class="min-w-0 space-y-5 bg-white shadow-sm dark:border-slate-700 dark:bg-navy-800 xl:col-span-2 lg:space-y-6">
+                class="min-w-0 space-y-5 bg-white shadow-sm dark:border-slate-700 dark:bg-navy-800 xl:col-span-3 lg:space-y-6">
                 <div
-                    class="rounded-2xl border border-slate-150 bg-white shadow-sm dark:border-slate-700 dark:bg-navy-800 xl:w-4/5">
+                    class="rounded-2xl border border-slate-150 bg-white shadow-sm dark:border-slate-700 dark:bg-navy-800 xl:w-full">
                     <!-- Receipt Header -->
                     <div class="flex justify-center border-b border-slate-150 px-6 py-4 dark:border-slate-700">
                         <span class="uppercase text-slate-600 dark:text-navy-200">
-                            Receipt Preview
+                            Preview
                         </span>
                     </div>
 
                     <div class="p-5 xl:p-8">
                         <!-- Store and Customer Details -->
-                        <div class="mb-9 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between rounded-xl bg-slate-150 p-4 dark:bg-navy-700">
+                        <div
+                            class="mb-9 flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between rounded-xl bg-primary/10 p-4 dark:bg-navy-700">
                             <!-- Store Details -->
                             <div>
                                 <span class="mb-1 block text-sm font-medium text-slate-600 dark:text-navy-300">
@@ -64,8 +70,8 @@
                                         {{ settings.store_phone }}
                                     </p>
 
-                                    <p v-if="settings.store_tagline">
-                                        {{ settings.store_tagline }}
+                                    <p v-if="settings.store_tagline" class="italic">
+                                       &ldquo;{{ settings.store_tagline }}&rdquo; 
                                     </p>
                                 </div>
 
@@ -103,14 +109,6 @@
                                         {{ order.customer_phone }}
                                     </p>
                                 </div>
-
-                                <span class="mb-1.5 block text-sm font-medium text-slate-600 dark:text-navy-300">
-                                    Payment Date:
-                                </span>
-
-                                <span class="block text-sm text-slate-500 dark:text-navy-300">
-                                    {{ order.paid_at ? order.paid_at : '—' }}
-                                </span>
                             </div>
                         </div>
 
@@ -214,29 +212,35 @@
                         <!-- Invoice Table End -->
 
                         <!-- Totals -->
-                        <div class="my-6 border-b border-slate-150 pb-6 text-right dark:border-slate-700">
-                            <div class="mb-2 flex justify-end gap-8 text-sm text-slate-500 dark:text-navy-300">
-                                <span>Subtotal:</span>
-                                <span class="min-w-28 font-medium">
-                                    {{ formatMoney(order.subtotal) }}
-                                </span>
-                            </div>
+                        <div
+                            class="my-6 overflow-hidden rounded-2xl border border-slate-300 bg-primary/10 dark:border-navy-600 dark:bg-navy-800">
+                            <!-- Grid container: stacks on mobile, 2 columns on desktop -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2">
 
-                            <div class="mb-3 flex justify-end gap-8 text-sm text-slate-500 dark:text-navy-300">
-                                <span>Shipping Fee:</span>
-                                <span class="min-w-28 font-medium">
-                                    {{ formatMoney(order.shipping_fee) }}
-                                </span>
-                            </div>
+                                <!-- Left Column: Total -->
+                                <div
+                                    class="flex items-center gap-4 p-5 border-slate-300 sm:border-b-0 sm:border-r dark:border-navy-600">
+                                    <span class="text-lg font-bold text-slate-800 dark:text-navy-50">Total:</span>
+                                    <span class="text-2xl font-extrabold text-slate-900 dark:text-white">
+                                        {{ formatMoney(order.grand_total) }}
+                                    </span>
+                                </div>
 
-                            <div class="flex justify-end gap-8 text-lg font-semibold text-slate-800 dark:text-navy-50">
-                                <span>Total:</span>
-                                <span class="min-w-28">
-                                    {{ formatMoney(order.grand_total) }}
-                                </span>
+                                <!-- Right Column: Breakdown -->
+                                <div class="flex flex-col justify-center gap-2 p-5">
+                                    <div class="flex justify-between text-sm text-slate-600 dark:text-navy-300">
+                                        <span>Subtotal:</span>
+                                        <span class="font-medium">{{ formatMoney(order.subtotal) }}</span>
+                                    </div>
+
+                                    <div class="flex justify-between text-sm text-slate-600 dark:text-navy-300">
+                                        <span>Shipping Fee:</span>
+                                        <span class="font-medium">{{ formatMoney(order.shipping_fee) }}</span>
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
-
                         <!-- Payment Details -->
                         <div v-if="order.payments.length" class="mb-6">
                             <h4 class="mb-3 text-sm font-semibold text-slate-800 dark:text-navy-50">
@@ -270,11 +274,12 @@
 
                         <!-- Actions -->
                         <div class="flex items-center justify-between gap-3 print:hidden">
-                            <button type="button"
+                            <a
+    :href="admin_orders_print_receipt.url(order.ulid)" type="button"
                                 class="btn border gap-2 border-primary/30 bg-primary/10 font-medium text-primary hover:bg-primary/20 focus:bg-primary/20 active:bg-primary/25 dark:border-accent-light/30 dark:bg-accent-light/10 dark:text-accent-light dark:hover:bg-accent-light/20 dark:focus:bg-accent-light/20 dark:active:bg-accent-light/25">
                                 <PrintSVG />
                                 Print Receipt
-                            </button>
+                        </a>
                             <button type="button"
                                 class="btn border border-primary/30 bg-primary/10 gap-2 font-medium text-primary hover:bg-primary/20 focus:bg-primary/20 active:bg-primary/25 dark:border-accent-light/30 dark:bg-accent-light/10 dark:text-accent-light dark:hover:bg-accent-light/20 dark:focus:bg-accent-light/20 dark:active:bg-accent-light/25">
 
@@ -298,13 +303,15 @@ import {
     admin_orders_cancel,
     admin_orders_fulfilment,
     admin_orders_show_receipt,
-    admin_orders_show
+    admin_orders_show,
+    admin_orders_print_receipt
 } from '@/routes';
 
 import MenuSVG from '@/components/SVG/menuSVG.vue';
 import { ArrowLeft } from '@lucide/vue';
 import PrintSVG from '@/components/SVG/printSVG.vue';
 import SendSVG from '@/components/SVG/sendSVG.vue';
+import ReceiptSVG from '@/components/SVG/receiptSVG.vue';
 
 interface OrderItem {
     id: string;

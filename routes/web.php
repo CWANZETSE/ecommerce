@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminCouponController;
-use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminReviewController;
 use App\Http\Controllers\Admin\AttributeController;
 use App\Http\Controllers\Admin\BannerController;
@@ -25,10 +24,8 @@ use App\Http\Controllers\Storefront\CouponController;
 use App\Http\Controllers\Storefront\HomeController;
 use App\Http\Controllers\Storefront\ShopController;
 use App\Http\Controllers\Storefront\SingleProductPageController;
-use App\Http\Controllers\Webhooks\MpesaCallbackController;
 use App\Http\Middleware\EnsureUserIsAdmin;
 use App\Http\Middleware\EnsureUserIsCustomer;
-use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 
@@ -40,9 +37,9 @@ use Illuminate\Support\Facades\Storage;
 
 Route::get('/disk-check', function () {
     return [
-        'default'     => config('filesystems.default'),
+        'default' => config('filesystems.default'),
         'aws_url_env' => env('AWS_URL'),
-        'config_url'  => config('filesystems.disks.bazario_cloud_disk.url'),
+        'config_url' => config('filesystems.disks.bazario_cloud_disk.url'),
         'storage_url' => Storage::url('test.png'),
     ];
 });
@@ -51,7 +48,7 @@ Route::get('/checkout/status/{payment:ulid}', [CheckoutController::class, 'statu
     ->name('checkout_status');
 Route::get('/checkout/waiting/{order:ulid}', [CheckoutController::class, 'waiting'])
     ->name('checkout_waiting');
-      
+
 Route::get('/', HomeController::class)->name('home');
 
 // Storefront browsing (public — guests can browse)
@@ -229,6 +226,8 @@ Route::middleware(['auth', 'verified', EnsureUserIsAdmin::class])
         // Orders
         Route::get('/orders', [AdminOrderController::class, 'index'])->name('orders_index');
         Route::get('/orders/{order:ulid}', [AdminOrderController::class, 'show'])->name('orders_show');
+        Route::get('/orders/{order:ulid}/receipt/pdf', [AdminOrderController::class, 'orderPrintReceipt'])
+            ->name('orders_print_receipt');
         Route::get('/orders/receipt/{order:ulid}', [AdminOrderController::class, 'showReceipt'])->name('orders_show_receipt');
         Route::patch('/orders/{order:ulid}/fulfilment', [AdminOrderController::class, 'updateFulfilment'])
             ->name('orders_fulfilment');
@@ -261,6 +260,5 @@ Route::middleware(['auth', 'verified', EnsureUserIsAdmin::class])
 | Webhooks
 |--------------------------------------------------------------------------
 */
-
 
 require __DIR__.'/settings.php';
