@@ -223,6 +223,7 @@ class OrderController extends Controller
                 'fulfilment',
                 $data['note'] ?? null
             );
+            \App\Events\OrderStatusChangedEvent::dispatch($order, $newStatus);
         });
         return back()->with('success', 'Fulfilment status updated.');
     }
@@ -278,8 +279,8 @@ class OrderController extends Controller
         $order->recordStatus($previous->value, 'cancelled', 'fulfilment');
 
         try {
-            Notification::route('mail', $order->customer_email)
-                ->notify(new OrderCancelledNotification($order, $wasPaid));
+            \App\Events\OrderCancelledEvent::dispatch($order, $wasPaid);
+            
         } catch (\Throwable $e) {
             Log::warning('OrderCancelledNotification failed', [
                 'order' => $order->order_number,
