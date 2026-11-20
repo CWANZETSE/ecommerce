@@ -10,8 +10,17 @@ class EnsureUserIsAdmin
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (! $request->user()?->isAdmin()) {
-            abort(403, 'Administrator access required.');
+
+        $user = $request->user();
+
+        if (! $user) {
+            abort(403, 'Unauthenticated request.');
+        }
+        // Customers do not belong in the admin area — send them home
+        if (!$user->isAdmin()) {
+            return redirect()
+                ->route('home')
+                ->with('info', 'You were redirected to the customer home page.');
         }
 
         return $next($request);

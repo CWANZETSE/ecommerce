@@ -4,6 +4,8 @@ import { computed, ref, watch } from 'vue';
 import type { PageProps } from '@/types';
 import StorefrontLayout from '@/layouts/StorefrontLayout.vue';
 import { customer_checkout_store } from '@/routes';
+import PaySVG from '@/components/SVG/paySVG.vue';
+import ShippingSVG from '@/components/SVG/shippingSVG.vue';
 
 interface County {
     name: string;
@@ -175,25 +177,10 @@ const formatMoney = (amount) =>
                     <div class="flex items-center space-x-3 border-b border-slate-150 pb-4 dark:border-navy-600">
                         <div
                             class="flex size-9 items-center justify-center rounded-lg bg-primary/10 text-primary dark:bg-accent-light/10 dark:text-accent-light">
-                            <svg viewBox="-15.36 -15.36 54.72 54.72" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                                <g id="SVGRepo_iconCarrier">
-                                    <!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
-                                    <path opacity="0.4"
-                                        d="M17 7.75C16.81 7.75 16.62 7.68 16.47 7.53C16.18 7.24 16.18 6.76 16.47 6.47L18.52 4.42C16.76 2.92 14.49 2 12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 9.51 21.08 7.24 19.58 5.48L17.53 7.53C17.38 7.68 17.19 7.75 17 7.75Z"
-                                        fill="#292D32"></path>
-                                    <path
-                                        d="M13.75 11.82L12.75 11.47V9.25H12.83C13.34 9.25 13.75 9.7 13.75 10.25C13.75 10.66 14.09 11 14.5 11C14.91 11 15.25 10.66 15.25 10.25C15.25 8.87 14.17 7.75 12.83 7.75H12.75V7.5C12.75 7.09 12.41 6.75 12 6.75C11.59 6.75 11.25 7.09 11.25 7.5V7.75H10.95C9.74001 7.75 8.75 8.77 8.75 10.03C8.75 11.49 9.6 11.96 10.25 12.19L11.25 12.54V14.76H11.17C10.66 14.76 10.25 14.31 10.25 13.76C10.25 13.35 9.91 13.01 9.5 13.01C9.09 13.01 8.75 13.35 8.75 13.76C8.75 15.14 9.83001 16.26 11.17 16.26H11.25V16.51C11.25 16.92 11.59 17.26 12 17.26C12.41 17.26 12.75 16.92 12.75 16.51V16.26H13.05C14.26 16.26 15.25 15.24 15.25 13.98C15.25 12.51 14.4 12.04 13.75 11.82ZM10.74 10.76C10.4 10.64 10.25 10.57 10.25 10.02C10.25 9.59 10.57 9.24 10.95 9.24H11.25V10.93L10.74 10.76ZM13.05 14.75H12.75V13.06L13.26 13.24C13.6 13.36 13.75 13.43 13.75 13.98C13.75 14.4 13.43 14.75 13.05 14.75Z"
-                                        fill="#292D32"></path>
-                                    <path
-                                        d="M22.6902 1.71024C22.6102 1.53024 22.4702 1.38024 22.2802 1.30024C22.1902 1.26024 22.0902 1.24023 21.9902 1.24023H17.9902C17.5802 1.24023 17.2402 1.58023 17.2402 1.99023C17.2402 2.40023 17.5802 2.74023 17.9902 2.74023H20.1802L18.5103 4.41024C18.8903 4.74024 19.2403 5.09024 19.5703 5.47024L21.2402 3.80024V6.00024C21.2402 6.41024 21.5802 6.75024 21.9902 6.75024C22.4002 6.75024 22.7402 6.41024 22.7402 6.00024V2.00024C22.7502 1.90024 22.7302 1.81024 22.6902 1.71024Z"
-                                        fill="#292D32"></path>
-                                </g>
-                            </svg>
+                            <PaySVG/>
                         </div>
                         <div>
-                            <h2 class="text-base font-semibold text-slate-800 dark:text-navy-50">Contact & Payment
+                            <h2 class="text-base font-semibold text-slate-800 dark:text-navy-50">Payment
                                 Details</h2>
                             <p class="text-xs text-slate-400 dark:text-navy-300">Where should we send your M-Pesa
                                 payment prompt?</p>
@@ -204,7 +191,9 @@ const formatMoney = (amount) =>
                             <label class="text-xs+ font-medium text-slate-600 dark:text-navy-200">Full Name</label>
                             <input :value="auth.user?.name" :disabled="!isAdmin" placeholder="Enter your full name"
                                 class="form-input mt-1.5 w-full rounded-lg bg-slate-150 px-3 py-2.5 ring-primary/50 placeholder:text-slate-400 hover:bg-slate-200 focus:ring-3 dark:bg-navy-900/90 dark:ring-accent/50 dark:text-navy-100 disabled:cursor-not-allowed disabled:bg-slate-150 disabled:text-slate-500 disabled:hover:bg-slate-150 dark:disabled:bg-navy-900/90 dark:disabled:text-navy-400 dark:disabled:hover:bg-navy-900/90" />
-
+                            <p class="mt-1 text-xs text-slate-400 dark:text-navy-300">
+                                The name that will appear on receipt. 
+                            </p>
                         </div>
 
                         <!-- M-Pesa Phone -->
@@ -215,7 +204,7 @@ const formatMoney = (amount) =>
                             <input v-model="form.phone" type="tel" required placeholder="0712345678"
                                 class="form-input w-full mt-2 rounded-lg border border-slate-300 bg-transparent px-3 py-2 placeholder:text-slate-400/70 hover:border-slate-400 focus:border-primary dark:border-navy-450 dark:hover:border-navy-400 dark:focus:border-accent" />
                             <p class="mt-1 text-xs text-slate-400 dark:text-navy-300">
-                                The STK Push M-Pesa payment prompt will be sent directly to this phone number.
+                                The STK Push M-Pesa prompt will be sent to this phone number.
                             </p>
                             <p v-if="form.errors.phone" class="mt-1 text-xs text-error">
                                 {{ form.errors.phone }}
@@ -230,31 +219,7 @@ const formatMoney = (amount) =>
                         class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-150 pb-4 dark:border-navy-600">
                         <div class="flex items-center space-x-3">
                             <div class="flex size-9 items-center justify-center rounded-lg bg-info/10 text-info">
-                                <svg viewBox="-14.64 -14.64 53.28 53.28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                                    <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                                    <g id="SVGRepo_iconCarrier">
-                                        <!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
-                                        <path opacity="0.4"
-                                            d="M12 20C16.4183 20 20 16.4183 20 12C20 7.58172 16.4183 4 12 4C7.58172 4 4 7.58172 4 12C4 16.4183 7.58172 20 12 20Z"
-                                            fill="#292D32"></path>
-                                        <path
-                                            d="M12.0009 15.1199C13.724 15.1199 15.1209 13.723 15.1209 11.9999C15.1209 10.2768 13.724 8.87988 12.0009 8.87988C10.2777 8.87988 8.88086 10.2768 8.88086 11.9999C8.88086 13.723 10.2777 15.1199 12.0009 15.1199Z"
-                                            fill="#292D32"></path>
-                                        <path
-                                            d="M12.75 2V4.04H12.74C12.5 4.01 12.25 4 12 4C11.75 4 11.5 4.01 11.26 4.04H11.25V2C11.25 1.59 11.59 1.25 12 1.25C12.41 1.25 12.75 1.59 12.75 2Z"
-                                            fill="#292D32"></path>
-                                        <path
-                                            d="M4 12C4 12.25 4.01 12.51 4.04 12.75H2C1.59 12.75 1.25 12.41 1.25 12C1.25 11.59 1.59 11.25 2 11.25H4.04C4.01 11.49 4 11.75 4 12Z"
-                                            fill="#292D32"></path>
-                                        <path
-                                            d="M12.75 19.96V22C12.75 22.41 12.41 22.75 12 22.75C11.59 22.75 11.25 22.41 11.25 22V19.96H11.26C11.5 19.99 11.75 20 12 20C12.25 20 12.5 19.99 12.74 19.96H12.75Z"
-                                            fill="#292D32"></path>
-                                        <path
-                                            d="M22.7509 12C22.7509 12.41 22.4109 12.75 22.0009 12.75H19.9609C19.9909 12.51 20.0009 12.25 20.0009 12C20.0009 11.75 19.9909 11.49 19.9609 11.25H22.0009C22.4109 11.25 22.7509 11.59 22.7509 12Z"
-                                            fill="#292D32"></path>
-                                    </g>
-                                </svg>
+                                <ShippingSVG/>
                             </div>
                             <h2 class="text-base font-semibold text-slate-800 dark:text-navy-50">Delivery Address</h2>
                         </div>
