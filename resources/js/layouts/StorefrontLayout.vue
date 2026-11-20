@@ -684,10 +684,13 @@ function toggleTheme() {
                     </p>
                     <div class="flex items-center gap-6">
                         <Link href="/policies/privacy" class="hover:underline"
-                            >Privacy</Link
+                            >Privacy Policy</Link
                         >
                         <Link href="/policies/terms" class="hover:underline"
-                            >Terms</Link
+                            >Terms & Conditions</Link
+                        >
+                        <Link href="/policies/shipping" class="hover:underline"
+                            >Shipping Policy</Link
                         >
                     </div>
                 </div>

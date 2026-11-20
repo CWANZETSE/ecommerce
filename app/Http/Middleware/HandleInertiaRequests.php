@@ -35,6 +35,8 @@ class HandleInertiaRequests extends Middleware
             // Store-wide settings — available to guests AND logged-in users
             'store_name' => fn () => StoreSetting::get('store_name', 'My Store'),
             'store_tagline' => fn () => StoreSetting::get('store_tagline', ''),
+            'store_email' => fn () => StoreSetting::get('store_email', ''),
+            'store_address' => fn () => StoreSetting::get('store_address', ''),
             'store_logo_url' => function () {
                 $logo = StoreSetting::get('store_logo');
                 return $logo ? Storage::url($logo) : null;

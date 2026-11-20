@@ -35,13 +35,14 @@ use Illuminate\Support\Facades\Storage;
 |--------------------------------------------------------------------------
 */
 
-Route::get('/disk-check', function () {
-    return [
-        'default' => config('filesystems.default'),
-        'aws_url_env' => env('AWS_URL'),
-        'config_url' => config('filesystems.disks.bazario_cloud_disk.url'),
-        'storage_url' => Storage::url('test.png'),
-    ];
+Route::get('/policies/privacy', function () {
+    return inertia('Policy/privacy');
+});
+Route::get('/policies/shipping', function () {
+    return inertia('Policy/shipping');
+});
+Route::get('/policies/terms', function () {
+    return inertia('Policy/terms');
 });
 
 Route::get('/checkout/status/{payment:ulid}', [CheckoutController::class, 'status'])
