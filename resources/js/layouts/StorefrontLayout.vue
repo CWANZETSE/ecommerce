@@ -128,7 +128,7 @@ function toggleTheme() {
                     <!-- Brand -->
                     <Link href="/" class="flex shrink-0 items-center gap-2.5">
                         <img v-if="page.props.store_logo_url" :src="page.props.store_logo_url"
-                            :alt="page.props.store_name" class="h-30 w-auto  object-contain" />
+                            :alt="page.props.store_name" class="h-12 w-auto  object-contain" />
                         <span v-else
                             class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary font-bold text-white shadow-md dark:bg-accent">
                             <ShoppingBag class="size-4.5" />
