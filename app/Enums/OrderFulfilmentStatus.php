@@ -44,4 +44,9 @@ enum OrderFulfilmentStatus: string
             self::Cancelled => 'Cancelled',
         };
     }
+
+    public function canGenerateReceipt(): bool
+{
+    return in_array($this, [self::Dispatched, self::Delivered], true);
+}
 }

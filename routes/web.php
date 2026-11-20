@@ -116,6 +116,8 @@ Route::middleware(['auth', 'verified', EnsureUserIsCustomer::class])
         Route::get('/reviews', [ReviewController::class, 'index'])->name('reviews_index');
         Route::post('/orders/{order:ulid}/items/{item}/review', [ReviewController::class, 'store'])
             ->name('reviews_store');
+        Route::get('/orders/print/receipt/{order:ulid}', [CustomerOrderController::class, 'printReceipt'])->name('orders_print_receipt');
+
     });
 
 /*
@@ -223,15 +225,18 @@ Route::middleware(['auth', 'verified', EnsureUserIsAdmin::class])
         // Orders
         Route::get('/orders', [AdminOrderController::class, 'index'])->name('orders_index');
         Route::get('/orders/{order:ulid}', [AdminOrderController::class, 'show'])->name('orders_show');
-        Route::get('/orders/{order:ulid}/receipt/pdf', [AdminOrderController::class, 'orderPrintReceipt'])
-            ->name('orders_print_receipt');
-        Route::get('/orders/receipt/{order:ulid}', [AdminOrderController::class, 'showReceipt'])->name('orders_show_receipt');
+        
         Route::patch('/orders/{order:ulid}/fulfilment', [AdminOrderController::class, 'updateFulfilment'])
             ->name('orders_fulfilment');
         Route::post('/orders/{order:ulid}/notes', [AdminOrderController::class, 'addNote'])
             ->name('orders_notes_store');
         Route::post('/orders/{order:ulid}/cancel', [AdminOrderController::class, 'cancel'])
             ->name('orders_cancel');
+
+            Route::get('/orders/{order:ulid}/receipt/pdf', [AdminOrderController::class, 'orderPrintReceipt'])
+            ->name('orders_print_receipt');
+        Route::get('/orders/receipt/{order:ulid}', [AdminOrderController::class, 'showReceipt'])->name('orders_show_receipt');
+
 
         // Attributes
         Route::prefix('attributes')->name('attributes_')->group(function () {

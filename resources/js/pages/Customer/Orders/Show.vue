@@ -17,6 +17,7 @@ import {
     Star,
     PackageCheck,
 } from '@lucide/vue';
+import { customer_orders_print_receipt } from '@/routes';
 
 interface OrderItem {
     id: string;
@@ -432,6 +433,14 @@ const formatCurrency = (amount: number) =>
                             Order Items
                         </h2>
                     </div>
+                    <div class="flex items-center gap-3">
+                <a
+    :href="customer_orders_print_receipt.url(order.ulid)" type="button"
+                                class="btn border gap-2 border-primary/30 bg-primary/10 font-medium text-primary hover:bg-primary/20 focus:bg-primary/20 active:bg-primary/25 dark:border-accent-light/30 dark:bg-accent-light/10 dark:text-accent-light dark:hover:bg-accent-light/20 dark:focus:bg-accent-light/20 dark:active:bg-accent-light/25">
+                                <PrintSVG />
+                                Download
+                        </a>
+            </div>
                 </div>
 
                 <div class="mt-4 overflow-x-auto">
@@ -589,7 +598,7 @@ const formatCurrency = (amount: number) =>
                                         p.provider_reference }}</p>
                                 </td>
                                 <td class="px-3 py-3.5">
-                                    <span :class="badgeClass(p.status)">
+                                    <span :class="badgeClass(p.status)" class="capitalize">
                                         {{ p.status }}
                                     </span>
                                 </td>

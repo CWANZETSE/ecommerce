@@ -69,36 +69,36 @@ class OrderController extends Controller
                 'customer_email' => $order->customer_email,
                 'customer_phone' => $order->customer_phone,
                 'shipping_address' => $order->shipping_address,
-                'subtotal' => $order->subtotal,
-                'shipping_fee' => $order->shipping_fee,
-                'grand_total' => $order->grand_total,
+                'subtotal' => number_format($order->subtotal, 2),
+                'shipping_fee' => number_format($order->shipping_fee, 2),
+                'grand_total' => number_format($order->grand_total, 2),
                 'payment_status' => $order->payment_status->value,
                 'fulfilment_status' => $order->fulfilment_status->value,
                 'paid_at' => $order->paid_at
     ? Carbon::parse($order->paid_at)->format('D d-m-Y H:i:s')
     : null,
 
-'cancelled_at' => $order->cancelled_at
-    ? Carbon::parse($order->cancelled_at)->format('D d-m-Y H:i:s')
-    : null,
+                'cancelled_at' => $order->cancelled_at
+                    ? Carbon::parse($order->cancelled_at)->format('D d-m-Y H:i:s')
+                    : null,
 
-'created_at' => $order->created_at
-    ? Carbon::parse($order->created_at)->format('D d-m-Y H:i:s')
-    : null,
+                'created_at' => $order->created_at
+                    ? Carbon::parse($order->created_at)->format('D d-m-Y H:i:s')
+                    : null,
                 'items' => $order->items->map(fn ($i) => [
                     'id' => $i->id,
                     'product_name' => $i->product_name,
                     'sku' => $i->sku,
                     'attributes' => $i->attributes,
-                    'unit_price' => $i->unit_price,
+                    'unit_price' => number_format($i->unit_price, 2),
                     'quantity' => $i->quantity,
-                    'line_total' => $i->line_total,
+                    'line_total' => number_format($i->line_total, 2),
                 ])->values(),
                 'payments' => $order->payments->map(fn ($p) => [
                     'id' => $p->id,
                     'ulid' => $p->ulid,
                     'provider' => $p->provider->value,
-                    'amount' => $p->amount,
+                    'amount' => number_format($p->amount, 2),
                     'status' => $p->status->value,
                     'provider_reference' => $p->provider_reference,
                     'checkout_request_id' => $p->checkout_request_id,
@@ -107,9 +107,9 @@ class OrderController extends Controller
     ? Carbon::parse($p->paid_at)->format('D d-m-Y H:i:s')
     : null,
 
-'created_at' => $p->created_at
-    ? Carbon::parse($p->created_at)->format('D d-m-Y H:i:s')
-    : null,
+                    'created_at' => $p->created_at
+                        ? Carbon::parse($p->created_at)->format('D d-m-Y H:i:s')
+                        : null,
                 ])->values(),
                 'history' => $order->statusHistory->map(fn ($h) => [
                     'id' => $h->id,
@@ -200,8 +200,8 @@ class OrderController extends Controller
 
     public function orderPrintReceipt(Order $order)
     {
-        if ($order->payment_status !== OrderPaymentStatus::Paid) {
-            return back()->with('error', 'Receipt cannot be generated for unpaid invoice');
+        if (! $order->fulfilment_status->canGenerateReceipt()) {
+            return back()->with('error', 'A receipt cannot be generated until the order is dispatched or delivered.');
         }
 
         $order->load(['items', 'payments']);

@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Customer;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Models\ProductReview;
+use App\Models\StoreSetting;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -29,7 +32,7 @@ class OrderController extends Controller
         $order->load(['items', 'payments']);
 
         // Determine which items are eligible for review (paid + delivered, not yet reviewed)
-        $reviewedItemIds = \App\Models\ProductReview::where('user_id', auth()->id())
+        $reviewedItemIds = ProductReview::where('user_id', auth()->id())
             ->whereIn('order_item_id', $order->items->pluck('id'))
             ->pluck('order_item_id')
             ->all();
@@ -37,7 +40,7 @@ class OrderController extends Controller
         return Inertia::render('Customer/Orders/Show', [
             'order' => [
                 'ulid' => $order->ulid,
-                'user'=>$order->user,
+                'user' => $order->user,
                 'order_number' => $order->order_number,
                 'created_at' => $order->created_at->toDateTimeString(),
                 'subtotal' => $order->subtotal,
@@ -73,5 +76,25 @@ class OrderController extends Controller
                 ])->values(),
             ],
         ]);
+    }
+
+    public function printReceipt(Order $order)
+    {
+        if (! $order->fulfilment_status->canGenerateReceipt()) {
+            return back()->with('error', 'A receipt cannot be generated until the order is dispatched or delivered.');
+        }
+
+        $order->load(['items', 'payments']);
+
+        $settings = StoreSetting::public()
+            ->pluck('value', 'key')
+            ->toArray();
+
+        $pdf = Pdf::loadView('admin.orders.receipt-pdf', [
+            'order' => $order,
+            'settings' => $settings,
+        ]);
+
+        return $pdf->download('receipt-'.$order->order_number.'.pdf');
     }
 }
