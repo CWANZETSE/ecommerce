@@ -5,17 +5,18 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\OrderFulfilmentStatus;
 use App\Enums\OrderPaymentStatus;
 use App\Enums\StockMovementType;
+use App\Events\OrderCancelledEvent;
+use App\Events\OrderStatusChangedEvent;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\StoreSetting;
-use App\Notifications\OrderCancelledNotification;
 use App\Services\InventoryService;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Notification;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -73,9 +74,17 @@ class OrderController extends Controller
                 'grand_total' => $order->grand_total,
                 'payment_status' => $order->payment_status->value,
                 'fulfilment_status' => $order->fulfilment_status->value,
-                'paid_at' => $order->paid_at?->toDateTimeString(),
-                'cancelled_at' => $order->cancelled_at?->toDateTimeString(),
-                'created_at' => $order->created_at->toDateTimeString(),
+                'paid_at' => $order->paid_at
+    ? Carbon::parse($order->paid_at)->format('D d-m-Y H:i:s')
+    : null,
+
+'cancelled_at' => $order->cancelled_at
+    ? Carbon::parse($order->cancelled_at)->format('D d-m-Y H:i:s')
+    : null,
+
+'created_at' => $order->created_at
+    ? Carbon::parse($order->created_at)->format('D d-m-Y H:i:s')
+    : null,
                 'items' => $order->items->map(fn ($i) => [
                     'id' => $i->id,
                     'product_name' => $i->product_name,
@@ -94,8 +103,13 @@ class OrderController extends Controller
                     'provider_reference' => $p->provider_reference,
                     'checkout_request_id' => $p->checkout_request_id,
                     'failure_reason' => $p->failure_reason,
-                    'paid_at' => $p->paid_at?->toDateTimeString(),
-                    'created_at' => $p->created_at->toDateTimeString(),
+                    'paid_at' => $p->paid_at
+    ? Carbon::parse($p->paid_at)->format('D d-m-Y H:i:s')
+    : null,
+
+'created_at' => $p->created_at
+    ? Carbon::parse($p->created_at)->format('D d-m-Y H:i:s')
+    : null,
                 ])->values(),
                 'history' => $order->statusHistory->map(fn ($h) => [
                     'id' => $h->id,
@@ -107,7 +121,9 @@ class OrderController extends Controller
                         'id' => $h->user->id,
                         'name' => $h->user->name,
                     ] : 'System',
-                    'created_at' => $h->created_at->toDateTimeString(),
+                    'created_at' => $h->created_at
+    ? Carbon::parse($h->created_at)->format('D d-m-Y H:i:s')
+    : null,
                 ])->values(),
             ],
             'fulfilmentStatuses' => array_map(fn ($s) => ['value' => $s->value, 'label' => ucfirst($s->value)], OrderFulfilmentStatus::cases()),
@@ -136,9 +152,17 @@ class OrderController extends Controller
                 'grand_total' => $order->grand_total,
                 'payment_status' => $order->payment_status->value,
                 'fulfilment_status' => $order->fulfilment_status->value,
-                'paid_at' => $order->paid_at?->toDateTimeString(),
-                'cancelled_at' => $order->cancelled_at?->toDateTimeString(),
-                'created_at' => $order->created_at->toDateTimeString(),
+                'paid_at' => $order->paid_at
+                    ? Carbon::parse($order->paid_at)->format('D d-m-Y H:i:s')
+                    : null,
+
+                'cancelled_at' => $order->cancelled_at
+                    ? Carbon::parse($order->cancelled_at)->format('D d-m-Y H:i:s')
+                    : null,
+
+                'created_at' => $order->created_at
+                    ? Carbon::parse($order->created_at)->format('D d-m-Y H:i:s')
+                    : null,
 
                 'items' => $order->items->map(fn ($i) => [
                     'id' => $i->id,
@@ -159,8 +183,13 @@ class OrderController extends Controller
                     'provider_reference' => $p->provider_reference,
                     'checkout_request_id' => $p->checkout_request_id,
                     'failure_reason' => $p->failure_reason,
-                    'paid_at' => $p->paid_at?->toDateTimeString(),
-                    'created_at' => $p->created_at->toDateTimeString(),
+                    'paid_at' => $p->paid_at
+    ? Carbon::parse($p->paid_at)->format('D d-m-Y H:i:s')
+    : null,
+
+                    'created_at' => $p->created_at
+                        ? Carbon::parse($p->created_at)->format('D d-m-Y H:i:s')
+                        : null,
                 ])->values(),
             ],
             'settings' => StoreSetting::public()
@@ -223,8 +252,9 @@ class OrderController extends Controller
                 'fulfilment',
                 $data['note'] ?? null
             );
-            \App\Events\OrderStatusChangedEvent::dispatch($order, $newStatus);
+            OrderStatusChangedEvent::dispatch($order, $newStatus);
         });
+
         return back()->with('success', 'Fulfilment status updated.');
     }
 
@@ -279,8 +309,8 @@ class OrderController extends Controller
         $order->recordStatus($previous->value, 'cancelled', 'fulfilment');
 
         try {
-            \App\Events\OrderCancelledEvent::dispatch($order, $wasPaid);
-            
+            OrderCancelledEvent::dispatch($order, $wasPaid);
+
         } catch (\Throwable $e) {
             Log::warning('OrderCancelledNotification failed', [
                 'order' => $order->order_number,

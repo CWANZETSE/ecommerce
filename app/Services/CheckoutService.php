@@ -195,7 +195,7 @@ class CheckoutService
                 'ulid' => (string) Str::ulid(),
                 'order_number' => $orderNumber,
                 'user_id' => auth()->id(),
-                'cart_id' => $cart->id, 
+                'cart_id' => $cart->id,
                 'customer_name' => $customer['name'],
                 'customer_email' => $customer['email'],
                 'customer_phone' => $customer['phone'],
@@ -367,27 +367,9 @@ class CheckoutService
 
     private function generateOrderNumber(): string
     {
-        Log::debug('Checkout: generating order number');
-
-        $year = now()->year;
-        $last = Order::whereYear('created_at', $year)
-            ->lockForUpdate()
-            ->orderByDesc('order_number')
-            ->first();
-
-        $next = 1;
-        if ($last) {
-            $parts = explode('-', $last->order_number);
-            $next = ((int) end($parts)) + 1;
-        }
-
-        $number = sprintf('ORD-%d-%06d', $year, $next);
-
-        Log::debug('Checkout: order number generated', [
-            'year' => $year,
-            'last_order_number' => $last?->order_number,
-            'next_order_number' => $number,
-        ]);
+        do {
+            $number = 'ORD-'.substr((string) Str::ulid(), -12);
+        } while (Order::where('order_number', $number)->exists());
 
         return $number;
     }
