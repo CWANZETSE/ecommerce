@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -92,17 +93,14 @@
 
         /* -------------------------------------------------
            HEADER
-           Transparent background with readable text.
         ------------------------------------------------- */
         .header-box {
             width: 100%;
+            table-layout: fixed;
             border-collapse: separate;
             border-spacing: 0;
             margin-bottom: 12px;
-
-            /* Keep the header transparent */
             background-color: transparent;
-
             border: 1px solid #e2e8f0;
             border-radius: 9px;
         }
@@ -139,7 +137,7 @@
             font-weight: bold;
             letter-spacing: 1.2px;
             text-transform: uppercase;
-            color: #d97706;
+            color: #4f46e5;
         }
 
         .order-number {
@@ -149,44 +147,57 @@
         }
 
         /* -------------------------------------------------
-           BILLED FROM / BILLED TO
+           BILLED FROM / BILLED TO TABLE
         ------------------------------------------------- */
         .details-wrapper {
             width: 100%;
             margin-bottom: 10px;
-            border-collapse: separate;
-            border-spacing: 8px 0;
-            margin-left: -8px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            overflow: hidden;
         }
 
-        .details-box {
+        .details-table {
+            width: 100%;
+            table-layout: fixed;
+            border-collapse: collapse;
+        }
+
+        .details-table th {
             width: 50%;
-            vertical-align: top;
-            background-color: #f8fafc;
-            border-radius: 8px;
+            background-color: #eef2ff;
+            color: #4338ca;
+            text-align: left;
+            padding: 8px 11px;
+            font-size: 9px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            border-bottom: 1px solid #c7d2fe;
+            border-right: 1px solid #e0e7ff;
+        }
+
+        .details-table th:last-child {
+            border-right: none;
+        }
+
+        .details-table td {
+            width: 50%;
             padding: 9px 11px;
-            border: 1px solid #e2e8f0;
+            vertical-align: top;
+            border-right: 1px solid #e2e8f0;
+        }
+
+        .details-table td:last-child {
+            border-right: none;
+        }
+
+        .details-table .billed-from-cell {
             border-left: 3px solid #4f46e5;
         }
 
-        .details-box.amber {
-            border-left-color: #f59e0b;
-        }
-
-        .section-label {
-            font-size: 9px;
-            text-transform: uppercase;
-            font-weight: bold;
-            letter-spacing: 0.8px;
-            color: #4f46e5;
-            border-bottom: 1px solid #e2e8f0;
-            padding-bottom: 4px;
-            margin-bottom: 6px;
-            display: block;
-        }
-
-        .section-label.amber {
-            color: #d97706;
+        .details-table .billed-to-cell {
+            border-left: 3px solid #f59e0b;
         }
 
         .person-name {
@@ -215,6 +226,7 @@
 
         .items-table {
             width: 100%;
+            table-layout: fixed;
             border-collapse: collapse;
         }
 
@@ -275,14 +287,23 @@
 
         /* -------------------------------------------------
            TOTALS
+           Card occupies exactly 50% of receipt width,
+           matching the Billed To column.
         ------------------------------------------------- */
         .totals-wrapper {
             width: 100%;
+            table-layout: fixed;
+            border-collapse: collapse;
             margin-bottom: 11px;
         }
 
+        .totals-wrapper > tbody > tr > td {
+            padding: 0;
+            vertical-align: top;
+        }
+
         .totals-box {
-            width: 45%;
+            width: 100%;
             background-color: #f8fafc;
             border: 1px solid #e2e8f0;
             border-radius: 8px;
@@ -291,6 +312,7 @@
 
         .totals-table {
             width: 100%;
+            table-layout: fixed;
             border-collapse: collapse;
         }
 
@@ -334,6 +356,7 @@
 
         .payment-table {
             width: 100%;
+            table-layout: fixed;
             border-collapse: collapse;
         }
 
@@ -372,6 +395,7 @@
            FOOTER
         ------------------------------------------------- */
         .footer {
+            width: 100%;
             margin-top: 16px;
             padding: 10px 12px;
             border: 1px dashed #cbd5e1;
@@ -521,50 +545,69 @@
             </tr>
         </table>
 
-        <!-- Billed From / Billed To -->
-        <table class="details-wrapper">
-            <tr>
-                <td class="details-box">
-                    <span class="section-label">Billed From</span>
+        <!-- Billed From / Billed To Table -->
+        <div class="details-wrapper">
+            <table class="details-table">
+                <thead>
+                    <tr>
+                        <th>Billed From</th>
+                        <th>Billed To</th>
+                    </tr>
+                </thead>
 
-                    <div class="person-name">
-                        {{ $settings['store_name'] ?? 'Store' }}
-                    </div>
+                <tbody>
+                    <tr>
+                        <td class="billed-from-cell">
+                            <div class="person-name">
+                                {{ $settings['store_name'] ?? 'Store' }}
+                            </div>
 
-                    @if(!empty($settings['store_address']))
-                        <div class="muted">{{ $settings['store_address'] }}</div>
-                    @endif
+                            @if(!empty($settings['store_address']))
+                                <div class="muted">
+                                    {{ $settings['store_address'] }}
+                                </div>
+                            @endif
 
-                    @if(!empty($settings['store_email']))
-                        <div class="muted">{{ $settings['store_email'] }}</div>
-                    @endif
+                            @if(!empty($settings['store_email']))
+                                <div class="muted">
+                                    {{ $settings['store_email'] }}
+                                </div>
+                            @endif
 
-                    @if(!empty($settings['store_phone']))
-                        <div class="muted">{{ $settings['store_phone'] }}</div>
-                    @endif
-                </td>
+                            @if(!empty($settings['store_phone']))
+                                <div class="muted">
+                                    {{ $settings['store_phone'] }}
+                                </div>
+                            @endif
+                        </td>
 
-                <td class="details-box amber">
-                    <span class="section-label amber">Billed To</span>
+                        <td class="billed-to-cell">
+                            <div class="person-name">
+                                {{ $order->customer_name ?? 'Walk-in Customer' }}
+                            </div>
 
-                    <div class="person-name">
-                        {{ $order->customer_name ?? 'Walk-in Customer' }}
-                    </div>
+                            @if(!empty($address))
+                                <div class="muted">
+                                    {{ $address }}
+                                </div>
+                            @endif
 
-                    @if(!empty($address))
-                        <div class="muted">{{ $address }}</div>
-                    @endif
+                            @if(!empty($order->customer_email))
+                                <div class="muted">
+                                    {{ $order->customer_email }}
+                                </div>
+                            @endif
 
-                    @if(!empty($order->customer_email))
-                        <div class="muted">{{ $order->customer_email }}</div>
-                    @endif
-
-                    @if(!empty($order->customer_phone))
-                        <div class="muted">{{ $order->customer_phone }}</div>
-                    @endif
-                </td>
-            </tr>
-        </table>
+                            @if(!empty($order->customer_phone))
+                                <div class="muted">
+                                    {{ $order->customer_phone }}
+                                </div>
+                            @endif
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
         <!-- Products Table -->
         <div class="items-wrapper">
@@ -629,49 +672,57 @@
 
         <!-- Totals -->
         <table class="totals-wrapper">
-            <tr>
-                <td width="55%"></td>
+            <tbody>
+                <tr>
+                    <!-- Empty left half: 50% -->
+                    <td width="50%"></td>
 
-                <td width="45%" class="totals-box">
-                    <table class="totals-table">
-                        <tr>
-                            <td class="text-muted">Subtotal</td>
+                    <!-- Totals card right half: 50% -->
+                    <td width="50%">
+                        <div class="totals-box">
+                            <table class="totals-table">
+                                <tbody>
+                                    <tr>
+                                        <td class="text-muted">Subtotal</td>
 
-                            <td class="text-right font-bold text-dark">
-                                {{ $money($order->subtotal) }}
-                            </td>
-                        </tr>
+                                        <td class="text-right font-bold text-dark">
+                                            {{ $money($order->subtotal) }}
+                                        </td>
+                                    </tr>
 
-                        <tr>
-                            <td class="text-muted">Shipping Fee</td>
+                                    <tr>
+                                        <td class="text-muted">Shipping Fee</td>
 
-                            <td class="text-right font-bold text-dark">
-                                {{ $money($order->shipping_fee) }}
-                            </td>
-                        </tr>
+                                        <td class="text-right font-bold text-dark">
+                                            {{ $money($order->shipping_fee) }}
+                                        </td>
+                                    </tr>
 
-                        @if($order->discount_total > 0)
-                            <tr>
-                                <td class="text-amber">Discount</td>
+                                    @if($order->discount_total > 0)
+                                        <tr>
+                                            <td class="text-amber">Discount</td>
 
-                                <td class="text-right font-bold text-amber">
-                                    -{{ $money($order->discount_total) }}
-                                </td>
-                            </tr>
-                        @endif
+                                            <td class="text-right font-bold text-amber">
+                                                -{{ $money($order->discount_total) }}
+                                            </td>
+                                        </tr>
+                                    @endif
 
-                        <tr class="grand-total-row">
-                            <td class="text-left" style="text-transform: uppercase; letter-spacing: 0.8px;">
-                                Total
-                            </td>
+                                    <tr class="grand-total-row">
+                                        <td class="text-left" style="text-transform: uppercase; letter-spacing: 0.8px;">
+                                            Total
+                                        </td>
 
-                            <td class="text-right">
-                                {{ $money($order->grand_total) }}
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
+                                        <td class="text-right">
+                                            {{ $money($order->grand_total) }}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
         </table>
 
         <!-- Transaction Details -->
