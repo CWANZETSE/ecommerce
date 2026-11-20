@@ -370,7 +370,6 @@ class CheckoutService
         do {
             $number = 'ORD-'.substr((string) Str::ulid(), -12);
         } while (Order::where('order_number', $number)->exists());
-
         return $number;
     }
 }
