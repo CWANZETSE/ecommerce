@@ -46,7 +46,7 @@ enum OrderFulfilmentStatus: string
     }
 
     public function canGenerateReceipt(): bool
-{
-    return in_array($this, [self::Dispatched, self::Delivered], true);
-}
+    {
+        return in_array($this, [self::Processing, self::Dispatched, self::Delivered], true);
+    }
 }

@@ -19,7 +19,6 @@
             font-style: normal;
         }
 
-        /* Force Single Page */
         @page {
             margin: 20px 25px;
         }
@@ -31,13 +30,13 @@
 
         body {
             font-family: 'Geologica', sans-serif;
-            color: #334155; /* Slate 700 */
+            color: #334155;
             font-size: 11px;
             line-height: 1.4;
             background-color: #ffffff;
         }
 
-        /* Strict Container */
+        /* Strict Container - Forces all children to line up exactly */
         .receipt-container {
             width: 100%;
             max-width: 750px;
@@ -53,7 +52,6 @@
         .text-right { text-align: right; }
         .text-center { text-align: center; }
         .text-muted { color: #64748b; }
-        .text-indigo { color: #4f46e5; }
         .text-amber { color: #d97706; }
         .text-dark { color: #0f172a; }
 
@@ -62,9 +60,9 @@
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 15px;
-            background-color: #4f46e5; /* Indigo */
+            background-color: #4f46e5;
             border-radius: 8px;
-            border: 2px solid #4338ca; /* Darker Indigo Border */
+            border: 2px solid #4338ca;
             overflow: hidden;
         }
         .header-box td {
@@ -72,18 +70,12 @@
             color: #ffffff;
         }
         
-        /* Logo / Store Name Styling */
-        .logo-container {
-            background-color: #ffffff;
-            padding: 6px 12px;
-            border-radius: 6px;
-            display: inline-block;
-            margin-bottom: 4px;
-        }
+        /* Transparent Logo Styling */
         .logo-img {
             max-height: 50px;
             max-width: 220px;
             display: block;
+            margin-bottom: 6px;
         }
         .store-name {
             font-size: 24px;
@@ -91,27 +83,28 @@
             letter-spacing: -0.5px;
             color: #ffffff;
         }
-
         .receipt-title {
             font-size: 14px;
             font-weight: bold;
             letter-spacing: 2px;
             text-transform: uppercase;
-            color: #fcd34d; /* Amber light */
+            color: #fcd34d;
         }
         .order-number {
             font-size: 10px;
-            color: #e0e7ff; /* Indigo 100 */
+            color: #e0e7ff;
             margin-top: 4px;
         }
 
-        /* Details Grid */
+        /* Details Grid - Standardized to align with outer borders */
         .details-wrapper {
             width: 100%;
-            margin-bottom: 15px;
             border-collapse: separate;
             border-spacing: 15px 0;
-            margin-left: -15px; /* Offset the spacing */
+            margin-bottom: 15px;
+            /* The negative margin offsets the left-most border-spacing gap so it aligns perfectly */
+            margin-left: -15px; 
+            width: calc(100% + 30px);
         }
         .details-box {
             width: 50%;
@@ -119,11 +112,11 @@
             background-color: #f8fafc;
             border-radius: 6px;
             padding: 12px 15px;
-            border: 2px solid #e2e8f0; /* Heavy border */
-            border-left: 5px solid #4f46e5; /* Indigo accent */
+            border: 2px solid #e2e8f0;
+            border-left: 5px solid #4f46e5;
         }
         .details-box.amber {
-            border-left: 5px solid #f59e0b; /* Amber accent */
+            border-left: 5px solid #f59e0b;
         }
         .section-label {
             font-size: 9px;
@@ -163,7 +156,7 @@
             border-collapse: collapse;
         }
         .items-table th {
-            background-color: #eef2ff; /* Indigo 50 */
+            background-color: #eef2ff;
             color: #4f46e5;
             text-align: left;
             padding: 10px;
@@ -201,16 +194,16 @@
         }
         .attribute {
             font-size: 9px;
-            color: #b45309; /* Amber 700 */
+            color: #b45309;
             margin-top: 4px;
-            background-color: #fef3c7; /* Amber 50 */
+            background-color: #fef3c7;
             display: inline-block;
             padding: 2px 6px;
             border-radius: 4px;
             border: 1px solid #fde68a;
         }
 
-        /* Totals Section */
+        /* Totals Section - Aligned perfectly to the right edge */
         .totals-wrapper {
             width: 100%;
             margin-bottom: 15px;
@@ -221,6 +214,7 @@
             border: 2px solid #e2e8f0;
             border-radius: 6px;
             overflow: hidden;
+            margin-left: auto; /* Pushes it strictly to the right edge */
         }
         .totals-table {
             width: 100%;
@@ -239,7 +233,7 @@
             border-bottom: none;
         }
         .grand-total-row td {
-            background-color: #4f46e5; /* Indigo */
+            background-color: #4f46e5;
             color: #ffffff !important;
             font-size: 13px;
             font-weight: bold;
@@ -308,9 +302,8 @@
         use Illuminate\Support\Facades\Log;
 
         // 1. Logo Retrieval Logic
-        $logoPath = $settings['store_logo'] ?? null;
+        $logoPath = $settings['store_logo'] ?? $settings['logo'] ?? null;
         
-        // Remove "storage/" or "/storage/" prefix if present
         if ($logoPath) {
             $logoPath = preg_replace('#^/?storage/#', '', $logoPath);
         }
@@ -369,12 +362,10 @@
             <tr>
                 <td width="55%">
                     @if($logoDataUri)
-                        <div class="logo-container">
-                            <img src="{{ $logoDataUri }}" class="logo-img" alt="{{ $settings['store_name'] ?? 'Store' }} Logo">
-                        </div>
-                        <div style="font-size: 10px; color: #e0e7ff; margin-top: 4px;">
-                            {{ $settings['store_tagline'] ?? '' }}
-                        </div>
+                        <img src="{{ $logoDataUri }}" class="logo-img" alt="{{ $settings['store_name'] ?? 'Store' }} Logo">
+                        @if(!empty($settings['store_tagline']))
+                            <div style="font-size: 10px; color: #e0e7ff; margin-top: 4px;">{{ $settings['store_tagline'] }}</div>
+                        @endif
                     @else
                         <div class="store-name">{{ $settings['store_name'] ?? 'Store' }}</div>
                         @if(!empty($settings['store_tagline']))
@@ -390,7 +381,7 @@
             </tr>
         </table>
 
-        <!-- Details -->
+        <!-- Details Grid -->
         <table class="details-wrapper">
             <tr>
                 <td class="details-box">
@@ -445,34 +436,31 @@
             </table>
         </div>
 
-        <!-- Totals -->
-        <table class="totals-wrapper">
-            <tr>
-                <td width="55%"></td>
-                <td width="45%" class="totals-box">
-                    <table class="totals-table">
-                        <tr>
-                            <td class="text-muted">Subtotal</td>
-                            <td class="text-right font-bold text-dark">{{ $money($order->subtotal) }}</td>
-                        </tr>
-                        <tr>
-                            <td class="text-muted">Shipping Fee</td>
-                            <td class="text-right font-bold text-dark">{{ $money($order->shipping_fee) }}</td>
-                        </tr>
-                        @if($order->discount_total > 0)
-                        <tr>
-                            <td class="text-amber">Discount</td>
-                            <td class="text-right font-bold text-amber">-{{ $money($order->discount_total) }}</td>
-                        </tr>
-                        @endif
-                        <tr class="grand-total-row">
-                            <td class="text-left" style="text-transform: uppercase; letter-spacing: 1px;">Total</td>
-                            <td class="text-right">{{ $money($order->grand_total) }}</td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-        </table>
+        <!-- Totals Section -->
+        <div class="totals-wrapper">
+            <div class="totals-box">
+                <table class="totals-table">
+                    <tr>
+                        <td class="text-muted">Subtotal</td>
+                        <td class="text-right font-bold text-dark">{{ $money($order->subtotal) }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted">Shipping Fee</td>
+                        <td class="text-right font-bold text-dark">{{ $money($order->shipping_fee) }}</td>
+                    </tr>
+                    @if($order->discount_total > 0)
+                    <tr>
+                        <td class="text-amber">Discount</td>
+                        <td class="text-right font-bold text-amber">-{{ $money($order->discount_total) }}</td>
+                    </tr>
+                    @endif
+                    <tr class="grand-total-row">
+                        <td class="text-left" style="text-transform: uppercase; letter-spacing: 1px;">Total</td>
+                        <td class="text-right">{{ $money($order->grand_total) }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
 
         <!-- Payment Details -->
         @if($order->payments->count() > 0)
