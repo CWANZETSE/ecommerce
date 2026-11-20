@@ -11,6 +11,5 @@
 
 
 
-@import '../../public/custom/app.css'
+@import './custom/app.css'
 /* No sidebar in this layout — zero out the offset so header/content go full-width */
-
