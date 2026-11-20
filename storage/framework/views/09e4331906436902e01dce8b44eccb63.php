@@ -76,7 +76,6 @@
         }
 
         .logo-container {
-            background-color: #ffffff;
             padding: 4px 8px;
             border-radius: 4px;
             display: inline-block;
