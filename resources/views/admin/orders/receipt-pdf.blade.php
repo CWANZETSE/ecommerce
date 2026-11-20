@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,7 +5,9 @@
     <title>Receipt {{ $order->order_number }}</title>
 
     <style>
-        /* Custom Fonts */
+        /* -------------------------------------------------
+           APPLICATION FONTS
+        ------------------------------------------------- */
         @font-face {
             font-family: 'Geologica';
             src: url('{{ public_path('fonts/Geologica.ttf') }}') format('truetype');
@@ -21,8 +22,11 @@
             font-style: normal;
         }
 
+        /* -------------------------------------------------
+           GENERAL STYLES
+        ------------------------------------------------- */
         @page {
-            margin: 12px 18px;
+            margin: 15px 20px;
         }
 
         * {
@@ -35,28 +39,14 @@
             font-family: 'Geologica', sans-serif;
             color: #334155;
             font-size: 10px;
-            line-height: 1.3;
+            line-height: 1.35;
             background-color: #ffffff;
         }
 
-        /* Main Receipt Container */
         .receipt-container {
             width: 100%;
             max-width: 750px;
             margin: 0 auto;
-            padding: 0;
-        }
-
-        /* Shared Section Width */
-        .header-box,
-        .details-wrapper,
-        .items-wrapper,
-        .totals-wrapper,
-        .payment-wrapper,
-        .footer {
-            width: 100%;
-            margin-left: 0;
-            margin-right: 0;
         }
 
         strong,
@@ -65,114 +55,133 @@
             color: #0f172a;
         }
 
-        /* Utilities */
-        .text-right { text-align: right; }
-        .text-center { text-align: center; }
-        .text-left { text-align: left; }
-        .text-muted { color: #64748b; }
-        .text-indigo { color: #4f46e5; }
-        .text-amber { color: #d97706; }
-        .text-dark { color: #0f172a; }
+        /* -------------------------------------------------
+           UTILITIES
+        ------------------------------------------------- */
+        .text-right {
+            text-align: right;
+        }
 
-        /* Header */
+        .text-center {
+            text-align: center;
+        }
+
+        .text-left {
+            text-align: left;
+        }
+
+        .text-muted {
+            color: #64748b;
+        }
+
+        .text-indigo {
+            color: #4f46e5;
+        }
+
+        .text-amber {
+            color: #d97706;
+        }
+
+        .text-dark {
+            color: #0f172a;
+        }
+
+        .font-bold {
+            font-weight: bold;
+        }
+
+        /* -------------------------------------------------
+           HEADER
+           Transparent background with readable text.
+        ------------------------------------------------- */
         .header-box {
-            border-collapse: collapse;
-            table-layout: fixed;
-            margin-bottom: 8px;
-            background-color: #4f46e5;
-            border-radius: 8px;
-            border: 1px solid #4338ca;
-            overflow: hidden;
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-bottom: 12px;
+
+            /* Keep the header transparent */
+            background-color: transparent;
+
+            border: 1px solid #e2e8f0;
+            border-radius: 9px;
         }
 
         .header-box td {
-            padding: 10px 12px;
-            color: #ffffff;
+            padding: 12px 15px;
+            color: #334155;
             vertical-align: middle;
         }
 
-        /* Logo - Render directly on Indigo background */
         .logo-container {
-            background: transparent;
+            background-color: transparent;
             padding: 0;
-            border: none;
             border-radius: 0;
             display: inline-block;
             margin-bottom: 3px;
         }
 
         .logo-img {
-            max-height: 35px;
-            max-width: 180px;
-            width: auto;
-            height: auto;
+            max-height: 36px;
+            max-width: 190px;
             display: block;
-            object-fit: contain;
         }
 
         .store-name {
-            font-size: 20px;
+            font-size: 21px;
             font-weight: bold;
-            letter-spacing: -0.5px;
-            color: #ffffff;
+            letter-spacing: -0.4px;
+            color: #0f172a;
         }
 
         .receipt-title {
-            font-size: 12px;
+            font-size: 13px;
             font-weight: bold;
-            letter-spacing: 2px;
+            letter-spacing: 1.2px;
             text-transform: uppercase;
-            color: #fcd34d;
+            color: #d97706;
         }
 
         .order-number {
             font-size: 9px;
-            color: #e0e7ff;
+            color: #64748b;
             margin-top: 3px;
         }
 
-        /* Details */
+        /* -------------------------------------------------
+           BILLED FROM / BILLED TO
+        ------------------------------------------------- */
         .details-wrapper {
-            border-collapse: collapse;
-            table-layout: fixed;
-            margin-bottom: 8px;
-        }
-
-        .details-wrapper td {
-            width: 50%;
-            vertical-align: top;
-            padding: 0 4px;
-        }
-
-        .details-wrapper td:first-child {
-            padding-left: 0;
-        }
-
-        .details-wrapper td:last-child {
-            padding-right: 0;
+            width: 100%;
+            margin-bottom: 10px;
+            border-collapse: separate;
+            border-spacing: 8px 0;
+            margin-left: -8px;
         }
 
         .details-box {
+            width: 50%;
+            vertical-align: top;
             background-color: #f8fafc;
-            border-radius: 6px;
-            padding: 7px 9px;
+            border-radius: 8px;
+            padding: 9px 11px;
             border: 1px solid #e2e8f0;
             border-left: 3px solid #4f46e5;
         }
 
         .details-box.amber {
-            border-left: 3px solid #f59e0b;
+            border-left-color: #f59e0b;
         }
 
         .section-label {
-            font-size: 8px;
+            font-size: 9px;
             text-transform: uppercase;
             font-weight: bold;
-            letter-spacing: 1px;
+            letter-spacing: 0.8px;
             color: #4f46e5;
             border-bottom: 1px solid #e2e8f0;
-            padding-bottom: 3px;
-            margin-bottom: 5px;
+            padding-bottom: 4px;
+            margin-bottom: 6px;
             display: block;
         }
 
@@ -181,7 +190,7 @@
         }
 
         .person-name {
-            font-size: 10px;
+            font-size: 11px;
             font-weight: bold;
             color: #0f172a;
             margin-bottom: 3px;
@@ -191,34 +200,35 @@
             color: #64748b;
             font-size: 9px;
             margin-bottom: 2px;
-            overflow-wrap: break-word;
         }
 
-        /* Items */
+        /* -------------------------------------------------
+           PRODUCTS TABLE
+        ------------------------------------------------- */
         .items-wrapper {
-            margin-bottom: 8px;
-            border-radius: 6px;
+            width: 100%;
+            margin-bottom: 11px;
             border: 1px solid #e2e8f0;
+            border-radius: 8px;
             overflow: hidden;
         }
 
         .items-table {
             width: 100%;
             border-collapse: collapse;
-            table-layout: fixed;
         }
 
         .items-table th {
             background-color: #eef2ff;
-            color: #4f46e5;
+            color: #4338ca;
             text-align: left;
-            padding: 5px 6px;
-            font-size: 8px;
+            padding: 8px 9px;
+            font-size: 9px;
             font-weight: bold;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.4px;
             border-bottom: 1px solid #c7d2fe;
-            border-right: 1px solid #c7d2fe;
+            border-right: 1px solid #e0e7ff;
         }
 
         .items-table th:last-child {
@@ -226,11 +236,10 @@
         }
 
         .items-table td {
-            padding: 5px 6px;
+            padding: 8px 9px;
             border-bottom: 1px solid #e2e8f0;
-            border-right: 1px solid #e2e8f0;
+            border-right: 1px solid #f1f5f9;
             vertical-align: top;
-            overflow-wrap: break-word;
         }
 
         .items-table td:last-child {
@@ -256,31 +265,27 @@
         .attribute {
             font-size: 8px;
             color: #b45309;
-            margin-top: 3px;
-            background-color: #fef3c7;
+            margin-top: 4px;
+            background-color: #fffbeb;
             display: inline-block;
-            padding: 1px 4px;
-            border-radius: 4px;
+            padding: 2px 5px;
+            border-radius: 5px;
             border: 1px solid #fde68a;
         }
 
-        /* Totals */
+        /* -------------------------------------------------
+           TOTALS
+        ------------------------------------------------- */
         .totals-wrapper {
-            border-collapse: collapse;
-            table-layout: fixed;
-            margin-bottom: 8px;
-        }
-
-        .totals-wrapper > tbody > tr > td {
-            padding: 0;
-            vertical-align: top;
+            width: 100%;
+            margin-bottom: 11px;
         }
 
         .totals-box {
             width: 45%;
             background-color: #f8fafc;
             border: 1px solid #e2e8f0;
-            border-radius: 6px;
+            border-radius: 8px;
             overflow: hidden;
         }
 
@@ -290,10 +295,10 @@
         }
 
         .totals-table td {
-            padding: 5px 8px;
+            padding: 7px 10px;
             font-size: 9px;
             border-bottom: 1px solid #e2e8f0;
-            border-right: 1px solid #e2e8f0;
+            border-right: 1px solid #f1f5f9;
         }
 
         .totals-table td:last-child {
@@ -307,37 +312,39 @@
         .grand-total-row td {
             background-color: #4f46e5;
             color: #ffffff !important;
-            font-size: 11px;
+            font-size: 12px;
             font-weight: bold;
-            padding: 7px 8px;
+            padding: 9px 10px;
         }
 
         .grand-total-row strong {
             color: #ffffff !important;
         }
 
-        /* Payments */
+        /* -------------------------------------------------
+           TRANSACTION DETAILS
+        ------------------------------------------------- */
         .payment-wrapper {
-            margin-bottom: 8px;
+            width: 100%;
+            margin-bottom: 11px;
             border: 1px solid #e2e8f0;
-            border-radius: 6px;
+            border-radius: 8px;
             overflow: hidden;
         }
 
         .payment-table {
             width: 100%;
             border-collapse: collapse;
-            table-layout: fixed;
         }
 
         .payment-table th {
             background-color: #f8fafc;
             color: #475569;
-            padding: 5px 6px;
-            font-size: 8px;
+            padding: 7px 9px;
+            font-size: 9px;
             text-transform: uppercase;
             border-bottom: 1px solid #e2e8f0;
-            border-right: 1px solid #e2e8f0;
+            border-right: 1px solid #f1f5f9;
             text-align: left;
         }
 
@@ -346,12 +353,11 @@
         }
 
         .payment-table td {
-            padding: 5px 6px;
+            padding: 8px 9px;
             font-size: 9px;
             border-bottom: 1px solid #e2e8f0;
-            border-right: 1px solid #e2e8f0;
+            border-right: 1px solid #f1f5f9;
             color: #334155;
-            overflow-wrap: break-word;
         }
 
         .payment-table td:last-child {
@@ -362,15 +368,17 @@
             border-bottom: none;
         }
 
-        /* Footer */
+        /* -------------------------------------------------
+           FOOTER
+        ------------------------------------------------- */
         .footer {
-            margin-top: 10px;
-            padding: 8px;
+            margin-top: 16px;
+            padding: 10px 12px;
             border: 1px dashed #cbd5e1;
-            border-radius: 6px;
+            border-radius: 8px;
             text-align: center;
             color: #64748b;
-            font-size: 8px;
+            font-size: 9px;
             background-color: #f8fafc;
         }
     </style>
@@ -396,14 +404,17 @@
             try {
                 if (Storage::exists($logoPath)) {
                     $bytes = Storage::get($logoPath);
-                    $mime  = Storage::mimeType($logoPath) ?: 'image/png';
+                    $mime = Storage::mimeType($logoPath) ?: 'image/png';
+
                     $logoDataUri = 'data:' . $mime . ';base64,' . base64_encode($bytes);
                 } else {
-                    Log::warning('Receipt logo missing on disk', ['path' => $logoPath]);
+                    Log::warning('Receipt logo missing on disk', [
+                        'path' => $logoPath,
+                    ]);
                 }
             } catch (\Throwable $e) {
                 Log::warning('Receipt logo embedding failed', [
-                    'path'  => $logoPath,
+                    'path' => $logoPath,
                     'error' => $e->getMessage(),
                 ]);
             }
@@ -425,7 +436,9 @@
         }
 
         $formatAttributes = function ($attributes) {
-            if (is_string($attributes)) return $attributes;
+            if (is_string($attributes)) {
+                return $attributes;
+            }
 
             if (!is_array($attributes)) {
                 return is_scalar($attributes) ? (string) $attributes : '';
@@ -446,7 +459,9 @@
                 ->map(function ($value, $key) use ($formatValue) {
                     $formattedValue = $formatValue($value);
 
-                    if ($formattedValue === '') return null;
+                    if ($formattedValue === '') {
+                        return null;
+                    }
 
                     if (is_string($key)) {
                         return ucfirst(str_replace('_', ' ', $key)) . ': ' . $formattedValue;
@@ -461,7 +476,7 @@
 
     <div class="receipt-container">
 
-        <!-- Header -->
+        <!-- Receipt Header -->
         <table class="header-box">
             <tr>
                 <td width="55%">
@@ -474,16 +489,18 @@
                             >
                         </div>
 
-                        <div style="font-size: 9px; color: #e0e7ff; margin-top: 3px;">
-                            {{ $settings['store_tagline'] ?? '' }}
-                        </div>
+                        @if(!empty($settings['store_tagline']))
+                            <div style="font-size: 9px; color: #64748b; margin-top: 3px;">
+                                {{ $settings['store_tagline'] }}
+                            </div>
+                        @endif
                     @else
                         <div class="store-name">
                             {{ $settings['store_name'] ?? 'Store' }}
                         </div>
 
                         @if(!empty($settings['store_tagline']))
-                            <div style="font-size: 9px; color: #e0e7ff; margin-top: 3px;">
+                            <div style="font-size: 9px; color: #64748b; margin-top: 3px;">
                                 {{ $settings['store_tagline'] }}
                             </div>
                         @endif
@@ -492,62 +509,64 @@
 
                 <td width="45%" class="text-right" style="vertical-align: middle;">
                     <div class="receipt-title">Official Receipt</div>
-                    <div class="order-number">Order: {{ $order->order_number }}</div>
-                    <div class="order-number">Date: {{ $order->created_at->format('d M Y, h:i A') }}</div>
+
+                    <div class="order-number">
+                        Order: {{ $order->order_number }}
+                    </div>
+
+                    <div class="order-number">
+                        Date: {{ $order->created_at->format('d M Y, h:i A') }}
+                    </div>
                 </td>
             </tr>
         </table>
 
-        <!-- Details -->
+        <!-- Billed From / Billed To -->
         <table class="details-wrapper">
             <tr>
-                <td>
-                    <div class="details-box">
-                        <span class="section-label">Billed From</span>
+                <td class="details-box">
+                    <span class="section-label">Billed From</span>
 
-                        <div class="person-name">
-                            {{ $settings['store_name'] ?? 'Store' }}
-                        </div>
-
-                        @if(!empty($settings['store_address']))
-                            <div class="muted">{{ $settings['store_address'] }}</div>
-                        @endif
-
-                        @if(!empty($settings['store_email']))
-                            <div class="muted">{{ $settings['store_email'] }}</div>
-                        @endif
-
-                        @if(!empty($settings['store_phone']))
-                            <div class="muted">{{ $settings['store_phone'] }}</div>
-                        @endif
+                    <div class="person-name">
+                        {{ $settings['store_name'] ?? 'Store' }}
                     </div>
+
+                    @if(!empty($settings['store_address']))
+                        <div class="muted">{{ $settings['store_address'] }}</div>
+                    @endif
+
+                    @if(!empty($settings['store_email']))
+                        <div class="muted">{{ $settings['store_email'] }}</div>
+                    @endif
+
+                    @if(!empty($settings['store_phone']))
+                        <div class="muted">{{ $settings['store_phone'] }}</div>
+                    @endif
                 </td>
 
-                <td>
-                    <div class="details-box amber">
-                        <span class="section-label amber">Billed To</span>
+                <td class="details-box amber">
+                    <span class="section-label amber">Billed To</span>
 
-                        <div class="person-name">
-                            {{ $order->customer_name ?? 'Walk-in Customer' }}
-                        </div>
-
-                        @if(!empty($address))
-                            <div class="muted">{{ $address }}</div>
-                        @endif
-
-                        @if(!empty($order->customer_email))
-                            <div class="muted">{{ $order->customer_email }}</div>
-                        @endif
-
-                        @if(!empty($order->customer_phone))
-                            <div class="muted">{{ $order->customer_phone }}</div>
-                        @endif
+                    <div class="person-name">
+                        {{ $order->customer_name ?? 'Walk-in Customer' }}
                     </div>
+
+                    @if(!empty($address))
+                        <div class="muted">{{ $address }}</div>
+                    @endif
+
+                    @if(!empty($order->customer_email))
+                        <div class="muted">{{ $order->customer_email }}</div>
+                    @endif
+
+                    @if(!empty($order->customer_phone))
+                        <div class="muted">{{ $order->customer_phone }}</div>
+                    @endif
                 </td>
             </tr>
         </table>
 
-        <!-- Items -->
+        <!-- Products Table -->
         <div class="items-wrapper">
             <table class="items-table">
                 <thead>
@@ -573,7 +592,9 @@
                                 </div>
 
                                 @if(!empty($item->sku))
-                                    <div class="sku">SKU: {{ $item->sku }}</div>
+                                    <div class="sku">
+                                        SKU: {{ $item->sku }}
+                                    </div>
                                 @endif
 
                                 @if(!empty($item->attributes))
@@ -615,6 +636,7 @@
                     <table class="totals-table">
                         <tr>
                             <td class="text-muted">Subtotal</td>
+
                             <td class="text-right font-bold text-dark">
                                 {{ $money($order->subtotal) }}
                             </td>
@@ -622,6 +644,7 @@
 
                         <tr>
                             <td class="text-muted">Shipping Fee</td>
+
                             <td class="text-right font-bold text-dark">
                                 {{ $money($order->shipping_fee) }}
                             </td>
@@ -630,6 +653,7 @@
                         @if($order->discount_total > 0)
                             <tr>
                                 <td class="text-amber">Discount</td>
+
                                 <td class="text-right font-bold text-amber">
                                     -{{ $money($order->discount_total) }}
                                 </td>
@@ -637,7 +661,7 @@
                         @endif
 
                         <tr class="grand-total-row">
-                            <td class="text-left" style="text-transform: uppercase; letter-spacing: 1px;">
+                            <td class="text-left" style="text-transform: uppercase; letter-spacing: 0.8px;">
                                 Total
                             </td>
 
@@ -650,7 +674,7 @@
             </tr>
         </table>
 
-        <!-- Payment Details -->
+        <!-- Transaction Details -->
         @if($order->payments->count() > 0)
             <div class="payment-wrapper">
                 <table class="payment-table">
