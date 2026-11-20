@@ -219,44 +219,60 @@ class OrderController extends Controller
     }
 
     public function updateFulfilment(Request $request, Order $order): RedirectResponse
-    {
-        $data = $request->validate([
-            'status' => ['required', 'string'],
-            'note' => ['nullable', 'string', 'max:500'],
-        ]);
+{
+    $data = $request->validate([
+        'status' => ['required', 'string'],
+        'note' => ['nullable', 'string', 'max:500'],
+    ]);
 
-        $newStatus = OrderFulfilmentStatus::tryFrom($data['status']);
-        $currentStatus = $order->fulfilment_status;
+    $newStatus = OrderFulfilmentStatus::tryFrom($data['status']);
+    $currentStatus = $order->fulfilment_status;
 
-        if (! $newStatus) {
-            return back()->with('error', 'Invalid status selected.');
-        }
-
-        // 1. Check against the Enum rules
-        if (! $currentStatus->canTransitionTo($newStatus)) {
-            return back()->with('error', "Cannot transition from {$currentStatus->label()} to {$newStatus->label()}.");
-        }
-
-        // 2. If cancelling, ensure payment logic is respected
-        if ($newStatus === OrderFulfilmentStatus::Cancelled) {
-            // Run your existing cancellation logic (restock, notify, etc.)
-            return $this->cancel($order);
-        }
-
-        // 3. Update the status and log history
-        DB::transaction(function () use ($order, $currentStatus, $newStatus, $data) {
-            $order->update(['fulfilment_status' => $newStatus]);
-            $order->recordStatus(
-                $currentStatus->value,
-                $newStatus->value,
-                'fulfilment',
-                $data['note'] ?? null
-            );
-            OrderStatusChangedEvent::dispatch($order, $newStatus);
-        });
-
-        return back()->with('success', 'Fulfilment status updated.');
+    if (! $newStatus) {
+        return back()->with('error', 'Invalid status selected.');
     }
+
+    // 1. Check against the Enum rules
+    if (! $currentStatus->canTransitionTo($newStatus)) {
+        return back()->with(
+            'error',
+            "Cannot transition from {$currentStatus->label()} to {$newStatus->label()}."
+        );
+    }
+
+    // 2. Prevent unpaid orders from moving to Processing
+    if (
+        $newStatus === OrderFulfilmentStatus::Processing &&
+        $order->payment_status !== 'paid'
+    ) {
+        return back()->with(
+            'error',
+            'This order cannot be moved to Processing because payment has not been completed.'
+        );
+    }
+
+    // 3. If cancelling, ensure payment logic is respected
+    if ($newStatus === OrderFulfilmentStatus::Cancelled) {
+        // Run your existing cancellation logic (restock, notify, etc.)
+        return $this->cancel($order);
+    }
+
+    // 4. Update the status and log history
+    DB::transaction(function () use ($order, $currentStatus, $newStatus, $data) {
+        $order->update(['fulfilment_status' => $newStatus]);
+
+        $order->recordStatus(
+            $currentStatus->value,
+            $newStatus->value,
+            'fulfilment',
+            $data['note'] ?? null
+        );
+
+        OrderStatusChangedEvent::dispatch($order, $newStatus);
+    });
+
+    return back()->with('success', 'Fulfilment status updated.');
+}
 
     public function addNote(Request $request, Order $order): RedirectResponse
     {

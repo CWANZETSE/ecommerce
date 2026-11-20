@@ -13,8 +13,10 @@ enum OrderFulfilmentStatus: string
     /**
      * Determine if the order can transition to the given status.
      */
-    public function canTransitionTo(OrderFulfilmentStatus $newStatus): bool
-    {
+    public function canTransitionTo(
+        OrderFulfilmentStatus $newStatus,
+        bool $isPaid = true
+    ): bool {
         // 1. No going back if already in a final state
         if ($this === self::Delivered || $this === self::Cancelled) {
             return false;
@@ -25,7 +27,12 @@ enum OrderFulfilmentStatus: string
             return true;
         }
 
-        // 3. Strict step-by-step forward progression
+        // 3. An unpaid order cannot move to Processing
+        if ($newStatus === self::Processing && ! $isPaid) {
+            return false;
+        }
+
+        // 4. Strict step-by-step forward progression
         return match ($this) {
             self::Pending => $newStatus === self::Processing,
             self::Processing => $newStatus === self::Dispatched,
@@ -47,6 +54,10 @@ enum OrderFulfilmentStatus: string
 
     public function canGenerateReceipt(): bool
     {
-        return in_array($this, [self::Processing, self::Dispatched, self::Delivered], true);
+        return in_array(
+            $this,
+            [self::Processing, self::Dispatched, self::Delivered],
+            true
+        );
     }
 }
