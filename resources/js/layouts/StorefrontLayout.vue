@@ -19,6 +19,8 @@ import {
     SparkleIcon
 } from '@lucide/vue';
 import { admin_dashboard, customer_orders_index, customer_products_index, home } from '@/routes';
+import HomeSVG from '@/components/SVG/homeSVG.vue';
+import CartSVG from '@/components/SVG/cartSVG.vue';
 
 interface CategoryNode {
     id: string;
@@ -155,9 +157,9 @@ function toggleTheme() {
                             <Moon v-else class="size-5 text-amber-400" />
                         </button>
                         <Link href="/cart"
-                            class="relative flex size-10 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-slate-100 text-slate-700 transition-colors hover:bg-slate-200 dark:border-navy-500 dark:bg-navy-700 dark:text-navy-100"
+                            class="relative flex size-10 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-primary/10 text-primary dark:bg-accent-light/10 dark:text-accent-light dark:border-navy-500"
                             title="Shopping Cart">
-                            <span class="text-2xl">🛍️</span>
+                            <span class="text-2xl"><CartSVG/></span>
                             <span v-if="cartCount > 0"
                                 class="absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full bg-error text-[10px] font-bold text-white shadow">
                                 {{ cartCount }}
@@ -285,23 +287,8 @@ function toggleTheme() {
                     <div
                         class="scrollbar-none flex h-11 items-center gap-2 overflow-x-auto whitespace-nowrap text-sm font-medium">
                         <Link :href="home.url()"
-                            class="flex items-center gap-3 rounded-lg px-3 py-2 text-xs-plus tracking-wide outline-hidden transition-colors duration-200 hover:bg-primary/20 focus:bg-primary/20 active:bg-primary/25 dark:hover:bg-navy-300/20 dark:focus:bg-navy-300/20 dark:active:bg-navy-300/25">
-                            <svg class="size-5 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                viewBox="0 0 24 24">
-                                <path fill="currentColor" fill-opacity=".3"
-                                    d="M5 14.059c0-1.01 0-1.514.222-1.945.221-.43.632-.724 1.453-1.31l4.163-2.974c.56-.4.842-.601 1.162-.601.32 0 .601.2 1.162.601l4.163 2.974c.821.586 1.232.88 1.453 1.31.222.43.222.935.222 1.945V19c0 .943 0 1.414-.293 1.707C18.414 21 17.943 21 17 21H7c-.943 0-1.414 0-1.707-.293C5 20.414 5 19.943 5 19v-4.94Z">
-                                </path>
-                                <path fill="currentColor"
-                                    d="M3 12.387c0 .267 0 .4.084.441.084.041.19-.04.4-.204l7.288-5.669c.59-.459.885-.688 1.228-.688.343 0 .638.23 1.228.688l7.288 5.669c.21.163.316.245.4.204.084-.04.084-.174.084-.441v-.409c0-.48 0-.72-.102-.928-.101-.208-.291-.355-.67-.65l-7-5.445c-.59-.459-.885-.688-1.228-.688-.343 0-.638.23-1.228.688l-7 5.445c-.379.295-.569.442-.67.65-.102.208-.102.448-.102.928v.409Z">
-                                </path>
-                                <path fill="currentColor"
-                                    d="M11.5 15.5h1A1.5 1.5 0 0 1 14 17v3.5h-4V17a1.5 1.5 0 0 1 1.5-1.5Z">
-                                </path>
-                                <path fill="currentColor"
-                                    d="M17.5 5h-1a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5Z">
-                                </path>
-                            </svg>
-                            <span class="truncate">Home</span>
+                            class="flex items-center justify-center size-8 rounded-lg bg-primary/10 text-primary dark:bg-accent-light/10 dark:text-accent-light">
+                            <HomeSVG/>
                         </Link>
 
                         <Link :href="customer_products_index.url()"
@@ -338,12 +325,12 @@ function toggleTheme() {
                             </div>
                         </template>
 
-                        <div class="ml-auto flex shrink-0 items-center gap-4 text-xs">
+                        <div class="ml-auto hidden shrink-0 items-center gap-4 text-xs lg:flex">
                             <span v-if="auth?.user"
                                 class="flex text-center text-slate-400 transition-colors hover:text-slate-700 dark:text-navy-300 dark:hover:text-navy-100">
-                                
-                                <span class="truncate"><span>Hello, {{ auth.user.name
-                            }}</span></span>
+                                <span class="truncate">
+                                    <span>Hello, {{ auth.user.name }}</span>
+                                </span>
                             </span>
                         </div>
                     </div>
@@ -378,7 +365,7 @@ function toggleTheme() {
                         </div>
                         <div class="min-w-0 flex-1">
                             <p class="truncate text-sm font-semibold text-slate-800 dark:text-navy-50">{{ auth.user.name
-                            }}</p>
+                                }}</p>
                             <p class="truncate text-xs text-slate-500 dark:text-navy-300">{{ auth.user.email }}</p>
                         </div>
                     </div>

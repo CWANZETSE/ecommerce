@@ -2,6 +2,12 @@
 import { Head, useForm } from '@inertiajs/vue3';
 import type { PageProps } from '@/types';
 import StorefrontLayout from '@/layouts/StorefrontLayout.vue';
+import ShoppingSVG from '@/components/SVG/shoppingSVG.vue';
+import CartSVG from '@/components/SVG/cartSVG.vue';
+import ShippingSVG from '@/components/SVG/shippingSVG.vue';
+import NoteSVG from '@/components/SVG/NoteSVG.vue';
+import UserSVG from '@/components/SVG/userSVG.vue';
+import KeySVG from '@/components/SVG/keySVG.vue';
 
 interface User {
     id: string;
@@ -61,9 +67,7 @@ function savePassword() {
                 <!-- Orders Stat -->
                 <div class="card flex items-center p-4 dark:bg-navy-750">
                     <div class="flex size-12 items-center justify-center rounded-xl bg-primary/10 text-primary dark:bg-accent-light/10 dark:text-accent-light mr-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="size-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                        </svg>
+                        <CartSVG/>
                     </div>
                     <div>
                         <p class="text-xs text-slate-400 dark:text-navy-300">Total Orders</p>
@@ -74,10 +78,7 @@ function savePassword() {
                 <!-- Addresses Stat -->
                 <div class="card flex items-center p-4 dark:bg-navy-750">
                     <div class="flex size-12 items-center justify-center rounded-xl bg-info/10 text-info mr-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="size-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
+                        <ShippingSVG/>
                     </div>
                     <div>
                         <p class="text-xs text-slate-400 dark:text-navy-300">Saved Addresses</p>
@@ -88,9 +89,7 @@ function savePassword() {
                 <!-- Reviews Stat -->
                 <div class="card flex items-center p-4 dark:bg-navy-750">
                     <div class="flex size-12 items-center justify-center rounded-xl bg-warning/10 text-warning mr-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="size-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-                        </svg>
+                        <NoteSVG/>
                     </div>
                     <div>
                         <p class="text-xs text-slate-400 dark:text-navy-300">Product Reviews</p>
@@ -105,9 +104,7 @@ function savePassword() {
                 <section class="card p-6 dark:bg-navy-750">
                     <div class="flex items-center space-x-3 border-b border-slate-150 pb-4 dark:border-navy-600">
                         <div class="flex size-9 items-center justify-center rounded-lg bg-primary/10 text-primary dark:bg-accent-light/10 dark:text-accent-light">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                            </svg>
+                            <UserSVG/>
                         </div>
                         <div>
                             <h2 class="text-base font-semibold text-slate-800 dark:text-navy-50">Profile Information</h2>
@@ -158,9 +155,7 @@ function savePassword() {
                 <section class="card p-6 dark:bg-navy-750">
                     <div class="flex items-center space-x-3 border-b border-slate-150 pb-4 dark:border-navy-600">
                         <div class="flex size-9 items-center justify-center rounded-lg bg-warning/10 text-warning">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
-                            </svg>
+                            <KeySVG/>
                         </div>
                         <div>
                             <h2 class="text-base font-semibold text-slate-800 dark:text-navy-50">Update Password</h2>
