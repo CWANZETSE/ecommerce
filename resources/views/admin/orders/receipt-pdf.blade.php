@@ -775,7 +775,7 @@
         <!-- Footer -->
         <div class="footer">
             Thank you for shopping with us!<br>
-            This is a computer-generated receipt and does not require a signature.
+            This is a system-generated receipt and does not require a signature.
         </div>
 
     </div>
