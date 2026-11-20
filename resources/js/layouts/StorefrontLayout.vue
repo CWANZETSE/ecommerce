@@ -128,7 +128,7 @@ function toggleTheme() {
                     <!-- Brand -->
                     <Link href="/" class="flex shrink-0 items-center gap-2.5">
                         <img v-if="page.props.store_logo_url" :src="page.props.store_logo_url"
-                            :alt="page.props.store_name" class="h-12 w-auto  object-contain" />
+                            :alt="page.props.store_name" class="h-6 w-auto object-contain lg:h-12" />
                         <span v-else
                             class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary font-bold text-white shadow-md dark:bg-accent">
                             <ShoppingBag class="size-4.5" />
@@ -159,7 +159,9 @@ function toggleTheme() {
                         <Link href="/cart"
                             class="relative flex size-10 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-primary/10 text-primary dark:bg-accent-light/10 dark:text-accent-light dark:border-navy-500"
                             title="Shopping Cart">
-                            <span class="text-2xl"><CartSVG/></span>
+                            <span class="text-2xl">
+                                <CartSVG />
+                            </span>
                             <span v-if="cartCount > 0"
                                 class="absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full bg-error text-[10px] font-bold text-white shadow">
                                 {{ cartCount }}
@@ -288,7 +290,7 @@ function toggleTheme() {
                         class="scrollbar-none flex h-11 items-center gap-2 overflow-x-auto whitespace-nowrap text-sm font-medium">
                         <Link :href="home.url()"
                             class="flex items-center justify-center size-8 rounded-lg bg-primary/10 text-primary dark:bg-accent-light/10 dark:text-accent-light">
-                            <HomeSVG/>
+                            <HomeSVG />
                         </Link>
 
                         <Link :href="customer_products_index.url()"
@@ -365,7 +367,7 @@ function toggleTheme() {
                         </div>
                         <div class="min-w-0 flex-1">
                             <p class="truncate text-sm font-semibold text-slate-800 dark:text-navy-50">{{ auth.user.name
-                                }}</p>
+                            }}</p>
                             <p class="truncate text-xs text-slate-500 dark:text-navy-300">{{ auth.user.email }}</p>
                         </div>
                     </div>
@@ -412,7 +414,7 @@ function toggleTheme() {
                         <div class="space-y-1.5 border-b border-slate-150 pb-4 dark:border-navy-600">
                             <Link href="/" class="flex shrink-0 items-center gap-2.5">
                                 <img v-if="page.props.store_logo_url" :src="page.props.store_logo_url" alt="Store logo"
-                                    class="h-12 w-auto" />
+                                    class="h-6 w-auto object-contain lg:h-12" />
                                 <span v-else
                                     class="flex size-9 items-center justify-center rounded-xl bg-primary text-white">
                                     <ShoppingBag class="size-4.5" />
