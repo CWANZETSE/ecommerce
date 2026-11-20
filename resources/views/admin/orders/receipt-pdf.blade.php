@@ -535,11 +535,11 @@
                     <div class="receipt-title">Official Receipt</div>
 
                     <div class="order-number">
-                        Order: {{ $order->order_number }}
+                        REF: {{ $order->order_number }}
                     </div>
 
                     <div class="order-number">
-                        Date: {{ $order->created_at->format('d M Y, h:i A') }}
+                        Date: {{ $order->created_at->format('d M Y') }}
                     </div>
                 </td>
             </tr>

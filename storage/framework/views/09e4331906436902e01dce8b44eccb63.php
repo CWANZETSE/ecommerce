@@ -538,12 +538,12 @@
                     <div class="receipt-title">Official Receipt</div>
 
                     <div class="order-number">
-                        Order: <?php echo e($order->order_number); ?>
+                        REF: <?php echo e($order->order_number); ?>
 
                     </div>
 
                     <div class="order-number">
-                        Date: <?php echo e($order->created_at->format('d M Y, h:i A')); ?>
+                        Date: <?php echo e($order->created_at->format('d M Y')); ?>
 
                     </div>
                 </td>
