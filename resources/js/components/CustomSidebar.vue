@@ -266,22 +266,7 @@ function logout() {
 
         <!-- Footer -->
         <footer class="shrink-0 border-t border-slate-150 p-3 dark:border-navy-700">
-            <div
-                class="group flex items-center space-x-3 py-2 shrink-0 px-3 pt-3 tracking-wide outline-hidden transition-all bg-slate-100 dark:bg-navy-800">
-                <!-- <div class="flex size-8 items-center justify-center rounded-lg bg-primary/15 text-white">
-                    <UserSVG/>
-                </div> -->
-
-                <div>
-                    <h2
-                        class="font-medium text-slate-700 transition-colors group-hover:text-primary group-focus:text-primary dark:text-navy-100 dark:group-hover:text-accent-light dark:group-focus:text-accent-light">
-                        {{ user?.name ?? 'Administrator' }}
-                    </h2>
-                    <div class="text-xs text-slate-400 line-clamp-1 dark:text-navy-300">
-                        Administrator
-                    </div>
-                </div>
-            </div>
+            
             <Link href="/"
                 class="group flex items-center gap-3 rounded-lg px-3 py-2 mt-2 text-xs-plus font-medium text-slate-600 transition-colors duration-200 hover:bg-primary/20 hover:text-primary focus:bg-primary/20 focus:text-primary active:bg-primary/25 dark:text-navy-200 dark:hover:bg-navy-300/20 dark:hover:text-accent-light dark:focus:bg-navy-300/20 dark:focus:text-accent-light dark:active:bg-navy-300/25">
                 <span
