@@ -77,7 +77,7 @@ const selectedAddress = computed(() =>
 const form = useForm({
     name: props.user?.name ?? '',
     email: props.user?.email ?? '',
-    phone: '',
+    phone: props.user?.phone ?? '',
     county: '',
     town: '',
     address: '',

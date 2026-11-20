@@ -52,7 +52,7 @@ class CheckoutController extends Controller
         return Inertia::render('Storefront/Checkout/Index', [
             'cart' => $this->cart->serialize($cart),
             'counties' => ShippingZone::where('is_active', true)->orderBy('name')->get(['name', 'fee']),
-            'user' => $user ? ['name' => $user->name, 'email' => $user->email] : null,
+            'user' => $user ? ['name' => $user->name, 'email' => $user->email,'phone' => $user->phone] : null,
             'addresses' => $user
                 ? $user->addresses()->orderByDesc('is_default')->orderBy('label')->get([
                     'id', 'label', 'recipient_name', 'phone', 'county', 'town', 'address', 'instructions', 'is_default',

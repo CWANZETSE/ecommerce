@@ -139,7 +139,7 @@ function toggleTheme() {
                     </Link>
 
                     <!-- Desktop Search -->
-                    <form class="mx-auto hidden w-full max-w-xl md:block" @submit.prevent="submitSearch">
+                    <form class="mx-auto hidden w-full max-w-xl lg:block" @submit.prevent="submitSearch">
                         <div class="relative">
                             <Search
                                 class="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
@@ -175,7 +175,7 @@ function toggleTheme() {
                                     :aria-label="`Account menu — ${firstName}`" :aria-expanded="accountOpen"
                                     @click="toggleAccount">
                                     <span
-                                        class="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary dark:bg-accent-light/15 dark:text-accent-light">
+                                        class="flex size-7 shrink-0 items-center justify-center font-bold text-primary">
                                         {{ firstName.charAt(0).toUpperCase() }}
                                     </span>
 
@@ -367,7 +367,7 @@ function toggleTheme() {
                         </div>
                         <div class="min-w-0 flex-1">
                             <p class="truncate text-sm font-semibold text-slate-800 dark:text-navy-50">{{ auth.user.name
-                            }}</p>
+                                }}</p>
                             <p class="truncate text-xs text-slate-500 dark:text-navy-300">{{ auth.user.email }}</p>
                         </div>
                     </div>
