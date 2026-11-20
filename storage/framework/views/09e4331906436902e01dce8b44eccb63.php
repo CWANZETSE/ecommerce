@@ -398,12 +398,10 @@
             width: 100%;
             margin-top: 16px;
             padding: 10px 12px;
-            border: 1px dashed #cbd5e1;
             border-radius: 8px;
             text-align: center;
             color: #64748b;
             font-size: 9px;
-            background-color: #f8fafc;
         }
     </style>
 </head>
