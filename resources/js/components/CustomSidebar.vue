@@ -96,7 +96,7 @@ function logout() {
                 <!-- Dashboard -->
                 <li>
                     <Link href="/admin/dashboard"
-                        class="flex items-center gap-3 rounded-lg px-3 py-2 text-xs-plus tracking-wide outline-hidden transition-colors duration-200 hover:bg-primary/20 focus:bg-primary/20 active:bg-primary/25 dark:hover:bg-navy-300/20 dark:focus:bg-navy-300/20 dark:active:bg-navy-300/25"
+                        class="flex items-center gap-3 rounded-lg px-3 py-1 text-xs-plus tracking-wide outline-hidden transition-colors duration-200 hover:bg-primary/20 focus:bg-primary/20 active:bg-primary/25 dark:hover:bg-navy-300/20 dark:focus:bg-navy-300/20 dark:active:bg-navy-300/25"
                         :class="isActive('/admin/dashboard') ? 'bg-primary/20 font-medium text-primary dark:bg-navy-300/20 dark:text-accent-light' : 'text-slate-600 hover:text-slate-900 dark:text-navy-200 dark:hover:text-navy-50'"
                         @click="emit('close')">
                         <span
@@ -110,7 +110,7 @@ function logout() {
                 <!-- Products -->
                 <li>
                     <Link href="/admin/products"
-                        class="flex items-center gap-3 rounded-lg px-3 py-2 text-xs-plus tracking-wide outline-hidden transition-colors duration-200 hover:bg-primary/20 focus:bg-primary/20 active:bg-primary/25 dark:hover:bg-navy-300/20 dark:focus:bg-navy-300/20 dark:active:bg-navy-300/25"
+                        class="flex items-center gap-3 rounded-lg px-3 py-1 text-xs-plus tracking-wide outline-hidden transition-colors duration-200 hover:bg-primary/20 focus:bg-primary/20 active:bg-primary/25 dark:hover:bg-navy-300/20 dark:focus:bg-navy-300/20 dark:active:bg-navy-300/25"
                         :class="isActive('/admin/products') ? 'bg-primary/20 font-medium text-primary dark:bg-navy-300/20 dark:text-accent-light' : 'text-slate-600 hover:text-slate-900 dark:text-navy-200 dark:hover:text-navy-50'"
                         @click="emit('close')">
                         <span
@@ -124,7 +124,7 @@ function logout() {
                 <!-- Categories -->
                 <li>
                     <Link href="/admin/categories"
-                        class="flex items-center gap-3 rounded-lg px-3 py-2 text-xs-plus tracking-wide outline-hidden transition-colors duration-200 hover:bg-primary/20 focus:bg-primary/20 active:bg-primary/25 dark:hover:bg-navy-300/20 dark:focus:bg-navy-300/20 dark:active:bg-navy-300/25"
+                        class="flex items-center gap-3 rounded-lg px-3 py-1 text-xs-plus tracking-wide outline-hidden transition-colors duration-200 hover:bg-primary/20 focus:bg-primary/20 active:bg-primary/25 dark:hover:bg-navy-300/20 dark:focus:bg-navy-300/20 dark:active:bg-navy-300/25"
                         :class="isActive('/admin/categories') ? 'bg-primary/20 font-medium text-primary dark:bg-navy-300/20 dark:text-accent-light' : 'text-slate-600 hover:text-slate-900 dark:text-navy-200 dark:hover:text-navy-50'"
                         @click="emit('close')">
                         <span
@@ -138,7 +138,7 @@ function logout() {
                 <!-- Brands -->
                 <li>
                     <Link href="/admin/brands"
-                        class="flex items-center gap-3 rounded-lg px-3 py-2 text-xs-plus tracking-wide outline-hidden transition-colors duration-200 hover:bg-primary/20 focus:bg-primary/20 active:bg-primary/25 dark:hover:bg-navy-300/20 dark:focus:bg-navy-300/20 dark:active:bg-navy-300/25"
+                        class="flex items-center gap-3 rounded-lg px-3 py-1 text-xs-plus tracking-wide outline-hidden transition-colors duration-200 hover:bg-primary/20 focus:bg-primary/20 active:bg-primary/25 dark:hover:bg-navy-300/20 dark:focus:bg-navy-300/20 dark:active:bg-navy-300/25"
                         :class="isActive('/admin/brands') ? 'bg-primary/20 font-medium text-primary dark:bg-navy-300/20 dark:text-accent-light' : 'text-slate-600 hover:text-slate-900 dark:text-navy-200 dark:hover:text-navy-50'"
                         @click="emit('close')">
                         <span
@@ -152,7 +152,7 @@ function logout() {
                 <!-- Attributes -->
                 <li>
                     <Link href="/admin/attributes"
-                        class="flex items-center gap-3 rounded-lg px-3 py-2 text-xs-plus tracking-wide outline-hidden transition-colors duration-200 hover:bg-primary/20 focus:bg-primary/20 active:bg-primary/25 dark:hover:bg-navy-300/20 dark:focus:bg-navy-300/20 dark:active:bg-navy-300/25"
+                        class="flex items-center gap-3 rounded-lg px-3 py-1 text-xs-plus tracking-wide outline-hidden transition-colors duration-200 hover:bg-primary/20 focus:bg-primary/20 active:bg-primary/25 dark:hover:bg-navy-300/20 dark:focus:bg-navy-300/20 dark:active:bg-navy-300/25"
                         :class="isActive('/admin/attributes') ? 'bg-primary/20 font-medium text-primary dark:bg-navy-300/20 dark:text-accent-light' : 'text-slate-600 hover:text-slate-900 dark:text-navy-200 dark:hover:text-navy-50'"
                         @click="emit('close')">
                         <span
@@ -166,7 +166,7 @@ function logout() {
                 <!-- Inventory -->
                 <li>
                     <Link href="/admin/inventory"
-                        class="flex items-center gap-3 rounded-lg px-3 py-2 text-xs-plus tracking-wide outline-hidden transition-colors duration-200 hover:bg-primary/20 focus:bg-primary/20 active:bg-primary/25 dark:hover:bg-navy-300/20 dark:focus:bg-navy-300/20 dark:active:bg-navy-300/25"
+                        class="flex items-center gap-3 rounded-lg px-3 py-1 text-xs-plus tracking-wide outline-hidden transition-colors duration-200 hover:bg-primary/20 focus:bg-primary/20 active:bg-primary/25 dark:hover:bg-navy-300/20 dark:focus:bg-navy-300/20 dark:active:bg-navy-300/25"
                         :class="isActive('/admin/inventory') ? 'bg-primary/20 font-medium text-primary dark:bg-navy-300/20 dark:text-accent-light' : 'text-slate-600 hover:text-slate-900 dark:text-navy-200 dark:hover:text-navy-50'"
                         @click="emit('close')">
                         <span
@@ -180,7 +180,7 @@ function logout() {
                 <!-- Orders -->
                 <li>
                     <Link href="/admin/orders"
-                        class="flex items-center gap-3 rounded-lg px-3 py-2 text-xs-plus tracking-wide outline-hidden transition-colors duration-200 hover:bg-primary/20 focus:bg-primary/20 active:bg-primary/25 dark:hover:bg-navy-300/20 dark:focus:bg-navy-300/20 dark:active:bg-navy-300/25"
+                        class="flex items-center gap-3 rounded-lg px-3 py-1 text-xs-plus tracking-wide outline-hidden transition-colors duration-200 hover:bg-primary/20 focus:bg-primary/20 active:bg-primary/25 dark:hover:bg-navy-300/20 dark:focus:bg-navy-300/20 dark:active:bg-navy-300/25"
                         :class="isActive('/admin/orders') ? 'bg-primary/20 font-medium text-primary dark:bg-navy-300/20 dark:text-accent-light' : 'text-slate-600 hover:text-slate-900 dark:text-navy-200 dark:hover:text-navy-50'"
                         @click="emit('close')">
                         <span
@@ -194,7 +194,7 @@ function logout() {
                 <!-- Shipping -->
                 <li>
                     <Link href="/admin/shipping"
-                        class="flex items-center gap-3 rounded-lg px-3 py-2 text-xs-plus tracking-wide outline-hidden transition-colors duration-200 hover:bg-primary/20 focus:bg-primary/20 active:bg-primary/25 dark:hover:bg-navy-300/20 dark:focus:bg-navy-300/20 dark:active:bg-navy-300/25"
+                        class="flex items-center gap-3 rounded-lg px-3 py-1 text-xs-plus tracking-wide outline-hidden transition-colors duration-200 hover:bg-primary/20 focus:bg-primary/20 active:bg-primary/25 dark:hover:bg-navy-300/20 dark:focus:bg-navy-300/20 dark:active:bg-navy-300/25"
                         :class="isActive('/admin/shipping') ? 'bg-primary/20 font-medium text-primary dark:bg-navy-300/20 dark:text-accent-light' : 'text-slate-600 hover:text-slate-900 dark:text-navy-200 dark:hover:text-navy-50'"
                         @click="emit('close')">
                         <span
@@ -208,7 +208,7 @@ function logout() {
                 <!-- Coupons -->
                 <li>
                     <Link href="/admin/coupons"
-                        class="flex items-center gap-3 rounded-lg px-3 py-2 text-xs-plus tracking-wide outline-hidden transition-colors duration-200 hover:bg-primary/20 focus:bg-primary/20 active:bg-primary/25 dark:hover:bg-navy-300/20 dark:focus:bg-navy-300/20 dark:active:bg-navy-300/25"
+                        class="flex items-center gap-3 rounded-lg px-3 py-1 text-xs-plus tracking-wide outline-hidden transition-colors duration-200 hover:bg-primary/20 focus:bg-primary/20 active:bg-primary/25 dark:hover:bg-navy-300/20 dark:focus:bg-navy-300/20 dark:active:bg-navy-300/25"
                         :class="isActive('/admin/coupons') ? 'bg-primary/20 font-medium text-primary dark:bg-navy-300/20 dark:text-accent-light' : 'text-slate-600 hover:text-slate-900 dark:text-navy-200 dark:hover:text-navy-50'"
                         @click="emit('close')">
                         <span
@@ -222,7 +222,7 @@ function logout() {
                 <!-- Reports -->
                 <li>
                     <Link href="/admin/reports"
-                        class="flex items-center gap-3 rounded-lg px-3 py-2 text-xs-plus tracking-wide outline-hidden transition-colors duration-200 hover:bg-primary/20 focus:bg-primary/20 active:bg-primary/25 dark:hover:bg-navy-300/20 dark:focus:bg-navy-300/20 dark:active:bg-navy-300/25"
+                        class="flex items-center gap-3 rounded-lg px-3 py-1 text-xs-plus tracking-wide outline-hidden transition-colors duration-200 hover:bg-primary/20 focus:bg-primary/20 active:bg-primary/25 dark:hover:bg-navy-300/20 dark:focus:bg-navy-300/20 dark:active:bg-navy-300/25"
                         :class="isActive('/admin/reports') ? 'bg-primary/20 font-medium text-primary dark:bg-navy-300/20 dark:text-accent-light' : 'text-slate-600 hover:text-slate-900 dark:text-navy-200 dark:hover:text-navy-50'"
                         @click="emit('close')">
                         <span
@@ -236,7 +236,7 @@ function logout() {
                 <!-- Banners -->
                 <li>
                     <Link href="/admin/banners"
-                        class="flex items-center gap-3 rounded-lg px-3 py-2 text-xs-plus tracking-wide outline-hidden transition-colors duration-200 hover:bg-primary/20 focus:bg-primary/20 active:bg-primary/25 dark:hover:bg-navy-300/20 dark:focus:bg-navy-300/20 dark:active:bg-navy-300/25"
+                        class="flex items-center gap-3 rounded-lg px-3 py-1 text-xs-plus tracking-wide outline-hidden transition-colors duration-200 hover:bg-primary/20 focus:bg-primary/20 active:bg-primary/25 dark:hover:bg-navy-300/20 dark:focus:bg-navy-300/20 dark:active:bg-navy-300/25"
                         :class="isActive('/admin/banners') ? 'bg-primary/20 font-medium text-primary dark:bg-navy-300/20 dark:text-accent-light' : 'text-slate-600 hover:text-slate-900 dark:text-navy-200 dark:hover:text-navy-50'"
                         @click="emit('close')">
                         <span
@@ -250,7 +250,7 @@ function logout() {
                 <!-- Settings -->
                 <li>
                     <Link href="/admin/settings"
-                        class="flex items-center gap-3 rounded-lg px-3 py-2 text-xs-plus tracking-wide outline-hidden transition-colors duration-200 hover:bg-primary/20 focus:bg-primary/20 active:bg-primary/25 dark:hover:bg-navy-300/20 dark:focus:bg-navy-300/20 dark:active:bg-navy-300/25"
+                        class="flex items-center gap-3 rounded-lg px-3 py-1 text-xs-plus tracking-wide outline-hidden transition-colors duration-200 hover:bg-primary/20 focus:bg-primary/20 active:bg-primary/25 dark:hover:bg-navy-300/20 dark:focus:bg-navy-300/20 dark:active:bg-navy-300/25"
                         :class="isActive('/admin/settings') ? 'bg-primary/20 font-medium text-primary dark:bg-navy-300/20 dark:text-accent-light' : 'text-slate-600 hover:text-slate-900 dark:text-navy-200 dark:hover:text-navy-50'"
                         @click="emit('close')">
                         <span
