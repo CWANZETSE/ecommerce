@@ -618,7 +618,7 @@
                         <th width="40%">Item Description</th>
                         <th width="15%" class="text-center">Qty</th>
                         <th width="20%" class="text-right">Unit Price</th>
-                        <th width="20%" class="text-right">Total</th>
+                        <th width="20%" class="text-right" style="text-align:right">Total</th>
                     </tr>
                 </thead>
 
@@ -743,7 +743,7 @@
                             <th width="20%">Method</th>
                             <th width="30%">Reference</th>
                             <th width="25%">Date</th>
-                            <th width="25%" class="text-right">Amount</th>
+                            <th width="25%" class="text-right" style="text-align:right">Amount</th>
                         </tr>
                     </thead>
 
