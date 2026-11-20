@@ -40,15 +40,10 @@
         <x-inertia::head>
             <title>{{ config('app.name', 'Laravel') }}</title>
         </x-inertia::head>
-        <link
-  href="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.snow.css"
-  rel="stylesheet"
-/>
+
     </head>
     <body class="is-header-blur font-sans antialiased">
         <x-inertia::app />
-
-        <script src="{{ asset('/custom/app.js') }}"></script>
     </body>
     
 </html>

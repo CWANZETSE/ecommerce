@@ -41,6 +41,8 @@ import DeliveryPlaneSVG from '@/components/SVG/deliveryPlaneSVG.vue';
 import PaySVG from '@/components/SVG/paySVG.vue';
 import ReceiptSVG from '@/components/SVG/receiptSVG.vue';
 import NoteSVG from '@/components/SVG/NoteSVG.vue';
+import FingerprintSVG from '@/components/SVG/fingerprintSVG.vue';
+import StickyNoteSVG from '@/components/SVG/stickyNoteSVG.vue';
 
 interface StatusOption { value: string; label: string }
 interface OrderItem {
@@ -184,10 +186,12 @@ function badgeClass(status: string): string {
             class="btn border border-primary/30 mb-3 bg-primary/10 font-medium text-primary hover:bg-primary/20 focus:bg-primary/20 active:bg-primary/25 dark:border-accent-light/30 dark:bg-accent-light/10 dark:text-accent-light dark:hover:bg-accent-light/20 dark:focus:bg-accent-light/20 dark:active:bg-accent-light/25">
             <ReceiptSVG /> Show Receipt
         </Link>
-        <!-- Order Content -->
-        <div class="grid items-start gap-5 xl:grid-cols-3 lg:gap-6">
-            <!-- Main Content -->
-            <div class="min-w-0 space-y-5 xl:col-span-2 lg:space-y-6">
+
+        <!-- Order Content: Changed to 12-column grid on lg+ -->
+        <div class="grid items-start gap-5 lg:grid-cols-12 lg:gap-6">
+
+            <!-- Main Content: Spans 7 columns on lg+ -->
+            <div class="min-w-0 space-y-5 lg:col-span-7 lg:space-y-6">
                 <!-- Order Items -->
                 <div
                     class="overflow-hidden rounded-2xl border border-white bg-white shadow-sm dark:border-navy-800 dark:bg-navy-800">
@@ -259,7 +263,7 @@ function badgeClass(status: string): string {
                                                 class="badge space-x-2.5 rounded-full bg-warning/10 text-warning dark:bg-warning/15">
                                                 <span>{{ a.name }}:</span>
                                                 <span class="font-semibold text-slate-500 dark:text-navy-100">{{ a.value
-                                                    }}</span>
+                                                }}</span>
                                             </span>
                                         </div>
                                     </td>
@@ -300,8 +304,6 @@ function badgeClass(status: string): string {
                 </div>
 
                 <!-- Status History -->
-
-
                 <div class="card rounded-2xl overflow-hidden pb-4">
                     <div class="my-3 flex items-center justify-between px-4 sm:px-5">
 
@@ -321,7 +323,6 @@ function badgeClass(status: string): string {
                             </div>
                         </div>
                         <div class="">
-
                         </div>
                     </div>
 
@@ -376,10 +377,13 @@ function badgeClass(status: string): string {
                                             </p>
                                         </td>
                                         <td
-                                            class="whitespace-nowrap border border-slate-150 px-5 py-3.5 align-top dark:border-slate-700">
-                                            <span class="text-slate-400 text-sm">
-                                                {{ h?.user?.name??'System' }}
-                                            </span>
+                                            class="whitespace-nowrap border border-slate-150 px-5 py-3.5 text-center align-middle dark:border-slate-700">
+                                            <div class="flex items-center justify-left gap-1.5">
+                                                <StickyNoteSVG class="size-4 text-primary dark:text-accent-light" />
+                                                <span class="text-sm text-slate-500 dark:text-slate-400">
+                                                    {{ h?.user?.name ?? 'System' }}
+                                                </span>
+                                            </div>
                                         </td>
                                         <td
                                             class="min-w-[220px] border border-slate-150 px-5 py-3.5 align-middle dark:border-slate-700">
@@ -406,8 +410,8 @@ function badgeClass(status: string): string {
 
             </div>
 
-            <!-- Sidebar -->
-            <aside class="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-1">
+            <!-- Sidebar: Spans 5 columns on lg+, 2 columns inside to match sketch -->
+            <aside class="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 lg:col-span-5 lg:grid-cols-2 xl:grid-cols-2">
                 <!-- Customer -->
                 <div
                     class="min-w-0 rounded-2xl border border-white bg-white p-4 shadow-sm dark:border-navy-800 dark:bg-navy-800 sm:p-5">

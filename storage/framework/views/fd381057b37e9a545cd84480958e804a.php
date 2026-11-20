@@ -58,10 +58,7 @@
 <?php $component = $__componentOriginal56673881198e3a2924721e242dee6899; ?>
 <?php unset($__componentOriginal56673881198e3a2924721e242dee6899); ?>
 <?php endif; ?>
-        <link
-  href="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.snow.css"
-  rel="stylesheet"
-/>
+
     </head>
     <body class="is-header-blur font-sans antialiased">
         <?php if (isset($component)) { $__componentOriginal1830bdc8f8b965a5838ec47487b5507c = $component; } ?>
@@ -84,8 +81,6 @@
 <?php $component = $__componentOriginal1830bdc8f8b965a5838ec47487b5507c; ?>
 <?php unset($__componentOriginal1830bdc8f8b965a5838ec47487b5507c); ?>
 <?php endif; ?>
-
-        <script src="<?php echo e(asset('/custom/app.js')); ?>"></script>
     </body>
     
 </html>
