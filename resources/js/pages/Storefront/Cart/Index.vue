@@ -4,7 +4,7 @@ import { computed } from 'vue';
 import type { PageProps } from '@/types';
 import StorefrontLayout from '@/layouts/StorefrontLayout.vue';
 import EmptySVG from '@/components/SVG/emptySVG.vue';
-import { customer_products_index } from '@/routes';
+import { customer_checkout_index, customer_products_index } from '@/routes';
 
 interface CartLine {
     id: string;
@@ -313,7 +313,7 @@ const formatMoney = (amount) =>
                 </div>
 
                 <div class="px-5 pb-5">
-                    <Link href="/checkout"
+                    <Link :href="customer_checkout_index.url()"
                         class="flex w-full items-center justify-center gap-2 rounded-lg bg-primary py-3 text-center text-sm font-semibold text-white shadow-sm transition-colors hover:bg-primary-focus active:bg-primary-focus/90 dark:bg-accent dark:hover:bg-accent-focus">
                         <span>Proceed to Checkout</span>
                         <svg xmlns="http://www.w3.org/2000/svg" class="size-4" fill="none" viewBox="0 0 24 24"

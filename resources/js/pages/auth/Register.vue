@@ -138,6 +138,44 @@ defineOptions({
                         <InputError :message="errors.name" />
                     </div>
 
+                    <!-- Phone -->
+                    <div>
+                        <label class="relative flex">
+                            <input
+                                id="phone"
+                                type="text"
+                                name="phone"
+                                required
+                                v-focus
+                                tabindex="1"
+                                autocomplete="phone"
+                                placeholder="Phone Number"
+                                class="form-input peer w-full rounded-lg bg-slate-150 px-3 py-2.5 pl-9 text-slate-700 ring-primary/50 placeholder:text-slate-400 hover:bg-slate-200 focus:ring-3 dark:bg-navy-900/90 dark:text-navy-100 dark:ring-accent/50 dark:placeholder:text-navy-300 dark:hover:bg-navy-900 dark:focus:bg-navy-900"
+                            />
+
+                            <span
+                                class="pointer-events-none absolute flex h-full w-10 items-center justify-center text-slate-400 peer-focus:text-primary dark:text-navy-300 dark:peer-focus:text-accent"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    class="size-5 transition-colors duration-200"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="1.5"
+                                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM4 21a8 8 0 0116 0"
+                                    />
+                                </svg>
+                            </span>
+                        </label>
+
+                        <InputError :message="errors.name" />
+                    </div>
+
                     <!-- Email -->
                     <div>
                         <label class="relative flex">

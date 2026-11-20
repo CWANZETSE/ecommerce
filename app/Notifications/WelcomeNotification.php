@@ -2,9 +2,10 @@
 
 namespace App\Notifications;
 
+use App\Notifications\Channels\AfricasTalkingChannel;
+use App\Services\AfricasTalking\AfricasTalkingMessage;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 class WelcomeNotification extends Notification implements ShouldQueue
@@ -13,16 +14,18 @@ class WelcomeNotification extends Notification implements ShouldQueue
 
     public function via(object $notifiable): array
     {
-        return ['mail'];
+        return [
+            AfricasTalkingChannel::class,
+        ];
     }
 
-    public function toMail(object $notifiable): MailMessage
+    public function toAfricasTalking(object $notifiable): AfricasTalkingMessage
     {
-        return (new MailMessage)
-            ->subject("Welcome to My Store!")
-            ->greeting("Hi {$notifiable->name},")
-            ->line("Thank you for creating an account with us.")
-            ->line("You can now track orders, save delivery addresses, and checkout faster.")
-            ->action('Start Shopping', url('/customer/products'));
+        $message = "Hi {$notifiable->name}, welcome to My Store! "
+            . "Thank you for creating an account with us. "
+            . "You can now track orders, save delivery addresses, and checkout faster. "
+            . "Start shopping at " . url('/customer/products');
+
+        return AfricasTalkingMessage::create($message);
     }
 }

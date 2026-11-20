@@ -35,6 +35,7 @@ class SendOrderStatusChangedNotification
                 'order_number' => $order->order_number,
                 'status' => $status->value,
             ]);
+
             return;
         }
 
@@ -43,18 +44,19 @@ class SendOrderStatusChangedNotification
         Log::info('Listener: Dispatching status notification', [
             'order_number' => $order->order_number,
             'notification' => $notificationClass,
-            'recipient' => $order->customer_email,
+            'recipient' => $order->customer_phone,
         ]);
 
         try {
-            Notification::route('mail', $order->customer_email)->notify($notification);
+            Notification::route('africastalking', $order->customer_phone)
+                ->notify($notification);
 
             Log::info('Listener: Notification queued/sent successfully', [
                 'order_number' => $order->order_number,
                 'notification' => $notificationClass,
             ]);
         } catch (Throwable $e) {
-            // Catch the exception so the Admin's status update succeeds even if the email fails
+            // Catch the exception so the Admin's status update succeeds even if the SMS fails
             Log::error('Listener: Failed to dispatch notification', [
                 'order_number' => $order->order_number,
                 'notification' => $notificationClass,

@@ -3,9 +3,10 @@
 namespace App\Notifications;
 
 use App\Models\Order;
+use App\Notifications\Channels\AfricasTalkingChannel;
+use App\Services\AfricasTalking\AfricasTalkingMessage;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 class PaymentFailedNotification extends Notification implements ShouldQueue
@@ -19,19 +20,20 @@ class PaymentFailedNotification extends Notification implements ShouldQueue
 
     public function via(object $notifiable): array
     {
-        return ['mail'];
+        return [
+            AfricasTalkingChannel::class,
+        ];
     }
 
-    public function toMail(object $notifiable): MailMessage
+    public function toAfricasTalking(object $notifiable): AfricasTalkingMessage
     {
-        return (new MailMessage)
-            ->subject("Payment failed — Order {$this->order->order_number}")
-            ->greeting("Hi {$this->order->customer_name},")
-            ->line("Unfortunately, we couldn't process the payment for order {$this->order->order_number}.")
-            ->line("Reason: {$this->reason}")
-            ->line('Your order is still open. You can try paying again or contact us if the issue persists.')
-            ->line("Order total: KES {$this->order->grand_total}")
-            ->line('If money was deducted from your account, it will be reversed within 48 hours.');
+        $message = "Payment failed for order {$this->order->order_number}. "
+            . "Reason: {$this->reason}. "
+            . "Your order is still open. Please try paying again or contact support if the issue persists. "
+            . "Order total: KES {$this->order->grand_total}. "
+            . "If money was deducted, it will be reversed within 48 hours.";
+
+        return AfricasTalkingMessage::create($message);
     }
 
     public function toArray(object $notifiable): array

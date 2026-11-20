@@ -48,6 +48,8 @@ Route::get('/checkout/status/{payment:ulid}', [CheckoutController::class, 'statu
     ->name('checkout_status');
 Route::get('/checkout/waiting/{order:ulid}', [CheckoutController::class, 'waiting'])
     ->name('checkout_waiting');
+Route::get('/checkout/success/{order:ulid}', [CheckoutController::class, 'success'])
+            ->name('checkout_success');
 
 Route::get('/', HomeController::class)->name('home');
 
@@ -76,17 +78,6 @@ Route::delete('/cart/coupon', [CouponController::class, 'remove'])->name('cart_c
 
 /*
 |--------------------------------------------------------------------------
-| Checkout
-|--------------------------------------------------------------------------
-*/
-
-Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout_index');
-Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout_store');
-Route::get('/checkout/success/{order:ulid}', [CheckoutController::class, 'success'])
-    ->name('checkout_success');
-
-/*
-|--------------------------------------------------------------------------
 | Authenticated Customer Routes
 |--------------------------------------------------------------------------
 | Customers only — admins are redirected to the admin dashboard.
@@ -97,6 +88,11 @@ Route::middleware(['auth', 'verified', EnsureUserIsCustomer::class])
     ->prefix('customer')
     ->name('customer_')
     ->group(function () {
+
+
+        Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout_index');
+        Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout_store');
+        
 
         // Account
         Route::get('/account', [AccountController::class, 'index'])->name('account_index');

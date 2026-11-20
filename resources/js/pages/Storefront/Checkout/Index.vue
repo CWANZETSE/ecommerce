@@ -3,6 +3,7 @@ import { Head, Link, useForm } from '@inertiajs/vue3';
 import { computed, ref, watch } from 'vue';
 import type { PageProps } from '@/types';
 import StorefrontLayout from '@/layouts/StorefrontLayout.vue';
+import { customer_checkout_store } from '@/routes';
 
 interface County {
     name: string;
@@ -134,7 +135,7 @@ const hasDiscount = computed(() => Number(props.cart.discount) > 0);
 
 /* ---------------- Submit ---------------- */
 function submit() {
-    form.post('/checkout');
+    form.post(customer_checkout_store.url());
 }
 
 const formatMoney = (amount) =>

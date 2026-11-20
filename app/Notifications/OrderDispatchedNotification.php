@@ -3,9 +3,10 @@
 namespace App\Notifications;
 
 use App\Models\Order;
+use App\Services\AfricasTalking\AfricasTalkingMessage;
+use App\Notifications\Channels\AfricasTalkingChannel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 class OrderDispatchedNotification extends Notification implements ShouldQueue
@@ -16,17 +17,23 @@ class OrderDispatchedNotification extends Notification implements ShouldQueue
 
     public function via(object $notifiable): array
     {
-        return ['mail', 'database'];
+        return [
+            AfricasTalkingChannel::class,
+            'database',
+        ];
     }
 
-    public function toMail(object $notifiable): MailMessage
+    public function toAfricasTalking(object $notifiable): AfricasTalkingMessage
     {
-        return (new MailMessage)
-            ->subject("Order Dispatched — {$this->order->order_number}")
-            ->greeting("Hi {$this->order->customer_name},")
-            ->line("Good news! Your order has been dispatched and is on its way to you.")
-            ->line("Delivery Address: {$this->order->shipping_address['county']}, {$this->order->shipping_address['address']}")
-            ->line("You can track your order status from your account dashboard.");
+        $message = "Good news! Your order {$this->order->order_number} has been dispatched and is on its way to you.";
+
+        $shippingAddress = $this->order->shipping_address;
+
+        if (!empty($shippingAddress['county']) && !empty($shippingAddress['address'])) {
+            $message .= " Delivery to {$shippingAddress['county']}, {$shippingAddress['address']}.";
+        }
+
+        return AfricasTalkingMessage::create($message);
     }
 
     public function toArray(object $notifiable): array

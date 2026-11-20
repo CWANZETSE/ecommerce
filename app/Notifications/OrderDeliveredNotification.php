@@ -3,9 +3,10 @@
 namespace App\Notifications;
 
 use App\Models\Order;
+use App\Services\AfricasTalking\AfricasTalkingMessage;
+use App\Notifications\Channels\AfricasTalkingChannel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 class OrderDeliveredNotification extends Notification implements ShouldQueue
@@ -16,17 +17,18 @@ class OrderDeliveredNotification extends Notification implements ShouldQueue
 
     public function via(object $notifiable): array
     {
-        return ['mail', 'database'];
+        return [
+            AfricasTalkingChannel::class,
+            'database',
+        ];
     }
 
-    public function toMail(object $notifiable): MailMessage
+    public function toAfricasTalking(object $notifiable): AfricasTalkingMessage
     {
-        return (new MailMessage)
-            ->subject("Order Delivered — {$this->order->order_number}")
-            ->greeting("Hi {$this->order->customer_name},")
-            ->line("Your order has been successfully delivered.")
-            ->line("We hope you love your purchase! Please take a moment to leave a review on the products you bought.")
-            ->action('Leave a Review', url("/customer/orders/{$this->order->ulid}"));
+        $message = "Your order {$this->order->order_number} has been successfully delivered. "
+            . "Thank you for shopping with us!";
+
+        return AfricasTalkingMessage::create($message);
     }
 
     public function toArray(object $notifiable): array
