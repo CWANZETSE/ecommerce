@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { Head, router } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import type { PageProps } from '@/types';
+import ReportsSVG from '@/components/SVG/reportsSVG.vue';
+import { admin_dashboard } from '@/routes';
 
 interface Props extends PageProps {
     summary: {
@@ -47,37 +49,47 @@ function exportInventory() {
 
     <div class="p-4 sm:p-5 lg:p-6">
         <!-- Header & Filters -->
-        <div class=" gap-4 py-5 lg:flex-row lg:items-center lg:justify-between lg:py-6">
-            <h2 class="text-xl font-medium text-slate-800 dark:text-navy-50 lg:text-2xl">
-                Reports
-            </h2>
-
-            <div class="flex flex-wrap items-end gap-2">
+        <div
+            class="p-6 border-0 shadow-md dark:shadow-dark-md mb-6 py-4 bg-primary/10 dark:bg-primary/10 overflow-hidden rounded-md border-none !shadow-none dark:!shadow-none"
+            style="border-radius: 12px"
+        >
+            <div class="flex items-center justify-between gap-6 relative">
                 <div>
-                    <span class="text-xs font-medium text-slate-500 dark:text-navy-300">From</span>
-                    <input v-model="from" type="date"
-                        class="form-input mt-1 rounded-lg border border-slate-300 bg-transparent px-2.5 py-1.5 text-sm hover:border-slate-400 focus:border-primary dark:border-navy-450 dark:hover:border-navy-400 dark:focus:border-accent" />
+                    <h4
+                        class="font-semibold text-xl text-dark dark:text-white mb-3"
+                    >
+                        Reports
+                    </h4>
+                    <ol
+                        class="flex items-center whitespace-nowrap"
+                        aria-label="Breadcrumb"
+                    >
+                         <li class="flex items-center">
+                            <Link
+                                class="opacity-80 text-sm text-link dark:text-darklink leading-none"
+                                :href="admin_dashboard.url()"
+                                data-discover="true"
+                                >Home</Link
+                            >
+                        </li>
+                        <li>
+                            <div
+                                class="p-0.5 rounded-full bg-primary/10 dark:bg-primary mx-2.5 flex items-center"
+                            ></div>
+                        </li>
+                        <li
+                            class="flex items-center text-sm text-default dark:text-darklink leading-none"
+                            aria-current="page"
+                        >
+                            Reports
+                        </li>
+                    </ol>
                 </div>
-                <div>
-                    <span class="text-xs font-medium text-slate-500 dark:text-navy-300">To</span>
-                    <input v-model="to" type="date"
-                        class="form-input mt-1 rounded-lg border border-slate-300 bg-transparent px-2.5 py-1.5 text-sm hover:border-slate-400 focus:border-primary dark:border-navy-450 dark:hover:border-navy-400 dark:focus:border-accent" />
+                <div
+                    class="hidden lg:flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary"
+                >
+                    <ReportsSVG />
                 </div>
-                <button type="button"
-                    class="btn bg-primary/10 font-medium text-primary hover:bg-primary/20 focus:bg-primary/20 active:bg-primary/25 dark:bg-accent-light/10 dark:text-accent-light dark:hover:bg-accent-light/20 dark:focus:bg-accent-light/20 dark:active:bg-accent-light/25"
-                    @click="applyFilters">
-                    Apply
-                </button>
-                <button type="button"
-                    class="btn bg-slate-150 font-medium text-slate-700 hover:bg-slate-200 focus:bg-slate-200 active:bg-slate-200/80 dark:bg-navy-500 dark:text-navy-50 dark:hover:bg-navy-450"
-                    @click="exportSales">
-                    Export sales CSV
-                </button>
-                <button type="button"
-                    class="btn bg-slate-150 font-medium text-slate-700 hover:bg-slate-200 focus:bg-slate-200 active:bg-slate-200/80 dark:bg-navy-500 dark:text-navy-50 dark:hover:bg-navy-450"
-                    @click="exportInventory">
-                    Export inventory CSV
-                </button>
             </div>
         </div>
 

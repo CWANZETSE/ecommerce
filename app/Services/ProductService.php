@@ -13,7 +13,7 @@ use Illuminate\Support\Str;
 
 class ProductService
 {
-    public function __construct(private SlugService $slugs) {}
+    public function __construct(private SlugService $slugs,private LogService $logs) {}
 
     public function create(array $data): Product
     {
@@ -25,8 +25,8 @@ class ProductService
             $product = Product::create($data);
             $this->syncVariations($product, $variations);
 
-            $this->log(
-                'product.created',
+            $this->logs->log(
+                'Created',
                 $product,
                 [
                     'name' => $product->name,
@@ -41,39 +41,137 @@ class ProductService
     }
 
     public function update(Product $product, array $data): Product
-    {
-        return DB::transaction(function () use ($product, $data) {
-            if (isset($data['name']) && $data['name'] !== $product->name) {
-                $data['slug'] = $this->slugs->generate($data['name'], Product::class, $product->id);
+{
+    return DB::transaction(function () use ($product, $data) {
+        if (isset($data['name']) && $data['name'] !== $product->name) {
+            $data['slug'] = $this->slugs->generate(
+                $data['name'],
+                Product::class,
+                $product->id
+            );
+        }
+
+        $variations = $data['variations'] ?? [];
+        unset($data['variations']);
+
+        // 1. Capture existing variation records before synchronization
+        $oldVariations = $product->variations()
+            ->get()
+            ->keyBy(fn ($variation) => $variation->getKey())
+            ->map(fn ($variation) => $variation->getAttributes())
+            ->all();
+
+        // 2. Capture original product values
+        $product->fill($data);
+
+        $changes = $product->getDirty();
+
+        $fromRecords = [];
+
+        foreach ($changes as $attribute => $newValue) {
+            $fromRecords[$attribute] = $product->getOriginal($attribute);
+        }
+
+        // 3. Update product
+        $product->save();
+
+        $toRecords = [];
+
+        foreach ($product->getChanges() as $attribute => $newValue) {
+            $toRecords[$attribute] = $newValue;
+        }
+
+        // 4. Synchronize variations
+        $this->syncVariations($product, $variations);
+
+        // 5. Capture variation records after synchronization
+        $newVariations = $product->variations()
+            ->get()
+            ->keyBy(fn ($variation) => $variation->getKey())
+            ->map(fn ($variation) => $variation->getAttributes())
+            ->all();
+
+        // 6. Compare variation records and capture only changed attributes
+        $variationFromRecords = [];
+        $variationToRecords = [];
+
+        $variationIds = array_unique(array_merge(
+            array_keys($oldVariations),
+            array_keys($newVariations)
+        ));
+
+        foreach ($variationIds as $variationId) {
+            $old = $oldVariations[$variationId] ?? null;
+            $new = $newVariations[$variationId] ?? null;
+
+            // Newly created variation
+            if ($old === null) {
+                $variationFromRecords[$variationId] = null;
+
+                $variationToRecords[$variationId] = array_diff_key(
+                    $new,
+                    array_flip(['created_at', 'updated_at'])
+                );
+
+                continue;
             }
 
-            $variations = $data['variations'] ?? [];
-            unset($data['variations']);
+            // Deleted variation
+            if ($new === null) {
+                $variationFromRecords[$variationId] = array_diff_key(
+                    $old,
+                    array_flip(['created_at', 'updated_at'])
+                );
 
-            $product->update($data);
-            $this->syncVariations($product, $variations);
+                $variationToRecords[$variationId] = null;
 
-            // update
-            $this->log(
-                'product.updated',
-                $product,
-                [
-                    'name' => $product->name,
-                    'sku' => $product->sku,
-                    'variation_count' => count($variations),
-                ],
-                "Updated product \"{$product->name}\" ({$product->sku})"
-            );
+                continue;
+            }
 
-            return $product->fresh(['variations.attributeValues', 'images']);
-        });
-    }
+            // Existing variation: capture only modified attributes
+            foreach ($new as $attribute => $newValue) {
+                if (in_array($attribute, ['created_at', 'updated_at'], true)) {
+                    continue;
+                }
+
+                $oldValue = $old[$attribute] ?? null;
+
+                if ($oldValue !== $newValue) {
+                    $variationFromRecords[$variationId][$attribute] = $oldValue;
+                    $variationToRecords[$variationId][$attribute] = $newValue;
+                }
+            }
+        }
+
+        // 7. Include variation changes in the product audit log
+        if (! empty($variationFromRecords)) {
+            $fromRecords['variations'] = $variationFromRecords;
+            $toRecords['variations'] = $variationToRecords;
+        }
+
+        // 8. Log the complete product update
+        $this->logs->log(
+            'Updated',
+            $product,
+            [
+                'name' => $product->name,
+                'sku' => $product->sku,
+                'variation_count' => count($variations),
+            ],
+            "Updated product \"{$product->name}\" ({$product->sku})",
+            $fromRecords ?: null,
+            $toRecords ?: null
+        );
+
+        return $product->fresh(['variations.attributeValues', 'images']);
+    });
+}
 
     public function delete(Product $product): void
     {
         DB::transaction(function () use ($product) {
-            $this->log(
-                'product.deleted',
+            $this->logs->log(
+                'Deleted',
                 $product,
                 ['name' => $product->name],
                 "Deleted product \"{$product->name}\""
@@ -142,16 +240,4 @@ class ProductService
         }
     }
 
-    private function log(string $action, Product $subject, array $props = [], ?string $description = null): void
-    {
-        ActivityLog::create([
-            'user_id' => Auth::id(),
-            'action' => $action,
-            'description' => $description,
-            'subject_type' => Product::class,
-            'subject_id' => $subject->id,
-            'properties' => $props,
-            'ip' => request()->ip(),
-        ]);
-    }
 }

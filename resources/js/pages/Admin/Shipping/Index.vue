@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Head, router, useForm } from '@inertiajs/vue3';
+import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
 import type { PageProps } from '@/types';
 import {
@@ -9,8 +9,10 @@ import {
     admin_shipping_toggle,
     admin_shipping_destroy,
     admin_shipping_bulk,
+    admin_dashboard,
 } from '@/routes';
 import Pagination from '@/components/Pagination.vue';
+import ShippingSVG from '@/components/SVG/shippingSVG.vue';
 
 interface Zone {
     id: string;
@@ -121,32 +123,47 @@ function applyBulkFee() {
     <Head title="Shipping Zones" />
 
     <div class="p-4 sm:p-5 lg:p-6">
-        <div class="flex items-center justify-between py-5 lg:py-6">
-            <div>
-                <h2 class="text-xl font-medium text-slate-800 dark:text-navy-50 lg:text-2xl">
-                    Shipping Zones
-                </h2>
-                <p class="mt-1 text-xs text-slate-400 dark:text-navy-300">
-                    {{ stats.total }} zones · {{ stats.active }} active · {{ stats.free }} free delivery
-                </p>
-            </div>
-            <div>
-                <button
-                    v-if="!bulkMode"
-                    type="button"
-                    class="btn bg-slate-150 font-medium text-slate-700 hover:bg-slate-200 focus:bg-slate-200 active:bg-slate-200/80 dark:bg-navy-500 dark:text-navy-50 dark:hover:bg-navy-450"
-                    @click="enterBulk"
+        <div
+            class="p-6 border-0 shadow-md dark:shadow-dark-md mb-6 py-4 bg-primary/10 dark:bg-primary/10 overflow-hidden rounded-md border-none !shadow-none dark:!shadow-none"
+            style="border-radius: 12px"
+        >
+            <div class="flex items-center justify-between gap-6 relative">
+                <div>
+                    <h4
+                        class="font-semibold text-xl text-dark dark:text-white mb-3"
+                    >
+                        Shipping
+                    </h4>
+                    <ol
+                        class="flex items-center whitespace-nowrap"
+                        aria-label="Breadcrumb"
+                    >
+                        <li class="flex items-center">
+                            <Link
+                                class="opacity-80 text-sm text-link dark:text-darklink leading-none"
+                                :href="admin_dashboard.url()"
+                                data-discover="true"
+                                >Home</Link
+                            >
+                        </li>
+                        <li>
+                            <div
+                                class="p-0.5 rounded-full bg-primary/10 dark:bg-primary mx-2.5 flex items-center"
+                            ></div>
+                        </li>
+                        <li
+                            class="flex items-center text-sm text-default dark:text-darklink leading-none"
+                            aria-current="page"
+                        >
+                            Shipping
+                        </li>
+                    </ol>
+                </div>
+                <div
+                    class="hidden lg:flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary"
                 >
-                    Bulk edit fees
-                </button>
-                <button
-                    v-else
-                    type="button"
-                    class="btn bg-slate-150 font-medium text-slate-700 hover:bg-slate-200 focus:bg-slate-200 active:bg-slate-200/80 dark:bg-navy-500 dark:text-navy-50 dark:hover:bg-navy-450"
-                    @click="bulkMode = false"
-                >
-                    Cancel bulk
-                </button>
+                    <ShippingSVG />
+                </div>
             </div>
         </div>
 

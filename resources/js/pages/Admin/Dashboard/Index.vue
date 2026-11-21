@@ -2,7 +2,7 @@
 import { Head, Link, router } from '@inertiajs/vue3';
 import { ref, watch, computed } from 'vue';
 import type { PageProps } from '@/types';
-import { admin_orders_show } from '@/routes';
+import { admin_dashboard, admin_orders_show } from '@/routes';
 import VueApexCharts from 'vue3-apexcharts';
 import { ArrowUpRight } from '@lucide/vue';
 import PaySVG from '@/components/SVG/paySVG.vue';
@@ -10,6 +10,7 @@ import CartSVG from '@/components/SVG/cartSVG.vue';
 import StripsSVG from '@/components/SVG/stripsSVG.vue';
 import PackageSVG from '@/components/SVG/packageSVG.vue';
 import ReportsSVG from '@/components/SVG/reportsSVG.vue';
+import MenuSVG from '@/components/SVG/menuSVG.vue';
 
 // Interfaces
 interface RecentOrder { ulid: string; order_number: string; customer_name: string; grand_total: string; payment_status: string; fulfilment_status: string; created_at: string; }
@@ -252,13 +253,42 @@ const paymentOptions = computed(() => ({
     <Head title="Dashboard" />
 
     <div class="p-4 sm:p-5 lg:p-6">
+        <div
+            class="p-6 border-0 shadow-md dark:shadow-dark-md mb-6 py-4 bg-primary/10 dark:bg-primary/10 overflow-hidden rounded-md border-none !shadow-none dark:!shadow-none"
+            style="border-radius: 12px"
+        >
+            <div class="flex items-center justify-between gap-6 relative">
+                <div>
+                    <h4
+                        class="font-semibold text-xl text-dark dark:text-white mb-3"
+                    >
+                        Analysis Center
+                    </h4>
+                    <ol
+                        class="flex items-center whitespace-nowrap"
+                        aria-label="Breadcrumb"
+                    >
+                        
+                        <li
+                            class="flex items-center text-sm text-default dark:text-darklink leading-none"
+                            aria-current="page"
+                        >
+                            <span class="badge space-x-2.5 rounded-sm bg-primary/10 text-primary dark:bg-accent-light/15 dark:text-accent-light">Showing Summary From {{ filters.from }} to {{
+                    filters.to }}</span>
+                        </li>
+                    </ol>
+                </div>
+                <div
+                    class="hidden lg:flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary"
+                >
+                    <MenuSVG />
+                </div>
+            </div>
+        </div>
         <!-- Header & Date Filter -->
         <div class="flex flex-col gap-4 py-5 sm:flex-row sm:items-center sm:justify-between lg:py-6">
             <div>
-                <h2 class="text-xl font-medium text-slate-800 dark:text-navy-50 lg:text-2xl">Dashboard Overview</h2>
-                <p class="badge space-x-2.5 rounded-full bg-primary/10 text-primary dark:bg-accent-light/15 dark:text-accent-light">Showing data from {{ filters.from }} to {{
-                    filters.to }}</p>
-            </div>
+                </div>
             <div class="flex items-center gap-2">
                 <input v-model="fromDate" type="date"
                     class="form-input rounded-lg border border-slate-300 bg-transparent px-3 py-2 text-sm focus:border-primary dark:border-navy-450 dark:focus:border-accent" />

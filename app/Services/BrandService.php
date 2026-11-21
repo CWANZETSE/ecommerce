@@ -2,16 +2,14 @@
 
 namespace App\Services;
 
-use App\Models\ActivityLog;
 use App\Models\Brand;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class BrandService
 {
-    public function __construct(private SlugService $slugs) {}
+    public function __construct(private SlugService $slugs, private LogService $logs) {}
 
     public function create(array $data, ?UploadedFile $logo = null): Brand
     {
@@ -23,8 +21,8 @@ class BrandService
             }
 
             $brand = Brand::create($data);
-            $this->log(
-                'brand.created',
+            $this->logs->log(
+                'Created',
                 $brand,
                 $data,
                 "Created brand \"{$brand->name}\""
@@ -38,7 +36,11 @@ class BrandService
     {
         return DB::transaction(function () use ($brand, $data, $logo) {
             if (isset($data['name']) && $data['name'] !== $brand->name) {
-                $data['slug'] = $this->slugs->generate($data['name'], Brand::class, $brand->id);
+                $data['slug'] = $this->slugs->generate(
+                    $data['name'],
+                    Brand::class,
+                    $brand->id
+                );
             }
 
             if ($logo) {
@@ -46,15 +48,35 @@ class BrandService
                 if ($brand->logo_path) {
                     Storage::disk('public')->delete($brand->logo_path);
                 }
+
                 $data['logo_path'] = $logo->store('brands', 'public');
             }
 
-            $brand->update($data);
-            $this->log(
-                'brand.updated',
+            // Apply changes without saving
+            $brand->fill($data);
+
+            // Capture only changed attributes
+            $changes = $brand->getDirty();
+
+            $fromRecords = [];
+            foreach ($changes as $attribute => $newValue) {
+                $fromRecords[$attribute] = $brand->getOriginal($attribute);
+            }
+
+            // Save changes
+            $brand->save();
+
+            // Capture new values of changed attributes
+            $toRecords = $brand->getChanges();
+
+            // Log update
+            $this->logs->log(
+                'Updated',
                 $brand,
                 $data,
-                "Updated brand \"{$brand->name}\""
+                "Updated brand \"{$brand->name}\"",
+                $fromRecords,
+                $toRecords
             );
 
             return $brand->fresh();
@@ -68,26 +90,13 @@ class BrandService
                 Storage::disk('public')->delete($brand->logo_path);
             }
             $name = $brand->name;
-            $this->log(
-                'brand.deleted',
+            $this->logs->log(
+                'Deleted',
                 $brand,
                 ['name' => $name],
                 "Deleted brand \"{$name}\""
             );
             $brand->delete();
         });
-    }
-
-    private function log(string $action, Brand $subject, array $props = [], ?string $description = null): void
-    {
-        ActivityLog::create([
-            'user_id' => Auth::id(),
-            'action' => $action,
-            'description' => $description,
-            'subject_type' => Brand::class,
-            'subject_id' => $subject->id,
-            'properties' => $props,
-            'ip' => request()->ip(),
-        ]);
     }
 }

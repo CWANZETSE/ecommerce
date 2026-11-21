@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('subject_type')->nullable();
             $table->uuid('subject_id')->nullable();
             $table->json('properties')->nullable();
+            $table->json('from_records')->nullable();
+            $table->json('to_records')->nullable();
             $table->string('ip', 45)->nullable();
             $table->timestamp('created_at')->useCurrent();
 

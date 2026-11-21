@@ -19,6 +19,8 @@ import ReportsSVG from './SVG/reportsSVG.vue';
 import BannerSVG from './SVG/bannerSVG.vue';
 import SettingSVG from './SVG/settingSVG.vue';
 import UserSVG from './SVG/userSVG.vue';
+import { admin_logs_index } from '@/routes/index.js';
+import NoteSVG from './SVG/NoteSVG.vue';
 
 const props = defineProps<{
     open: boolean;
@@ -259,6 +261,20 @@ function logout() {
                         </span>
 
                         <span class="truncate">Settings</span>
+                    </Link>
+                </li>
+
+                <li>
+                    <Link :href="admin_logs_index.url()"
+                        class="flex items-center gap-3 rounded-lg px-3 py-1 text-xs-plus tracking-wide outline-hidden transition-colors duration-200 hover:bg-primary/20 focus:bg-primary/20 active:bg-primary/25 dark:hover:bg-navy-300/20 dark:focus:bg-navy-300/20 dark:active:bg-navy-300/25"
+                        :class="isActive('/admin/settings') ? 'bg-primary/20 font-medium text-primary dark:bg-navy-300/20 dark:text-accent-light' : 'text-slate-600 hover:text-slate-900 dark:text-navy-200 dark:hover:text-navy-50'"
+                        @click="emit('close')">
+                        <span
+                            class="relative flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 dark:bg-primary">
+                            <NoteSVG/>
+                        </span>
+
+                        <span class="truncate">Activity Logs</span>
                     </Link>
                 </li>
             </ul>

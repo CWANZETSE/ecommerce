@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\ActivityLogController;
 use App\Http\Controllers\Admin\AdminCouponController;
 use App\Http\Controllers\Admin\AdminReviewController;
 use App\Http\Controllers\Admin\AttributeController;
@@ -249,6 +250,7 @@ Route::middleware(['auth', 'verified', EnsureUserIsAdmin::class])
                 ->name('values_destroy');
         });
 
+        Route::get('/activity/logs', [ActivityLogController::class, 'index'])->name('logs_index');
         // Inventory
         Route::prefix('inventory')->name('inventory_')->group(function () {
             Route::get('/', [InventoryController::class, 'index'])->name('index');

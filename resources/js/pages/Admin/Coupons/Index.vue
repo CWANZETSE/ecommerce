@@ -5,9 +5,11 @@ import {
     admin_coupons_create,
     admin_coupons_edit,
     admin_coupons_destroy,
+    admin_dashboard,
 } from '@/routes';
 import EmptySVG from '@/components/SVG/emptySVG.vue';
 import Pagination from '@/components/Pagination.vue';
+import CouponSVG from '@/components/SVG/couponSVG.vue';
 
 interface Coupon {
     id: string;
@@ -47,18 +49,48 @@ function destroy(coupon: Coupon) {
     <Head title="Coupons" />
 
     <div class="p-4 sm:p-5 lg:p-6">
-        <div class="flex items-center justify-between py-5 lg:py-6">
-            <div class="flex items-center space-x-4">
-                <h2 class="text-xl font-medium text-slate-800 dark:text-navy-50 lg:text-2xl">
-                    Coupons
-                </h2>
+        <div
+            class="p-6 border-0 shadow-md dark:shadow-dark-md mb-6 py-4 bg-primary/10 dark:bg-primary/10 overflow-hidden rounded-md border-none !shadow-none dark:!shadow-none"
+            style="border-radius: 12px"
+        >
+            <div class="flex items-center justify-between gap-6 relative">
+                <div>
+                    <h4
+                        class="font-semibold text-xl text-dark dark:text-white mb-3"
+                    >
+                        Coupons
+                    </h4>
+                    <ol
+                        class="flex items-center whitespace-nowrap"
+                        aria-label="Breadcrumb"
+                    >
+                        <li class="flex items-center">
+                            <Link
+                                class="opacity-80 text-sm text-link dark:text-darklink leading-none"
+                                :href="admin_dashboard.url()"
+                                data-discover="true"
+                                >Home</Link
+                            >
+                        </li>
+                        <li>
+                            <div
+                                class="p-0.5 rounded-full bg-primary/10 dark:bg-primary mx-2.5 flex items-center"
+                            ></div>
+                        </li>
+                        <li
+                            class="flex items-center text-sm text-default dark:text-darklink leading-none"
+                            aria-current="page"
+                        >
+                            Coupons
+                        </li>
+                    </ol>
+                </div>
+                <div
+                    class="hidden lg:flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary"
+                >
+                    <CouponSVG />
+                </div>
             </div>
-            <Link
-                :href="admin_coupons_create.url()"
-                class="btn bg-primary/10 font-medium text-primary hover:bg-primary/20 focus:bg-primary/20 active:bg-primary/25 dark:bg-accent-light/10 dark:text-accent-light dark:hover:bg-accent-light/20 dark:focus:bg-accent-light/20 dark:active:bg-accent-light/25"
-            >
-                New Coupon
-            </Link>
         </div>
 
         <div class="overflow-hidden rounded-2xl border border-slate-150 bg-white shadow-sm dark:border-slate-700 dark:bg-navy-800">

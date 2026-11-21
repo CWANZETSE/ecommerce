@@ -117,7 +117,7 @@ function decodeLabel(label: string): string {
         </ol>
 
         <!-- Results summary (Right) -->
-        <p class="m-0 text-center text-xs font-medium text-slate-500 dark:text-navy-300 sm:text-right">
+        <p class="m-0 text-center  font-medium text-slate-500 dark:text-navy-300 sm:text-right">
             Showing
             <span class="font-semibold text-slate-700 dark:text-navy-100">
                 {{ from }}–{{ to }}
@@ -126,7 +126,7 @@ function decodeLabel(label: string): string {
             <span class="font-semibold text-slate-700 dark:text-navy-100">
                 {{ total }}
             </span>
-            results
+            Result(s)
         </p>
     </div>
 </template>

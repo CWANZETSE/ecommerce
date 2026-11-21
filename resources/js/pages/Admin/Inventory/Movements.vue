@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
 import type { PageProps } from '@/types';
-import { admin_inventory_index, admin_inventory_movements } from '@/routes';
+import { admin_dashboard, admin_inventory_index, admin_inventory_movements } from '@/routes';
+import ReportsSVG from '@/components/SVG/reportsSVG.vue';
+import ReceiptSVG from '@/components/SVG/receiptSVG.vue';
 
 interface Movement {
     id: string;
@@ -47,42 +49,48 @@ const typeLabel: Record<string, string> = {
     <Head :title="`Movements — ${variation.sku}`" />
 
     <div class="p-4 sm:p-5 lg:p-6">
-        <div class="flex items-center justify-between py-5 lg:py-6">
-            <div class="flex items-center space-x-4">
-                <h2 class="text-xl font-medium text-slate-800 dark:text-navy-50 lg:text-2xl">
-                    Stock movements
-                </h2>
-                <div class="hidden h-full py-1 sm:flex">
-                    <div class="h-full w-px bg-slate-300 dark:bg-navy-600"></div>
+        <div
+            class="p-6 border-0 shadow-md dark:shadow-dark-md mb-6 py-4 bg-primary/10 dark:bg-primary/10 overflow-hidden rounded-md border-none !shadow-none dark:!shadow-none"
+            style="border-radius: 12px"
+        >
+            <div class="flex items-center justify-between gap-6 relative">
+                <div>
+                    <h4
+                        class="font-semibold text-xl text-dark dark:text-white mb-3"
+                    >
+                        Stock Movements
+                    </h4>
+                    <ol
+                        class="flex items-center whitespace-nowrap"
+                        aria-label="Breadcrumb"
+                    >
+                        <li class="flex items-center">
+                            <Link
+                                class="opacity-80 text-sm text-link dark:text-darklink leading-none"
+                                :href="admin_dashboard.url()"
+                                data-discover="true"
+                                >Home</Link
+                            >
+                        </li>
+                        <li>
+                            <div
+                                class="p-0.5 rounded-full bg-primary/10 dark:bg-primary mx-2.5 flex items-center"
+                            ></div>
+                        </li>
+                        <li
+                            class="flex items-center text-sm text-default dark:text-darklink leading-none"
+                            aria-current="page"
+                        >
+                            Movements
+                        </li>
+                    </ol>
                 </div>
-                <ul class="hidden flex-wrap items-center space-x-2 sm:flex">
-                    <li class="flex items-center space-x-2">
-                        <Link
-                            class="text-primary transition-colors hover:text-primary-focus dark:text-accent-light dark:hover:text-accent"
-                            :href="admin_inventory_index.url()"
-                        >
-                            Inventory
-                        </Link>
-                        <svg
-                            x-ignore
-                            xmlns="http://www.w3.org/2000/svg"
-                            class="size-4 text-slate-400"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                        >
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                        </svg>
-                    </li>
-                    <li class="text-slate-500 dark:text-navy-300">Movements</li>
-                </ul>
+                <div
+                    class="hidden lg:flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary"
+                >
+                    <ReceiptSVG />
+                </div>
             </div>
-            <Link
-                :href="admin_inventory_index.url()"
-                class="btn space-x-1.5 bg-slate-150 font-medium text-slate-700 hover:bg-slate-200 focus:bg-slate-200 active:bg-slate-200/80 dark:bg-navy-500 dark:text-navy-50 dark:hover:bg-navy-450 dark:focus:bg-navy-450 dark:active:bg-navy-450/90"
-            >
-                <span>← Back to inventory</span>
-            </Link>
         </div>
 
         <div class="space-y-4">

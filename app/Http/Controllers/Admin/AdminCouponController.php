@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Coupon;
+use App\Services\LogService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -13,7 +14,7 @@ use Inertia\Response;
 
 class AdminCouponController extends Controller
 {
-        public function index(): Response
+    public function index(): Response
     {
         $coupons = Coupon::withCount('usages')
             ->orderByDesc('created_at')
@@ -36,10 +37,19 @@ class AdminCouponController extends Controller
 
         if ($validator->fails()) {
             return back()
-            ->with('error', $validator->errors()->first());
+                ->with('error', $validator->errors()->first());
         }
 
-        Coupon::create($validator->validated());
+        $coupon = Coupon::create($validator->validated());
+        // Record coupon creation in activity logs.
+        new LogService()->log(
+            'Created',
+            $coupon,
+            [],
+            'Coupon created.',
+            null,
+            $coupon->getAttributes()
+        );
 
         return redirect()->route('admin_coupons_index')->with('success', 'Coupon created.');
     }
@@ -70,62 +80,132 @@ class AdminCouponController extends Controller
     public function update(Request $request, Coupon $coupon): RedirectResponse
     {
         $rules = $this->rules($coupon);
-        $validator = Validator::make($request->all(), $rules, $this->messages(), $this->attributes());
-    $this->attachLimitCheck($validator);
+
+        $validator = Validator::make(
+            $request->all(),
+            $rules,
+            $this->messages(),
+            $this->attributes()
+        );
+
+        $this->attachLimitCheck($validator);
+
         if ($coupon->usages()->exists()) {
             $validator->after(function ($v) use ($request, $coupon) {
                 if ($request->input('code') !== $coupon->code) {
-                    $v->errors()->add('code', 'The coupon code cannot be changed after it has been used.');
+                    $v->errors()->add(
+                        'code',
+                        'The coupon code cannot be changed after it has been used.'
+                    );
                 }
+
                 if ($request->input('type') !== $coupon->type) {
-                    $v->errors()->add('type', 'The coupon type cannot be changed after it has been used.');
+                    $v->errors()->add(
+                        'type',
+                        'The coupon type cannot be changed after it has been used.'
+                    );
                 }
+
                 if ((float) $request->input('value') !== (float) $coupon->value) {
-                    $v->errors()->add('value', 'The discount value cannot be changed after it has been used.');
+                    $v->errors()->add(
+                        'value',
+                        'The discount value cannot be changed after it has been used.'
+                    );
                 }
             });
         }
 
         if ($validator->fails()) {
             return back()
-            ->with('error', $validator->errors()->first());
+                ->with('error', $validator->errors()->first());
         }
 
-        $coupon->update($validator->validated());
+        // Get validated incoming data.
+        $data = $validator->validated();
 
-        return redirect()->route('admin_coupons_index')->with('success', 'Coupon updated.');
+        // Apply incoming changes without saving yet.
+        $coupon->fill($data);
+
+        // Get only attributes that have actually changed.
+        $changes = $coupon->getDirty();
+
+        // Capture only the old values of changed attributes.
+        $fromRecords = [];
+
+        foreach ($changes as $attribute => $newValue) {
+            $fromRecords[$attribute] = $coupon->getOriginal($attribute);
+        }
+
+        // Save the changes.
+        $coupon->save();
+
+        // Capture only the new values of changed attributes.
+        $toRecords = $coupon->getChanges();
+
+        // Record coupon update in activity logs.
+        new LogService()->log(
+            'Updated',
+            $coupon,
+            $data,
+            "Updated coupon \"{$coupon->code}\"",
+            $fromRecords,
+            $toRecords
+        );
+
+        return redirect()
+            ->route('admin_coupons_index')
+            ->with('success', 'Coupon updated.');
     }
 
     public function destroy(Coupon $coupon): RedirectResponse
-    {
-        if ($coupon->usages()->exists()) {
-            return back()->with('error', 'This coupon has been used and cannot be deleted. Deactivate it instead.');
-        }
-
-        $coupon->delete();
-
-        return redirect()->route('admin_coupons_index')->with('success', 'Coupon deleted.');
+{
+    if ($coupon->usages()->exists()) {
+        return back()->with(
+            'error',
+            'This coupon has been used and cannot be deleted. Deactivate it instead.'
+        );
     }
 
-    private function attachLimitCheck($validator): void
-{
-    $validator->after(function ($v) {
-        $total = $v->getData()['usage_limit'] ?? null;
-        $perCustomer = $v->getData()['per_customer_limit'] ?? null;
+    // Capture coupon attributes before deletion.
+    $fromRecords = $coupon->getAttributes();
 
-        // Only enforce when both are provided
-        if ($total === null || $total === '' || $perCustomer === null || $perCustomer === '') {
-            return;
-        }
+    // Delete the coupon.
+    $coupon->delete();
 
-        if ((int) $total < (int) $perCustomer) {
-            $v->errors()->add(
-                'usage_limit',
-                'The total usage limit cannot be less than the per-customer limit.'
-            );
-        }
-    });
+    // Record coupon deletion in activity logs.
+    new LogService()->log(
+        'Deleted',
+        $coupon,
+        [],
+        "Deleted coupon \"{$coupon->code}\".",
+        $fromRecords,
+        null
+    );
+
+    return redirect()
+        ->route('admin_coupons_index')
+        ->with('success', 'Coupon deleted.');
 }
+
+    private function attachLimitCheck($validator): void
+    {
+        $validator->after(function ($v) {
+            $total = $v->getData()['usage_limit'] ?? null;
+            $perCustomer = $v->getData()['per_customer_limit'] ?? null;
+
+            // Only enforce when both are provided
+            if ($total === null || $total === '' || $perCustomer === null || $perCustomer === '') {
+                return;
+            }
+
+            if ((int) $total < (int) $perCustomer) {
+                $v->errors()->add(
+                    'usage_limit',
+                    'The total usage limit cannot be less than the per-customer limit.'
+                );
+            }
+        });
+    }
 
     /**
      * Validation rules shared by store() and update().
