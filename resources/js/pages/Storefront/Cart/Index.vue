@@ -5,7 +5,7 @@ import { computed, ref } from 'vue';
 import type { PageProps } from '@/types';
 import StorefrontLayout from '@/layouts/StorefrontLayout.vue';
 import EmptySVG from '@/components/SVG/emptySVG.vue';
-import ConfirmDialog from '@/components/ConfirmDialog.vue';
+import CustomConfirmDialog from '@/components/CustomConfirmDialog.vue';
 import { customer_checkout_index, customer_products_index } from '@/routes';
 
 interface CartLine {
@@ -453,7 +453,7 @@ function formatMoney(amount: string | number) {
     </div>
 
     <!-- Remove Item Confirmation -->
-    <ConfirmDialog
+    <CustomConfirmDialog
         v-model="showRemoveDialog"
         title="Remove item"
         :description="selectedLine
