@@ -57,6 +57,10 @@ const auth = computed(() => page.props.auth);
 const categories = computed(() => page.props.categories ?? []);
 const cartCount = computed(() => page.props.cart_count ?? 0);
 const currentPath = computed(() => page.url.split("?")[0]);
+import { useToast } from '@/composables/useToast';
+import { Toaster } from '@/components/ui/sonner';
+// Initialize global toast watcher.
+useToast();
 
 const firstName = computed(() => {
     const name = auth.value?.user?.name ?? "";
@@ -668,7 +672,11 @@ function toggleTheme() {
         >
             <slot />
         </main>
-
+<!-- Global notifications -->
+        <Toaster
+            position="top-center"
+            :close-button="true"
+        />
         <footer
             class="mt-auto border-t border-slate-150 bg-white py-10 text-xs text-slate-400 dark:border-navy-600 dark:bg-navy-750 dark:text-navy-300"
         >

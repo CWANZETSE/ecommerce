@@ -318,8 +318,8 @@ function isAttributeSelected(attributeName: string, valueId: string): boolean {
                         <div class="flex flex-wrap gap-2">
                             <button v-for="value in values" :key="value.valueId" type="button"
                                 class="rounded-lg border px-3.5 py-2 text-xs font-medium transition-all" :class="isAttributeSelected(attributeName, value.valueId)
-                                        ? 'border-primary/10 bg-primary/10 text-primary shadow-sm dark:border-accent dark:bg-accent'
-                                        : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50 dark:border-navy-600 dark:bg-navy-800 dark:text-navy-100 dark:hover:border-navy-500 dark:hover:bg-navy-700'
+                                        ? 'border-success bg-success text-white shadow-sm dark:border-accent-light/30 dark:bg-success dark:text-white dark:hover:bg-success dark:focus:bg-success dark:active:bg-success'
+                                        : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50 dark:border-accent-light/30 dark:bg-accent-light/10 dark:text-accent-light dark:hover:bg-accent-light/20 dark:focus:bg-accent-light/20 dark:active:bg-accent-light/25'
                                     " @click="selectAttribute(attributeName, value.valueId)">
                                 {{ value.value }}
                             </button>
@@ -329,7 +329,7 @@ function isAttributeSelected(attributeName: string, valueId: string): boolean {
 
                 <!-- Buy box -->
                 <div
-                    class="mt-8 rounded-2xl border border-slate-200 bg-slate-50/60 p-4 dark:border-navy-600 dark:bg-navy-900/40 sm:p-5">
+                    class="mt-8 rounded-2xl border border-slate-200 bg-slate-50/60 p-4 dark:border-navy-600 dark:bg-navy-700 sm:p-5">
                     <div class="flex flex-wrap items-center gap-3">
                         <div
                             class="flex items-center rounded-lg border border-slate-200 bg-white dark:border-navy-600 dark:bg-navy-800">
@@ -355,11 +355,7 @@ function isAttributeSelected(attributeName: string, valueId: string): boolean {
                     <button type="button"
                         class="mt-4 flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-primary py-3.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-primary-focus focus:outline-none focus:ring-2 focus:ring-primary/40 active:bg-primary-focus/90 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-accent dark:hover:bg-accent-focus"
                         :disabled="!canAdd" @click="addToCart">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="size-4" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                        </svg>
+                        
                         {{
                             !selectedVariation
                                 ? 'Select options'
