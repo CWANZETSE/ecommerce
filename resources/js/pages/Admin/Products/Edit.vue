@@ -10,6 +10,22 @@ import {
     admin_products_images_destroy,
 } from '@/routes';
 
+import { QuillEditor } from '@vueup/vue-quill';
+import '@vueup/vue-quill/dist/vue-quill.snow.css';
+
+const description = defineModel<string>({
+    default: '',
+});
+
+const toolbar = [
+    ['bold', 'italic', 'underline', 'strike'],
+    [{ header: [1,2, 3, false] }],
+    [{ list: 'ordered' }, { list: 'bullet' }],
+    [{ align: [] }],
+    ['link'],
+    ['clean'],
+];
+
 interface Option { id: string; name: string }
 interface AttributeValue { id: string; value: string }
 interface Attribute { id: string; name: string; values: AttributeValue[] }
@@ -306,9 +322,17 @@ function setDefaultVariation(selectedRow: VariationFormRow) {
 
                     <label class="block">
                         <span class="font-medium text-slate-700 dark:text-navy-100">Description</span>
-                        <textarea v-model="form.description" rows="6"
-                            class="form-textarea mt-1.5 w-full rounded-lg border border-slate-300 bg-transparent p-2.5 placeholder:text-slate-400/70 hover:border-slate-400 focus:border-primary dark:border-navy-450 dark:hover:border-navy-400 dark:focus:border-accent"
-                            placeholder="Enter full description..."></textarea>
+                        <div class="product-description-editor">
+        <QuillEditor
+            v-model:content="form.description"
+            content-type="html"
+            theme="snow"
+            :toolbar="toolbar"
+            placeholder="Write a detailed product description..."
+            style="min-height: 240px;"
+        />
+    </div>
+
                     </label>
 
                     <div class="block">

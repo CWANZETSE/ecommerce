@@ -20374,3 +20374,33 @@
 .gradient-bg-end-3 {
     background: linear-gradient(116deg, rgb(255, 255, 255) 38.14%, rgb(247, 226, 255) 98.5%);
 }
+
+.product-description-editor .ql-toolbar {
+    border-radius: 0.5rem 0.5rem 0 0;
+    border-color: rgb(203 213 225);
+}
+
+.product-description-editor .ql-container {
+    border-radius: 0 0 0.5rem 0.5rem;
+    border-color: rgb(203 213 225);
+    font-size: 14px;
+}
+
+.product-description-editor .ql-editor {
+    min-height: 240px;
+    line-height: 1.7;
+}
+
+.dark .product-description-editor .ql-toolbar,
+.dark .product-description-editor .ql-container {
+    border-color: #475569;
+}
+
+.dark .product-description-editor .ql-toolbar {
+    background: #1e293b;
+}
+
+.dark .product-description-editor .ql-container {
+    background: #0f172a;
+    color: #e2e8f0;
+}

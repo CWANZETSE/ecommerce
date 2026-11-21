@@ -2,9 +2,8 @@
 import { Head, Link, router } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
 import type { PageProps } from '@/types';
-import { admin_dashboard, admin_products_create, admin_products_edit } from '@/routes';
+import { admin_products_create, admin_products_edit } from '@/routes';
 import Pagination from '@/components/Pagination.vue';
-import BoxSVG from '@/components/SVG/boxSVG.vue';
 
 interface Category { id: string; name: string }
 interface Variation { id: string; product_id: string; stock_quantity: number }
@@ -65,30 +64,7 @@ function totalStock(row: ProductRow): number {
                     >
                         Products
                     </h4>
-                    <ol
-                        class="flex items-center whitespace-nowrap"
-                        aria-label="Breadcrumb"
-                    >
-                        <li class="flex items-center">
-                            <Link
-                                class="opacity-80 text-sm text-link dark:text-darklink leading-none"
-                                :href="admin_dashboard.url()"
-                                data-discover="true"
-                                >Home</Link
-                            >
-                        </li>
-                        <li>
-                            <div
-                                class="p-0.5 rounded-full bg-primary/10 dark:bg-primary mx-2.5 flex items-center"
-                            ></div>
-                        </li>
-                        <li
-                            class="flex items-center text-sm text-default dark:text-darklink leading-none"
-                            aria-current="page"
-                        >
-                            Products
-                        </li>
-                    </ol>
+                    
                 </div>
                 <div
                     class="hidden lg:flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary"
@@ -97,17 +73,21 @@ function totalStock(row: ProductRow): number {
                 </div>
             </div>
         </div>
-
-        <div class="mt-4 flex flex-wrap items-center gap-2">
+        
+        <div class="mt-4 flex flex-wrap items-center gap-2 justify-between">
             <label class="relative">
                 <span class="sr-only">Search</span>
                 <input v-model="search" type="text" placeholder="Search name or SKU…"
                     class="form-input h-9 w-64 rounded-lg border border-slate-300 bg-transparent px-3 text-xs-plus text-slate-800 placeholder-slate-400 focus:border-primary dark:border-navy-450 dark:text-navy-100 dark:placeholder-navy-300 dark:focus:border-accent" />
             </label>
+            <Link :href="admin_products_create.url()"
+                class="btn h-9 space-x-2 bg-primary/10 px-4 text-xs-plus font-medium text-primary hover:bg-primary/20 focus:bg-primary/20 active:bg-primary/25 dark:bg-accent-light/10 dark:text-accent-light dark:hover:bg-accent-light/20 dark:focus:bg-accent-light/20 dark:active:bg-accent-light/25">
+                New Product
+            </Link>
         </div>
 
         <div
-            class="mt-4 overflow-hidden rounded-2xl bg-white shadow-sm dark:border-slate-700 dark:bg-navy-800">
+            class="mt-4 overflow-hidden rounded-2xl border border-slate-150 bg-white shadow-sm dark:border-slate-700 dark:bg-navy-800">
             <div class="overflow-x-auto">
                 <table class="w-full border-collapse text-left text-sm">
                     <thead>

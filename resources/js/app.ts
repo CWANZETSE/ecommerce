@@ -6,20 +6,20 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import AuthLayout from '@/layouts/AuthLayout.vue';
 import StorefrontLayout from '@/layouts/StorefrontLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
-import 'alertifyjs/build/css/alertify.css';
-import 'alertifyjs/build/css/themes/default.css';
-import { initializeFlashToast } from '@/lib/flashToast';
+// import 'alertifyjs/build/css/alertify.css';
+// import 'alertifyjs/build/css/themes/default.css';
+// import { initializeFlashToast } from '@/lib/flashToast';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
 async function bootstrap() {
     // Load Alertify only in the browser and wait until it is ready.
-    if (typeof window !== 'undefined') {
-        const module = await import('alertifyjs');
-        const alertify = module.default;
+    // if (typeof window !== 'undefined') {
+    //     const module = await import('alertifyjs');
+    //     const alertify = module.default;
 
-        (window as unknown as { alertify: typeof alertify }).alertify = alertify;
-    }
+    //     (window as unknown as { alertify: typeof alertify }).alertify = alertify;
+    // }
 
     void createInertiaApp({
         title: (title) => (title ? `${title} - ${appName}` : appName),

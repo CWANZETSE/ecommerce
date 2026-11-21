@@ -4,6 +4,7 @@ import type { PageProps } from '@/types';
 import { admin_dashboard, admin_inventory_index, admin_inventory_movements } from '@/routes';
 import ReportsSVG from '@/components/SVG/reportsSVG.vue';
 import ReceiptSVG from '@/components/SVG/receiptSVG.vue';
+import Pagination from '@/components/Pagination.vue';
 
 interface Movement {
     id: string;
@@ -13,6 +14,7 @@ interface Movement {
     new_quantity: number;
     reason: string | null;
     created_at: string;
+    created_at_formatted: string | null;
     user: { id: string; name: string } | null;
 }
 
@@ -151,7 +153,7 @@ const typeLabel: Record<string, string> = {
                     class="transition-colors hover:bg-primary/[0.025] dark:hover:bg-primary/[0.05]"
                 >
                     <td class="whitespace-nowrap border border-slate-150 px-5 py-3 text-xs text-slate-500 dark:border-slate-700 dark:text-navy-300">
-                        {{ m.created_at }}
+                        {{ m.created_at_formatted ?? '—' }}
                     </td>
 
                     <td class="whitespace-nowrap border border-slate-150 px-5 py-3 font-semibold text-slate-700 dark:border-slate-700 dark:text-navy-100">
@@ -192,25 +194,8 @@ const typeLabel: Record<string, string> = {
         </table>
     </div>
 
-    <!-- Pagination -->
-    <div
-        v-if="movements.links.length > 3"
-        class="flex flex-wrap items-center justify-between gap-3 border-t border-slate-150 px-4 py-4 dark:border-slate-700 sm:px-5"
-    >
-        <nav class="flex flex-wrap gap-1">
-            <template v-for="link in movements.links" :key="link.label">
-                <Link
-                    v-if="link.url"
-                    :href="link.url"
-                    class="inline-flex min-w-[2.25rem] items-center justify-center rounded-lg border px-3 py-2 text-xs font-semibold transition-colors"
-                    :class="link.active
-                        ? 'border-primary bg-primary text-white dark:border-accent dark:bg-accent'
-                        : 'border-slate-200 bg-white text-slate-600 hover:bg-primary/[0.05] hover:text-primary dark:border-navy-600 dark:bg-navy-800 dark:text-navy-200 dark:hover:bg-primary/[0.08]'"
-                    v-html="link.label"
-                />
-            </template>
-        </nav>
-    </div>
+
+    <Pagination :paginator="movements" />
 </div>
 
         </div>

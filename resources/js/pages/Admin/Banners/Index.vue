@@ -84,7 +84,12 @@ function destroy(banner: Banner) {
                 </div>
             </div>
         </div>
-
+        <Link
+                :href="admin_banners_create.url()"
+                class="btn bg-primary/10 font-medium text-primary mb-2 hover:bg-primary/20 focus:bg-primary/20 active:bg-primary/25 dark:bg-accent-light/10 dark:text-accent-light dark:hover:bg-accent-light/20 dark:focus:bg-accent-light/20 dark:active:bg-accent-light/25"
+            >
+                New Banner
+            </Link>
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 sm:gap-5">
             <!-- Loop through banners.data -->
             <div

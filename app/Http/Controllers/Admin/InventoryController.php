@@ -55,17 +55,28 @@ class InventoryController extends Controller
     }
 
     public function movements(ProductVariation $variation): Response
-    {
-        $movements = StockMovement::where('variation_id', $variation->id)
-            ->with(['user:id,name'])
-            ->orderByDesc('created_at')
-            ->paginate(30);
+{
+    $movements = StockMovement::where('variation_id', $variation->id)
+        ->with(['user:id,name'])
+        ->orderByDesc('created_at')
+        ->paginate(30);
 
-        return Inertia::render('Admin/Inventory/Movements', [
-            'variation' => $variation->load(['product:id,name,sku', 'attributeValues.attribute:id,name']),
-            'movements' => $movements,
-        ]);
-    }
+    $movements->getCollection()->transform(function ($movement) {
+        $movement->created_at_formatted = $movement->created_at
+            ? \Carbon\Carbon::parse($movement->created_at)->format('D d-m-Y H:i')
+            : null;
+
+        return $movement;
+    });
+
+    return Inertia::render('Admin/Inventory/Movements', [
+        'variation' => $variation->load([
+            'product:id,name,sku',
+            'attributeValues.attribute:id,name',
+        ]),
+        'movements' => $movements,
+    ]);
+}
 
     public function adjust(Request $request, ProductVariation $variation): RedirectResponse
     {
