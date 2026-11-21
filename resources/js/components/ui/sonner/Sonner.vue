@@ -24,8 +24,9 @@ const props = defineProps<ToasterProps>()
             '--normal-bg': '#ffffff',
             '--normal-text': '#172033',
             '--normal-border': '#f1f5f9',
-            '--border-radius': '20px',
-            '--width': '600px',
+            '--border-radius': '18px',
+            '--width': '480px',
+            'font-family': 'Geologica, sans-serif',
         }"
         v-bind="props"
     >
@@ -68,6 +69,36 @@ const props = defineProps<ToasterProps>()
 </template>
 
 <style>
+/* =========================================
+   FONT FAMILY
+========================================= */
+
+.toaster,
+.toaster *,
+.toaster [data-sonner-toast],
+.toaster [data-sonner-toast] * {
+    font-family: "Geologica", sans-serif !important;
+}
+
+/* =========================================
+   TOASTER POSITIONING — EXACT CENTER
+========================================= */
+
+.toaster[data-sonner-toaster] {
+    position: fixed !important;
+
+    left: 50% !important;
+    right: auto !important;
+
+    width: 480px !important;
+    max-width: calc(100vw - 24px) !important;
+
+    transform: translateX(-50%) !important;
+
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+}
 
 /* =========================================
    MAIN TOAST CARD
@@ -80,13 +111,19 @@ const props = defineProps<ToasterProps>()
     column-gap: 18px !important;
 
     width: min(480px, calc(100vw - 32px)) !important;
+    max-width: calc(100vw - 32px) !important;
+
     min-height: 0 !important;
     height: auto !important;
+
+    margin-left: auto !important;
+    margin-right: auto !important;
 
     padding: 22px 46px 22px 22px !important;
 
     background: #ffffff !important;
     color: #172033 !important;
+
     border: 1px solid #f1f5f9 !important;
     border-radius: 18px !important;
 
@@ -133,6 +170,7 @@ const props = defineProps<ToasterProps>()
 
     margin: 0 !important;
     padding: 0 !important;
+
     text-align: left !important;
 }
 
@@ -140,32 +178,27 @@ const props = defineProps<ToasterProps>()
    NOTIFICATION TYPE HEADINGS
 ========================================= */
 
-/* Success */
 .toaster [data-sonner-toast][data-type="success"] [data-title]::before {
     content: "Success";
 }
 
-/* Error */
 .toaster [data-sonner-toast][data-type="error"] [data-title]::before {
     content: "Error";
 }
 
-/* Warning */
 .toaster [data-sonner-toast][data-type="warning"] [data-title]::before {
     content: "Warning";
 }
 
-/* Information */
 .toaster [data-sonner-toast][data-type="info"] [data-title]::before {
     content: "Information";
 }
 
-/* Loading */
 .toaster [data-sonner-toast][data-type="loading"] [data-title]::before {
     content: "Processing";
 }
 
-/* Type heading */
+/* Heading */
 .toaster [data-sonner-toast] [data-title]::before {
     display: block;
     margin-bottom: 4px;
@@ -177,7 +210,7 @@ const props = defineProps<ToasterProps>()
     letter-spacing: -0.25px;
 }
 
-/* Actual notification message */
+/* Message */
 .toaster [data-sonner-toast] [data-title] {
     margin: 0 !important;
     padding: 0 !important;
@@ -189,7 +222,7 @@ const props = defineProps<ToasterProps>()
     letter-spacing: 0 !important;
 }
 
-/* Additional description, when provided */
+/* Additional description */
 .toaster [data-sonner-toast] [data-description] {
     margin: 2px 0 0 !important;
     padding: 0 !important;
@@ -294,6 +327,7 @@ const props = defineProps<ToasterProps>()
     font-size: 14px !important;
     font-weight: 550 !important;
     line-height: 1.5 !important;
+
     cursor: pointer;
 }
 
@@ -331,17 +365,24 @@ const props = defineProps<ToasterProps>()
     box-shadow: none !important;
 }
 
-
 /* =========================================
    MOBILE RESPONSIVENESS
 ========================================= */
 
 @media (max-width: 640px) {
+    .toaster[data-sonner-toaster],
+    [data-sonner-toaster].toaster {
+        width: 100% !important;
+        max-width: 100vw !important;
+    }
+
     .toaster [data-sonner-toast] {
         grid-template-columns: 44px minmax(0, 1fr) !important;
         column-gap: 13px !important;
 
         width: calc(100vw - 24px) !important;
+        max-width: calc(100vw - 24px) !important;
+
         padding: 17px 40px 17px 17px !important;
         border-radius: 16px !important;
     }
@@ -381,5 +422,4 @@ const props = defineProps<ToasterProps>()
         gap: 20px !important;
     }
 }
-
 </style>
