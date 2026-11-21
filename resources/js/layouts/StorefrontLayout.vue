@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Link, router, usePage } from "@inertiajs/vue3";
 import { computed, ref, watch } from "vue";
+import { onMounted, onBeforeUnmount } from 'vue';
 import {
     Search,
     ShoppingBag,
@@ -31,7 +32,7 @@ import PackageSVG from "@/components/SVG/packageSVG.vue";
 import BoxSVG from "@/components/SVG/boxSVG.vue";
 import ShippingSVG from "@/components/SVG/shippingSVG.vue";
 import MicrophoneSVG from "@/components/SVG/microphoneSVG.vue";
-
+import GlobalLoadingOverlay from '@/components/GlobalLoadingOverlay.vue';
 interface CategoryNode {
     id: string;
     name: string;
@@ -52,6 +53,8 @@ const page = usePage<{
     cart_count: number;
     categories?: CategoryNode[];
 }>();
+// Global loading state.
+const isLoading = ref(false);
 
 const auth = computed(() => page.props.auth);
 const categories = computed(() => page.props.categories ?? []);
@@ -114,6 +117,29 @@ function toggleTheme() {
     localStorage.setItem("theme", next ? "dark" : "light");
     isDark.value = next;
 }
+
+// Inertia event listener cleanup callbacks.
+let removeStartListener: (() => void) | undefined;
+let removeFinishListener: (() => void) | undefined;
+
+onMounted(() => {
+    // Show loading overlay when an Inertia request starts.
+    removeStartListener = router.on('start', () => {
+        isLoading.value = true;
+    });
+
+    // Hide loading overlay when an Inertia request finishes.
+    removeFinishListener = router.on('finish', () => {
+        isLoading.value = false;
+    });
+});
+
+onBeforeUnmount(() => {
+    removeStartListener?.();
+    removeFinishListener?.();
+
+    isLoading.value = false;
+});
 </script>
 
 <template>
@@ -677,6 +703,8 @@ function toggleTheme() {
             position="top-center"
             :close-button="true"
         />
+        <!-- Global loading overlay -->
+        <GlobalLoadingOverlay :show="isLoading" />
         <footer
             class="mt-auto border-t border-slate-150 bg-white py-10 text-xs text-slate-400 dark:border-navy-600 dark:bg-navy-750 dark:text-navy-300"
         >
