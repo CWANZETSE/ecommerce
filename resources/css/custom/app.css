@@ -20370,3 +20370,7 @@
         background-position: -200% 0;
     }
 }
+
+.gradient-bg-end-3 {
+    background: linear-gradient(116deg, rgb(255, 255, 255) 38.14%, rgb(247, 226, 255) 98.5%);
+}

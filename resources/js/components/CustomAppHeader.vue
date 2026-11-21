@@ -11,6 +11,14 @@ import {
     Sun,
     User as UserIcon,
 } from '@lucide/vue';
+import { useAppearance } from '@/composables/useAppearance';
+
+const { appearance, updateAppearance } = useAppearance();
+
+const tabs = [
+    { value: 'light', Icon: Sun, label: 'Light' },
+    { value: 'dark', Icon: Moon, label: 'Dark' },
+] as const;
 
 interface Breadcrumb {
     label: string;
@@ -49,15 +57,9 @@ function submitSearch() {
 /* -------- Theme -------- */
 const isDark = ref(false);
 
-function toggleTheme() {
-    const next = !document.documentElement.classList.contains('dark');
-    document.documentElement.classList.toggle('dark', next);
-    localStorage.setItem('theme', next ? 'dark' : 'light');
-    isDark.value = next;
-}
 
 onMounted(() => {
-    isDark.value = document.documentElement.classList.contains('dark');
+    // isDark.value = document.documentElement.classList.contains('dark');
 });
 
 /* -------- User dropdown -------- */
@@ -119,29 +121,6 @@ const userInitial = computed(() => {
                             <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5" />
                         </svg>
                     </button>
-
-                    <!-- Breadcrumbs -->
-                    <div class="flex items-center gap-1 text-xs-plus">
-                        <Link
-                            href="/"
-                            class="text-slate-500 transition-colors hover:text-slate-800 dark:text-navy-300 dark:hover:text-navy-50"
-                        >
-                            Home
-                        </Link>
-                        <template v-for="(crumb, i) in props.breadcrumbs" :key="i">
-                            <span class="text-slate-300 dark:text-navy-500">/</span>
-                            <Link
-                                v-if="crumb.href"
-                                :href="crumb.href"
-                                class="text-slate-500 transition-colors hover:text-slate-800 dark:text-navy-300 dark:hover:text-navy-50"
-                            >
-                                {{ crumb.label }}
-                            </Link>
-                            <span v-else class="font-medium text-slate-800 dark:text-navy-50">
-                                {{ crumb.label }}
-                            </span>
-                        </template>
-                    </div>
                 </div>
 
                 <!-- Right: actions (unchanged from your version) -->
@@ -152,16 +131,41 @@ const userInitial = computed(() => {
                     
 
 
-                    <!-- Dark-mode toggle -->
-                    <button
-                        type="button"
-                        class="btn size-8 rounded-full p-0 hover:bg-slate-300/20 focus:bg-slate-300/20 active:bg-slate-300/25 dark:hover:bg-navy-300/20 dark:focus:bg-navy-300/20 dark:active:bg-navy-300/25"
-                        :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
-                        @click="toggleTheme"
-                    >
-                        <Sun v-if="!isDark" class="size-5 text-amber-400" />
-                        <Moon v-else class="size-5 text-amber-400" />
-                    </button>
+                    <!-- Display-mode toggle -->
+                    
+<div
+    class="inline-flex items-center gap-1 rounded-full bg-slate-100 p-1 dark:bg-navy-750"
+    role="group"
+    aria-label="Display mode"
+>
+    <button
+        v-for="{ value, Icon, label } in tabs"
+        :key="value"
+        type="button"
+        :aria-pressed="appearance === value"
+        :aria-label="`Switch to ${label} mode`"
+        @click="updateAppearance(value)"
+        :class="[
+            'inline-flex h-8 items-center justify-center gap-1.5 rounded-full px-3 text-sm transition-all duration-200',
+            appearance === value
+                ? 'bg-white text-slate-900 shadow-sm dark:bg-navy-700 dark:text-navy-200'
+                : 'text-slate-500 hover:bg-slate-200/70 hover:text-slate-800 dark:text-slate-300 dark:hover:bg-slate-700/50 dark:hover:text-slate-100',
+        ]"
+    >
+        <component
+            :is="Icon"
+            :class="[
+                'size-4 shrink-0',
+                value === 'dark'
+                    ? 'text-amber-500'
+                    : 'text-orange-500',
+            ]"
+        />
+
+        <span>{{ label }}</span>
+    </button>
+</div>
+
 
 
 

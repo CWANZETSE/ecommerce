@@ -144,7 +144,7 @@ function destroy(banner: Banner) {
         </div>
 
         <!-- Add pagination component for the grid -->
-        <div v-if="banners.data.length > 0" class="mt-6 overflow-hidden rounded-2xl border border-slate-150 bg-white shadow-sm dark:border-slate-700 dark:bg-navy-800">
+        <div v-if="banners.data.length > 0" class="mt-6 overflow-hidden rounded-2xl bg-white shadow-sm dark:border-slate-700 dark:bg-navy-800">
             <Pagination :paginator="banners" />
         </div>
     </div>

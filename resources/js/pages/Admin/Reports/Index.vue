@@ -98,7 +98,7 @@ function exportInventory() {
     <!-- Summary Cards -->
     <div class="mt-4 grid grid-cols-1 gap-3 sm:mt-5 sm:grid-cols-2 sm:gap-5 lg:mt-6 xl:grid-cols-4">
         <!-- Gross Sales -->
-        <div class="rounded-2xl border border-slate-150 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-navy-800 sm:p-5">
+        <div class="rounded-2xl bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-navy-800 sm:p-5">
             <div class="flex items-start justify-between gap-3">
                 <div class="min-w-0">
                     <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-navy-300">
@@ -121,7 +121,7 @@ function exportInventory() {
         </div>
 
         <!-- Discounts -->
-        <div class="rounded-2xl border border-slate-150 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-navy-800 sm:p-5">
+        <div class="rounded-2xl bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-navy-800 sm:p-5">
             <div class="flex items-start justify-between gap-3">
                 <div class="min-w-0">
                     <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-navy-300">
@@ -144,7 +144,7 @@ function exportInventory() {
         </div>
 
         <!-- Net Revenue -->
-        <div class="rounded-2xl border border-slate-150 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-navy-800 sm:p-5">
+        <div class="rounded-2xl bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-navy-800 sm:p-5">
             <div class="flex items-start justify-between gap-3">
                 <div class="min-w-0">
                     <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-navy-300">
@@ -167,7 +167,7 @@ function exportInventory() {
         </div>
 
         <!-- Paid Orders -->
-        <div class="rounded-2xl border border-slate-150 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-navy-800 sm:p-5">
+        <div class="rounded-2xl bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-navy-800 sm:p-5">
             <div class="flex items-start justify-between gap-3">
                 <div class="min-w-0">
                     <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-navy-300">
@@ -197,7 +197,7 @@ function exportInventory() {
     <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
 
         <!-- Top Products -->
-        <div class="overflow-hidden rounded-2xl border border-slate-150 bg-white shadow-sm dark:border-slate-700 dark:bg-navy-800">
+        <div class="overflow-hidden rounded-2xl bg-white shadow-sm dark:border-slate-700 dark:bg-navy-800">
             <div class="border-b border-slate-150 bg-primary/[0.025] px-5 py-4 dark:border-slate-700 dark:bg-primary/[0.04]">
                 <h3 class="font-semibold text-slate-700 dark:text-navy-100">
                     Top Products
@@ -258,7 +258,7 @@ function exportInventory() {
         </div>
 
         <!-- Top Categories -->
-        <div class="overflow-hidden rounded-2xl border border-slate-150 bg-white shadow-sm dark:border-slate-700 dark:bg-navy-800">
+        <div class="overflow-hidden rounded-2xl bg-white shadow-sm dark:border-slate-700 dark:bg-navy-800">
             <div class="border-b border-slate-150 bg-primary/[0.025] px-5 py-4 dark:border-slate-700 dark:bg-primary/[0.04]">
                 <h3 class="font-semibold text-slate-700 dark:text-navy-100">
                     Top Categories
@@ -314,7 +314,7 @@ function exportInventory() {
         </div>
 
         <!-- Top Customers -->
-        <div class="overflow-hidden rounded-2xl border border-slate-150 bg-white shadow-sm dark:border-slate-700 dark:bg-navy-800">
+        <div class="overflow-hidden rounded-2xl bg-white shadow-sm dark:border-slate-700 dark:bg-navy-800">
             <div class="border-b border-slate-150 bg-primary/[0.025] px-5 py-4 dark:border-slate-700 dark:bg-primary/[0.04]">
                 <h3 class="font-semibold text-slate-700 dark:text-navy-100">
                     Top Customers
@@ -378,7 +378,7 @@ function exportInventory() {
         <div class="space-y-6">
 
             <!-- Payment Methods -->
-            <div class="overflow-hidden rounded-2xl border border-slate-150 bg-white shadow-sm dark:border-slate-700 dark:bg-navy-800">
+            <div class="overflow-hidden rounded-2xl bg-white shadow-sm dark:border-slate-700 dark:bg-navy-800">
                 <div class="border-b border-slate-150 bg-primary/[0.025] px-5 py-4 dark:border-slate-700 dark:bg-primary/[0.04]">
                     <h3 class="font-semibold text-slate-700 dark:text-navy-100">
                         Payment Methods
@@ -417,7 +417,7 @@ function exportInventory() {
             </div>
 
             <!-- Coupon Usage -->
-            <div class="overflow-hidden rounded-2xl border border-slate-150 bg-white shadow-sm dark:border-slate-700 dark:bg-navy-800">
+            <div class="overflow-hidden rounded-2xl bg-white shadow-sm dark:border-slate-700 dark:bg-navy-800">
                 <div class="border-b border-slate-150 bg-primary/[0.025] px-5 py-4 dark:border-slate-700 dark:bg-primary/[0.04]">
                     <h3 class="font-semibold text-slate-700 dark:text-navy-100">
                         Coupon Usage
@@ -456,7 +456,7 @@ function exportInventory() {
             </div>
 
             <!-- Inventory -->
-            <div class="overflow-hidden rounded-2xl border border-slate-150 bg-white shadow-sm dark:border-slate-700 dark:bg-navy-800">
+            <div class="overflow-hidden rounded-2xl bg-white shadow-sm dark:border-slate-700 dark:bg-navy-800">
                 <div class="border-b border-slate-150 bg-primary/[0.025] px-5 py-4 dark:border-slate-700 dark:bg-primary/[0.04]">
                     <h3 class="font-semibold text-slate-700 dark:text-navy-100">
                         Inventory

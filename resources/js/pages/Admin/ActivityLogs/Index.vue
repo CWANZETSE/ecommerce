@@ -217,7 +217,7 @@ const actionColor = (action: string) => {
 
         <!-- Filters -->
         <div
-            class="mt-4 overflow-hidden rounded-2xl border border-slate-150 bg-white shadow-sm dark:border-slate-700 dark:bg-navy-800"
+            class="mt-4 overflow-hidden rounded-2xl bg-white shadow-sm dark:border-slate-700 dark:bg-navy-800"
         >
             <div
                 class="border-b border-slate-150 bg-primary/[0.025] px-5 py-4 dark:border-slate-700 dark:bg-primary/[0.04]"
@@ -398,7 +398,7 @@ const actionColor = (action: string) => {
 
         <!-- Activity table -->
         <div
-            class="mt-5 overflow-hidden rounded-2xl border border-slate-150 bg-white shadow-sm dark:border-slate-700 dark:bg-navy-800"
+            class="mt-5 overflow-hidden rounded-2xl bg-white shadow-sm dark:border-slate-700 dark:bg-navy-800"
         >
             <!-- Table heading -->
             <div
@@ -612,7 +612,7 @@ const actionColor = (action: string) => {
             @keydown.esc="closeChanges"
         >
             <div
-                class="max-h-[85vh] w-full max-w-4xl overflow-y-auto rounded-2xl border border-slate-150 bg-white p-5 shadow-xl dark:border-slate-700 dark:bg-navy-800"
+                class="max-h-[85vh] w-full max-w-4xl overflow-y-auto rounded-2xl bg-white p-5 shadow-xl dark:border-slate-700 dark:bg-navy-800"
             >
                 <!-- Dialog header -->
                 <div

@@ -35,7 +35,7 @@
             <div
                 class="min-w-0 space-y-5 bg-white shadow-sm dark:border-slate-700 dark:bg-navy-800 xl:col-span-3 lg:space-y-6">
                 <div
-                    class="rounded-2xl border border-slate-150 bg-white shadow-sm dark:border-slate-700 dark:bg-navy-800 xl:w-full">
+                    class="rounded-2xl bg-white shadow-sm dark:border-slate-700 dark:bg-navy-800 xl:w-full">
                     <!-- Receipt Header -->
                     <div class="flex justify-center border-b border-slate-150 px-6 py-4 dark:border-slate-700">
                         <span class="uppercase text-slate-600 dark:text-navy-200">
@@ -114,7 +114,7 @@
 
                         <!-- Invoice Table Start -->
                         <div
-                            class="overflow-hidden rounded-2xl border border-slate-150 bg-white dark:border-slate-700 dark:bg-navy-800">
+                            class="overflow-hidden rounded-2xl bg-white dark:border-slate-700 dark:bg-navy-800">
                             <div class="max-w-full overflow-x-auto">
                                 <div class="min-w-[650px]">
                                     <!-- Table Header -->

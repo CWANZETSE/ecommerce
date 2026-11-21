@@ -221,7 +221,7 @@ function deleteAttribute(attribute: Attribute) {
             </div>
 
             <!-- Add pagination wrapper -->
-            <div class="mt-6 overflow-hidden rounded-2xl border border-slate-150 bg-white shadow-sm dark:border-slate-700 dark:bg-navy-800">
+            <div class="mt-6 overflow-hidden rounded-2xl bg-white shadow-sm dark:border-slate-700 dark:bg-navy-800">
                 <Pagination :paginator="attributes" />
             </div>
             

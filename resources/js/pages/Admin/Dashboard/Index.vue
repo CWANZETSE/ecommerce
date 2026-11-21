@@ -285,6 +285,7 @@ const paymentOptions = computed(() => ({
                 </div>
             </div>
         </div>
+        
         <!-- Header & Date Filter -->
         <div class="flex flex-col gap-4 py-5 sm:flex-row sm:items-center sm:justify-between lg:py-6">
             <div>
@@ -302,7 +303,7 @@ const paymentOptions = computed(() => ({
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <!-- Revenue -->
             <div
-                class="rounded-xl border border-slate-150 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-navy-800">
+                class="rounded-xl bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-navy-800">
                 <div class="flex items-center justify-between">
                     <p class="text-sm font-medium text-slate-500 dark:text-navy-300">Total Revenue</p>
                     <div class="flex size-12 p-2 items-center justify-center rounded-full bg-success/10 text-success">
@@ -314,7 +315,7 @@ const paymentOptions = computed(() => ({
 
             <!-- Orders -->
             <div
-                class="rounded-xl border border-slate-150 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-navy-800">
+                class="rounded-xl bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-navy-800">
                 <div class="flex items-center justify-between">
                     <p class="text-sm font-medium text-slate-500 dark:text-navy-300">Total Orders</p>
                     <div class="flex size-12 p-2 items-center justify-center rounded-full bg-primary/10 text-primary">
@@ -328,7 +329,7 @@ const paymentOptions = computed(() => ({
 
             <!-- Customers -->
             <div
-                class="rounded-xl border border-slate-150 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-navy-800">
+                class="rounded-xl bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-navy-800">
                 <div class="flex items-center justify-between">
                     <p class="text-sm font-medium text-slate-500 dark:text-navy-300">New Customers</p>
                     <div class="flex size-12 p-2 items-center justify-center rounded-full bg-info/10 text-info">
@@ -340,7 +341,7 @@ const paymentOptions = computed(() => ({
 
             <!-- Inventory -->
             <div
-                class="rounded-xl border border-slate-150 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-navy-800">
+                class="rounded-xl bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-navy-800">
                 <div class="flex items-center justify-between">
                     <p class="text-sm font-medium text-slate-500 dark:text-navy-300">Inventory Health</p>
                     <div class="flex size-12 p-2 items-center justify-center rounded-full bg-error/10 text-error">
@@ -362,7 +363,7 @@ const paymentOptions = computed(() => ({
         <div class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-1">
             <!-- Revenue Trend Chart -->
             <div
-                class="col-span-1 rounded-2xl border border-slate-150 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-navy-800 lg:col-span-2">
+                class="col-span-1 rounded-2xl bg-white p-5 dark:border-slate-700 dark:bg-navy-800 lg:col-span-2">
                 <h3 class="mb-4 font-medium text-slate-700 dark:text-navy-100">Revenue Trend</h3>
                 <VueApexCharts type="area" height="300" :options="revenueOptions" :series="revenueSeries" />
             </div>
@@ -374,7 +375,7 @@ const paymentOptions = computed(() => ({
         <div class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
             <!-- Payment Status Donut (Replaced Payment Providers) -->
             <div
-                class="w-full rounded-2xl border border-slate-150 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-navy-800 lg:w-1/2">
+                class="w-full rounded-2xl bg-white p-5 dark:border-slate-700 dark:bg-navy-800 lg:w-1/2">
                 <div class="flex items-center gap-2.5">
                     <div
                         class="rounded-lg size-10 bg-primary/10 p-2 text-primary dark:bg-accent-light/10 dark:text-accent-light">
@@ -449,7 +450,7 @@ const paymentOptions = computed(() => ({
 
             <!-- Recent Activity Log -->
             <div
-                class="w-full rounded-2xl border border-slate-150 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-navy-800 lg:w-1/2">
+                class="w-full rounded-2xl bg-white p-5 dark:border-slate-700 dark:bg-navy-800 lg:w-1/2">
                 <h3 class="mb-4 font-medium text-slate-700 dark:text-navy-100">Recent Admin Activity</h3>
                 <div class="space-y-6">
                     <div v-for="(event, index) in recentActivity" :key="event.id" class="group relative">
@@ -517,7 +518,7 @@ const paymentOptions = computed(() => ({
         <div class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
             <!-- Recent Orders -->
             <div
-                class="mt-4 overflow-hidden rounded-2xl border border-slate-150 bg-white shadow-sm dark:border-slate-700 dark:bg-navy-800">
+                class="mt-4 overflow-hidden rounded-2xl bg-white shadow-sm dark:border-slate-700 dark:bg-navy-800">
                 <!-- Card Header -->
                 <div
                     class="flex items-center justify-between border-b border-slate-150 bg-primary/[0.025] px-5 py-4 dark:border-slate-700 dark:bg-primary/[0.04]">
@@ -623,7 +624,7 @@ const paymentOptions = computed(() => ({
 
             <!-- Top Selling Products -->
             <div
-                class="mt-4 overflow-hidden rounded-2xl border border-slate-150 bg-white shadow-sm dark:border-slate-700 dark:bg-navy-800">
+                class="mt-4 overflow-hidden rounded-2xl bg-white shadow-sm dark:border-slate-700 dark:bg-navy-800">
                 <!-- Card Header -->
                 <div
                     class="flex items-center justify-between border-b border-slate-150 bg-primary/[0.025] px-5 py-4 dark:border-slate-700 dark:bg-primary/[0.04]">
