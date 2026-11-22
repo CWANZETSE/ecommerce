@@ -4,7 +4,7 @@ defineOptions({ layout: StorefrontLayout })
 </script>
 
 <template>
-  <div class="max-w-4xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
+  <div class="max-w-4xl mx-auto px-4 py-16 sm:px-6 lg:px-8 dark:bg-navy-900 dark:text-navy-300">
     <!-- Header -->
     <header class="mb-12 border-b border-gray-200 pb-8">
       <h1 class="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl">

@@ -37,14 +37,14 @@ use Illuminate\Support\Facades\Storage;
 */
 
 Route::get('/policies/privacy', function () {
-    return inertia('Policy/privacy');
+    return inertia('Policy/privacy')->name('privacy');
 });
 Route::get('/policies/shipping', function () {
-    return inertia('Policy/shipping');
+    return inertia('Policy/shipping')->name('shipping');
 });
 Route::get('/policies/terms', function () {
     return inertia('Policy/terms');
-});
+})->name('terms');
 
 Route::get('/checkout/status/{payment:ulid}', [CheckoutController::class, 'status'])
     ->name('checkout_status');
