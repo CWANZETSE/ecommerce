@@ -2,16 +2,22 @@
 
 namespace App\Http\Controllers\Storefront;
 
+use App\Enums\OrderPaymentStatus;
+use App\Enums\PaymentProvider;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\Payment;
 use App\Models\ShippingZone;
 use App\Services\CartService;
 use App\Services\CheckoutService;
+use App\Services\Payment\MpesaGateway;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -37,6 +43,7 @@ class CheckoutController extends Controller
                 'cart_id' => $cart?->id,
                 'item_count' => $cart?->items()->count() ?? 0,
             ]);
+
             return redirect()->route('cart_index')->with('error', 'Your cart is empty.');
         }
 
@@ -52,7 +59,7 @@ class CheckoutController extends Controller
         return Inertia::render('Storefront/Checkout/Index', [
             'cart' => $this->cart->serialize($cart),
             'counties' => ShippingZone::where('is_active', true)->orderBy('name')->get(['name', 'fee']),
-            'user' => $user ? ['name' => $user->name, 'email' => $user->email,'phone' => $user->phone] : null,
+            'user' => $user ? ['name' => $user->name, 'email' => $user->email, 'phone' => $user->phone] : null,
             'addresses' => $user
                 ? $user->addresses()->orderByDesc('is_default')->orderBy('label')->get([
                     'id', 'label', 'recipient_name', 'phone', 'county', 'town', 'address', 'instructions', 'is_default',
@@ -93,7 +100,7 @@ class CheckoutController extends Controller
                 'county' => $data['county'],
                 'save_address' => $data['save_address'] ?? false,
             ]);
-        } catch (\Illuminate\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             Log::warning('CheckoutController@store: validation failed', [
                 'errors' => $e->errors(),
             ]);
@@ -105,6 +112,7 @@ class CheckoutController extends Controller
 
         if (! $cart) {
             Log::warning('CheckoutController@store: cart missing at store() — aborting');
+
             return back()->with('error', 'Your cart is empty.');
         }
 
@@ -132,6 +140,7 @@ class CheckoutController extends Controller
             Log::warning('CheckoutController@store: placeOrder business-rule failure', [
                 'message' => $e->getMessage(),
             ]);
+
             return back()->with('error', $e->getMessage());
         } catch (\Throwable $e) {
             Log::error('CheckoutController@store: placeOrder unexpected failure', [
@@ -139,6 +148,7 @@ class CheckoutController extends Controller
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
+
             return back()->with('error', 'We could not place your order. Please try again.');
         }
 
@@ -233,6 +243,7 @@ class CheckoutController extends Controller
             Log::info('CheckoutController@waiting: payment already succeeded — redirecting to success', [
                 'order_ulid' => $order->ulid,
             ]);
+
             return redirect()->route('checkout_success', ['order' => $order->ulid]);
         }
 
@@ -324,6 +335,7 @@ class CheckoutController extends Controller
                 'order_ulid' => $order->ulid,
                 'payment_status' => $payment?->status->value,
             ]);
+
             return redirect()
                 ->route('checkout_waiting', ['order' => $order->ulid])
                 ->with('info', 'Please complete the payment before viewing your receipt.');
@@ -357,5 +369,64 @@ class CheckoutController extends Controller
                 ])->values(),
             ],
         ]);
+    }
+
+    public function retry(Request $request, Order $order, MpesaGateway $mpesa)
+    {
+        // 1. Security check: ensure the user owns this order or it's a guest session
+        $allowedOrderUlids = session()->get('checkout_order_ulids', []);
+        $isOwner = in_array($order->ulid, $allowedOrderUlids, true)
+                   || ($order->user_id && $order->user_id === auth()->id());
+
+        if (! $isOwner) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        // 2. Prevent retrying an already paid order
+        if ($order->payment_status === OrderPaymentStatus::Paid) {
+            return redirect()->route('checkout_success', $order->ulid);
+        }
+
+        // 3. Create a new payment attempt (or reset the old one)
+        try {
+            $payment = DB::transaction(function () use ($order, $mpesa) {
+                $payment = Payment::create([
+                    'ulid' => (string) Str::ulid(),
+                    'order_id' => $order->id,
+                    'provider' => PaymentProvider::Mpesa,
+                    'amount' => $order->grand_total,
+                    'currency' => 'KES',
+                    'status' => PaymentStatus::Pending,
+                    'idempotency_key' => Str::uuid()->toString(),
+                ]);
+
+                // Trigger the STK push
+                $stkResponse = $mpesa->initiate($payment, $order->customer_phone, $order->order_number);
+
+                $checkoutRequestId = $stkResponse['checkoutRequestId'] ?? null;
+
+                if (! $checkoutRequestId) {
+                    throw new \RuntimeException('M-Pesa did not return a checkoutRequestId.');
+                }
+
+                $payment->update([
+                    'checkout_request_id' => $checkoutRequestId,
+                    'merchant_request_id' => $stkResponse['MerchantRequestID'] ?? null,
+                    'status' => PaymentStatus::Processing,
+                    'raw_request' => ['phone' => $order->customer_phone, 'amount' => $order->grand_total],
+                    'raw_response' => $stkResponse,
+                ]);
+
+                return $payment;
+            });
+
+            return redirect()->route('checkout_waiting', $order->ulid)
+                ->with('success', 'New payment prompt sent. Check your phone.');
+
+        } catch (\Throwable $e) {
+            Log::error('Retry STK push failed', ['order' => $order->ulid, 'error' => $e->getMessage()]);
+
+            return back()->with('error', 'Could not initiate a new payment. Please try again later.');
+        }
     }
 }

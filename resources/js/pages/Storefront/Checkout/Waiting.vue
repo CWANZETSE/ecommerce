@@ -2,6 +2,7 @@
 import { Head, router } from '@inertiajs/vue3';
 import { onMounted, onUnmounted, ref } from 'vue';
 import type { PageProps } from '@/types';
+import { customer_checkout_retry } from '@/routes';
 
 interface Props extends PageProps {
     order: {
@@ -64,9 +65,14 @@ function stopPolling() {
     if (clockTimer) { clearInterval(clockTimer); clockTimer = null; }
 }
 
-function retry() {
-    router.visit('/checkout');
-}
+const retry = () => {
+    router.post(customer_checkout_retry.url(props.order.ulid), {}, {
+        preserveScroll: true,
+        onError: () => {
+            alert('Could not retry payment. Please try again.');
+        }
+    });
+};
 
 onMounted(() => {
     pollTimer = setInterval(checkStatus, POLL_INTERVAL_MS);

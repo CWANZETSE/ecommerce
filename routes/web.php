@@ -95,6 +95,7 @@ Route::middleware(['auth', 'verified', EnsureUserIsCustomer::class])
         Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout_index');
         Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout_store');
         
+        Route::post('/checkout/retry/{order:ulid}', [CheckoutController::class, 'retry'])->name('checkout_retry');
 
         // Account
         Route::get('/account', [AccountController::class, 'index'])->name('account_index');
