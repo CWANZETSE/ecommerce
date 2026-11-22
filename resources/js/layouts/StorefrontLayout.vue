@@ -208,14 +208,12 @@ onBeforeUnmount(() => {
                         @submit.prevent="submitSearch"
                     >
                         <div class="relative">
-                            <Search
-                                class="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-slate-400"
-                            />
+                            
                             <input
                                 v-model="search"
                                 type="search"
-                                placeholder="Search products, categories…"
-                                class="form-input w-full rounded-lg bg-slate-150 px-3.5 py-2.5 pl-10 text-sm ring-primary/50 placeholder:text-slate-400 hover:bg-slate-200 focus:ring-3 dark:bg-navy-900/90 dark:ring-accent/50 dark:text-navy-100"
+                                placeholder="Search products…"
+                                class="w-full form-input rounded-lg border border-slate-300 bg-transparent px-3 py-2 placeholder:text-slate-400/70 hover:border-slate-400 focus:border-primary dark:border-navy-450 dark:hover:border-navy-400 dark:focus:border-accent"
                             />
                         </div>
                     </form>
@@ -411,7 +409,7 @@ onBeforeUnmount(() => {
                                 v-model="search"
                                 type="search"
                                 placeholder="Search products…"
-                                class="form-input w-full rounded-lg bg-slate-150 px-3.5 py-2 pl-10 text-sm ring-primary/50 placeholder:text-slate-400 dark:bg-navy-900 dark:text-navy-100"
+                                class="form-input w-full rounded-lg border border-slate-300 bg-transparent px-3 py-2 placeholder:text-slate-400/70 hover:border-slate-400 focus:border-primary dark:border-navy-450 dark:hover:border-navy-400 dark:focus:border-accent"
                             />
                         </div>
                     </form>
