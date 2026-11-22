@@ -11,11 +11,11 @@ class StoreSettingSeeder extends Seeder
     {
         $defaults = [
             ['key' => 'store_name',              'value' => 'My Store',       'group' => 'general'],
-            ['key' => 'store_email',             'value' => '',               'group' => 'contact'],
-            ['key' => 'store_phone',             'value' => '',               'group' => 'contact'],
-            ['key' => 'store_address',           'value' => '',               'group' => 'contact'],
+            ['key' => 'store_email',             'value' => 'info@bazariotechnologies.co.ke',               'group' => 'contact'],
+            ['key' => 'store_phone',             'value' => '+254184391395',               'group' => 'contact'],
+            ['key' => 'store_address',           'value' => 'Muthithi Road, Westlands,Nairobi',               'group' => 'contact'],
             ['key' => 'store_logo',              'value' => null,             'group' => 'general'],
-            ['key' => 'store_tagline',           'value' => '',               'group' => 'general'],
+            ['key' => 'store_tagline',           'value' => 'Technology You Can Trust',               'group' => 'general'],
             ['key' => 'currency',                'value' => 'KES',            'group' => 'general'],
             ['key' => 'timezone',                'value' => 'Africa/Nairobi', 'group' => 'general'],
             ['key' => 'order_prefix',            'value' => 'ORD-',           'group' => 'general'],
@@ -27,6 +27,21 @@ class StoreSettingSeeder extends Seeder
             ['key' => 'new_arrivals_limit',      'value' => '8',              'group' => 'homepage'],
             ['key' => 'low_stock_threshold',     'value' => '5',              'group' => 'system'],
             ['key' => 'maintenance_mode',        'value' => 'false',          'group' => 'system'],
+            [
+                'key' => 'notification_email_enabled',
+                'value' => 'false',
+                'group' => 'notifications',
+            ],
+            [
+                'key' => 'notification_sms_enabled',
+                'value' => 'true',
+                'group' => 'notifications',
+            ],
+            [
+                'key' => 'notification_whatsapp_enabled',
+                'value' => 'false',
+                'group' => 'notifications',
+            ],
         ];
 
         foreach ($defaults as $row) {

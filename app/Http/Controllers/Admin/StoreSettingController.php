@@ -19,6 +19,11 @@ class StoreSettingController extends Controller
         'tax_enabled',
         'maintenance_mode',
         'free_shipping_enabled',
+
+        // Notification channels
+        'notification_email_enabled',
+        'notification_sms_enabled',
+        'notification_whatsapp_enabled',
     ];
 
     public function index(): Response
@@ -50,6 +55,7 @@ class StoreSettingController extends Controller
             'settings' => ['required', 'array'],
             'settings.*.key' => ['required', 'string', 'max:100'],
             'settings.*.value' => ['nullable'],
+
             'logo' => [
                 'nullable',
                 'file',
@@ -57,6 +63,7 @@ class StoreSettingController extends Controller
                 'mimes:jpg,jpeg,png,gif,webp,svg',
                 'mimetypes:image/jpeg,image/png,image/gif,image/webp,image/svg+xml,text/xml,application/xml',
             ],
+
             'remove_logo' => ['boolean'],
         ], [
             'logo.mimes' => 'The logo must be a JPG, PNG, GIF, WebP, or SVG file.',
@@ -73,19 +80,23 @@ class StoreSettingController extends Controller
             }
 
             $path = Storage::putFile('branding', $request->file('logo'));
+
             StoreSetting::set('store_logo', $path, 'general');
         }
 
         // Handle explicit logo removal
         if ($request->boolean('remove_logo')) {
             $existing = StoreSetting::where('key', 'store_logo')->first();
+
             if ($existing?->value) {
                 Storage::delete($existing->value);
             }
-            StoreSetting::where('key', 'store_logo')->update(['value' => null]);
+
+            StoreSetting::where('key', 'store_logo')
+                ->update(['value' => null]);
         }
 
-        // Skip 'store_logo' from the generic settings loop — handled above
+        // Update regular settings
         foreach ($data['settings'] as $row) {
             if ($row['key'] === 'store_logo') {
                 continue;
@@ -94,14 +105,18 @@ class StoreSettingController extends Controller
             $value = $row['value'];
 
             if (in_array($row['key'], self::BOOLEAN_KEYS, true)) {
-                $value = filter_var($value, FILTER_VALIDATE_BOOLEAN) ? 'true' : 'false';
+                $value = filter_var($value, FILTER_VALIDATE_BOOLEAN)
+                    ? 'true'
+                    : 'false';
             } elseif (is_bool($value)) {
                 $value = $value ? '1' : '0';
             } elseif ($value !== null) {
                 $value = (string) $value;
             }
 
-            StoreSetting::where('key', $row['key'])->update(['value' => $value]);
+            StoreSetting::where('key', $row['key'])
+                ->where('is_secret', false)
+                ->update(['value' => $value]);
         }
 
         return back()->with('success', 'Settings saved.');
@@ -109,10 +124,15 @@ class StoreSettingController extends Controller
 
     private function typeFor(string $key): string
     {
+        if (in_array($key, self::BOOLEAN_KEYS, true)) {
+            return 'boolean';
+        }
+
         return match ($key) {
             'store_logo' => 'image',
-            'tax_enabled', 'maintenance_mode', 'free_shipping_enabled' => 'boolean',
-            'featured_products_limit', 'new_arrivals_limit', 'low_stock_threshold' => 'number',
+            'featured_products_limit',
+            'new_arrivals_limit',
+            'low_stock_threshold' => 'number',
             default => 'text',
         };
     }

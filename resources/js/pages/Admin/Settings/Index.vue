@@ -100,6 +100,9 @@ const fieldLabels: Record<string, string> = {
     new_arrivals_limit: 'New arrivals limit',
     low_stock_threshold: 'Low stock alert threshold',
     maintenance_mode: 'Maintenance mode',
+    notification_email_enabled: 'Email notifications',
+    notification_sms_enabled: 'SMS notifications',
+    notification_whatsapp_enabled: 'WhatsApp notifications',
 };
 
 const groupTitles: Record<string, string> = {
@@ -109,6 +112,7 @@ const groupTitles: Record<string, string> = {
     shipping: 'Shipping',
     homepage: 'Homepage',
     system: 'System',
+    notifications: 'Notifications',
 };
 
 const groupDescriptions: Record<string, string> = {
@@ -118,6 +122,7 @@ const groupDescriptions: Record<string, string> = {
     shipping: 'Shipping rules and free-delivery threshold.',
     homepage: 'What appears on the storefront home page.',
     system: 'Operational flags and defaults.',
+    notifications: 'Choose which channels are used to send customer notifications.',
 };
 
 const groupIcons: Record<string, string> = {
@@ -127,6 +132,7 @@ const groupIcons: Record<string, string> = {
     shipping: 'M3 7h11v10H3V7zm11 3h4l3 3v4h-7v-7zM7 20a1.5 1.5 0 100-3 1.5 1.5 0 000 3zm10 0a1.5 1.5 0 100-3 1.5 1.5 0 000 3z',
     homepage: 'M3 12l9-9 9 9M5 10v10h14V10',
     system: 'M12 15a3 3 0 100-6 3 3 0 000 6zm7-3a7 7 0 01-.1 1.2l2 1.5-2 3.5-2.4-1a7 7 0 01-2.1 1.2L14 21h-4l-.4-2.6a7 7 0 01-2.1-1.2l-2.4 1-2-3.5 2-1.5A7 7 0 015 12z',
+    notifications: 'M18 8a6 6 0 00-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4',
 };
 
 function submit() {
