@@ -21,8 +21,6 @@ class StoreSettingSeeder extends Seeder
             ['key' => 'order_prefix',            'value' => 'ORD-',           'group' => 'general'],
             ['key' => 'tax_rate',                'value' => '0',              'group' => 'tax'],
             ['key' => 'tax_enabled',             'value' => 'false',          'group' => 'tax'],
-            ['key' => 'free_shipping_enabled',   'value' => 'true',           'group' => 'shipping'],
-            ['key' => 'free_shipping_threshold', 'value' => '5000',           'group' => 'shipping'],
             ['key' => 'featured_products_limit', 'value' => '8',              'group' => 'homepage'],
             ['key' => 'new_arrivals_limit',      'value' => '8',              'group' => 'homepage'],
             ['key' => 'maintenance_mode',        'value' => 'false',          'group' => 'system'],
