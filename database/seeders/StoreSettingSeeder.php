@@ -25,7 +25,6 @@ class StoreSettingSeeder extends Seeder
             ['key' => 'free_shipping_threshold', 'value' => '5000',           'group' => 'shipping'],
             ['key' => 'featured_products_limit', 'value' => '8',              'group' => 'homepage'],
             ['key' => 'new_arrivals_limit',      'value' => '8',              'group' => 'homepage'],
-            ['key' => 'low_stock_threshold',     'value' => '5',              'group' => 'system'],
             ['key' => 'maintenance_mode',        'value' => 'false',          'group' => 'system'],
             [
                 'key' => 'notification_email_enabled',
