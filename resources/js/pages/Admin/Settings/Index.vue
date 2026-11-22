@@ -384,17 +384,18 @@ function submit() {
                                         v-else-if="setting.type === 'boolean'"
                                     >
                                         <label
-                                            class="inline-flex items-center space-x-2"
+                                            class="flex items-center justify-between space-x-2"
                                         >
+                                        <span>{{
+                                                fieldLabels[setting.key] ??
+                                                setting.key
+                                            }}</span>
                                             <input
                                                 v-model="values[setting.key]"
                                                 class="form-switch h-5 w-10 rounded-full bg-slate-300 before:rounded-full before:bg-slate-50 checked:!bg-success checked:before:bg-white dark:bg-navy-900 dark:before:bg-navy-300 dark:checked:before:bg-white"
                                                 type="checkbox"
                                             />
-                                            <span>{{
-                                                fieldLabels[setting.key] ??
-                                                setting.key
-                                            }}</span>
+                                            
                                         </label>
                                     </template>
 

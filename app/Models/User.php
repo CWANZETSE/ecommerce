@@ -27,7 +27,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
-#[Fillable(['name', 'email','phone_number', 'password'])]
+#[Fillable(['name', 'email', 'phone', 'password'])]
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -64,13 +64,14 @@ class User extends Authenticatable
         return $this->hasMany(Order::class);
     }
 
-    public function reviews()
-    {
-        return $this->hasMany(ProductReview::class);
-    }
-
     public function routeNotificationForAfricasTalking($notification): ?string
     {
-        return $this->phone_number;
+        return $this->phone;
     }
+
+    public function routeNotificationForWhatsApp($notification): ?string
+    {
+        return $this->phone;
+    }
+    
 }

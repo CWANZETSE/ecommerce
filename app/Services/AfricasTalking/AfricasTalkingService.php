@@ -3,7 +3,6 @@
 namespace App\Services\AfricasTalking;
 
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 use RuntimeException;
 
 class AfricasTalkingService
@@ -55,44 +54,30 @@ class AfricasTalkingService
             config('africastalking.timeout', 15)
         )
             ->withHeaders([
-            'Apikey' => config('africastalking.api_key'),
-            'Accept' => 'application/json',
-        ])
+                'Apikey' => config('africastalking.api_key'),
+                'Accept' => 'application/json',
+            ])
             ->asForm()
             ->post(
                 rtrim(config('africastalking.base_url'), '/')
-                    .'/version1/messaging',
+                    . '/version1/messaging',
                 $payload
             );
 
         if ($response->failed()) {
-            Log::error('Africa\'s Talking SMS request failed.', [
-                'status' => $response->status(),
-                'response' => $response->json(),
-            ]);
-
             throw new RuntimeException(
                 'Africa\'s Talking SMS request failed: '
-                .$response->body()
+                . $response->body()
             );
         }
 
         $result = $response->json();
 
-        if (! isset($result['SMSMessageData'])) {
-            Log::error('Invalid Africa\'s Talking SMS response.', [
-                'response' => $result,
-            ]);
-
+        if (!isset($result['SMSMessageData'])) {
             throw new RuntimeException(
                 'Invalid response received from Africa\'s Talking.'
             );
         }
-
-        Log::info('Africa\'s Talking SMS request completed.', [
-            'message' => $result['SMSMessageData']['Message'] ?? null,
-            'recipients' => count($recipients),
-        ]);
 
         return $result;
     }

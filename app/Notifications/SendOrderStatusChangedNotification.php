@@ -2,12 +2,11 @@
 
 namespace App\Listeners;
 
-use App\Events\OrderStatusChangedEvent;
 use App\Enums\OrderFulfilmentStatus;
-use App\Notifications\OrderDispatchedNotification;
+use App\Events\OrderStatusChangedEvent;
 use App\Notifications\OrderDeliveredNotification;
+use App\Notifications\OrderDispatchedNotification;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Notification;
 use Throwable;
 
 class SendOrderStatusChangedNotification
@@ -23,14 +22,17 @@ class SendOrderStatusChangedNotification
             'new_status' => $status->value,
         ]);
 
-        // Determine if this status change requires a notification
         $notification = match ($status) {
-            OrderFulfilmentStatus::Dispatched => new OrderDispatchedNotification($order),
-            OrderFulfilmentStatus::Delivered => new OrderDeliveredNotification($order),
+            OrderFulfilmentStatus::Dispatched =>
+                new OrderDispatchedNotification($order),
+
+            OrderFulfilmentStatus::Delivered =>
+                new OrderDeliveredNotification($order),
+
             default => null,
         };
 
-        if (! $notification) {
+        if (!$notification) {
             Log::debug('Listener: No notification required for this status change', [
                 'order_number' => $order->order_number,
                 'status' => $status->value,
@@ -39,29 +41,36 @@ class SendOrderStatusChangedNotification
             return;
         }
 
-        $notificationClass = get_class($notification);
-
-        Log::info('Listener: Dispatching status notification', [
-            'order_number' => $order->order_number,
-            'notification' => $notificationClass,
-            'recipient' => $order->customer_phone,
-        ]);
-
         try {
-            Notification::route('africastalking', $order->customer_phone)
-                ->notify($notification);
+            $user = $order->user;
 
-            Log::info('Listener: Notification queued/sent successfully', [
+            if (!$user) {
+                Log::warning('Listener: Order customer not found. Notification skipped.', [
+                    'order_number' => $order->order_number,
+                    'notification' => class_basename($notification),
+                ]);
+
+                return;
+            }
+
+            Log::info('Listener: Dispatching status notification', [
                 'order_number' => $order->order_number,
-                'notification' => $notificationClass,
+                'notification' => class_basename($notification),
+                'recipient_id' => $user->getKey(),
             ]);
-        } catch (Throwable $e) {
-            // Catch the exception so the Admin's status update succeeds even if the SMS fails
-            Log::error('Listener: Failed to dispatch notification', [
+
+            $user->notify($notification);
+
+            Log::info('Listener: Status notification dispatched successfully', [
                 'order_number' => $order->order_number,
-                'notification' => $notificationClass,
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
+                'notification' => class_basename($notification),
+                'recipient_id' => $user->getKey(),
+            ]);
+        } catch (Throwable $exception) {
+            Log::error('Listener: Failed to dispatch status notification', [
+                'order_number' => $order->order_number,
+                'notification' => class_basename($notification),
+                'error' => $exception->getMessage(),
             ]);
         }
     }

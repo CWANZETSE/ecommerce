@@ -3,37 +3,87 @@
 namespace App\Notifications;
 
 use App\Models\Order;
+use App\Notifications\Concerns\HasConfigurableChannels;
 use App\Services\AfricasTalking\AfricasTalkingMessage;
-use App\Notifications\Channels\AfricasTalkingChannel;
+use App\Services\WhatsApp\WhatsAppMessage;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 class OrderDispatchedNotification extends Notification implements ShouldQueue
 {
+    use HasConfigurableChannels;
     use Queueable;
 
-    public function __construct(public Order $order) {}
+    public function __construct(
+        public Order $order
+    ) {}
 
-    public function via(object $notifiable): array
+    public function toMail(object $notifiable): MailMessage
     {
-        return [
-            AfricasTalkingChannel::class,
-            'database',
-        ];
+        $mail = (new MailMessage)
+            ->subject("Order {$this->order->order_number} Dispatched")
+            ->greeting("Hello {$notifiable->name},")
+            ->line(
+                "Good news! Your order {$this->order->order_number} has been dispatched and is on its way to you."
+            );
+
+        $shippingAddress = $this->order->shipping_address;
+
+        if (
+            ! empty($shippingAddress['county'])
+            && ! empty($shippingAddress['address'])
+        ) {
+            $mail->line(
+                "Delivery to {$shippingAddress['county']}, {$shippingAddress['address']}."
+            );
+        }
+
+        return $mail
+            ->line('Thank you for shopping with us!')
+            ->salutation('Thank you.');
     }
 
-    public function toAfricasTalking(object $notifiable): AfricasTalkingMessage
-    {
+    public function toAfricasTalking(
+        object $notifiable
+    ): AfricasTalkingMessage {
         $message = "Good news! Your order {$this->order->order_number} has been dispatched and is on its way to you.";
 
         $shippingAddress = $this->order->shipping_address;
 
-        if (!empty($shippingAddress['county']) && !empty($shippingAddress['address'])) {
+        if (
+            ! empty($shippingAddress['county'])
+            && ! empty($shippingAddress['address'])
+        ) {
             $message .= " Delivery to {$shippingAddress['county']}, {$shippingAddress['address']}.";
         }
 
         return AfricasTalkingMessage::create($message);
+    }
+
+    public function toWhatsApp(object $notifiable): WhatsAppMessage
+    {
+        $message = "Hello, your order {$this->order->order_number} has been dispatched.";
+
+        $shippingAddress = $this->order->shipping_address ?? [];
+
+        $county = $shippingAddress['county'] ?? null;
+        $address = $shippingAddress['address'] ?? null;
+
+        if ($county || $address) {
+            $message .= "\n\nDelivery destination:";
+
+            if ($county) {
+                $message .= "\nCounty: {$county}";
+            }
+
+            if ($address) {
+                $message .= "\nAddress: {$address}";
+            }
+        }
+
+        return WhatsAppMessage::text($message);
     }
 
     public function toArray(object $notifiable): array
@@ -41,7 +91,7 @@ class OrderDispatchedNotification extends Notification implements ShouldQueue
         return [
             'order_ulid' => $this->order->ulid,
             'order_number' => $this->order->order_number,
-            'sms_message' => "Good news! Your order {$this->order->order_number} has been dispatched and is on its way.",
+            'message' => "Good news! Your order {$this->order->order_number} has been dispatched and is on its way.",
         ];
     }
 }
