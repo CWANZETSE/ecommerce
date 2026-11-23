@@ -30,4 +30,8 @@ return [
 
     'timeout' => (int) env('WHATSAPP_TIMEOUT', 30),
 
+    'webhook_verify_token' => env('WHATSAPP_WEBHOOK_VERIFY_TOKEN'),
+
+    'app_secret' => env('WHATSAPP_APP_SECRET'),
+
 ];

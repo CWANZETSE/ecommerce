@@ -269,6 +269,11 @@ class WhatsAppMessage
         return $this->type;
     }
 
+    public function getTemplateName(): ?string
+{
+    return $this->templateName;
+}
+
     /*
     |--------------------------------------------------------------------------
     | Meta API Payload

@@ -25,6 +25,7 @@ use App\Http\Controllers\Storefront\CouponController;
 use App\Http\Controllers\Storefront\HomeController;
 use App\Http\Controllers\Storefront\ShopController;
 use App\Http\Controllers\Storefront\SingleProductPageController;
+use App\Http\Controllers\Webhooks\WhatsAppWebhookController;
 use App\Http\Middleware\EnsureUserIsAdmin;
 use App\Http\Middleware\EnsureUserIsCustomer;
 use Illuminate\Support\Facades\Route;
@@ -45,6 +46,7 @@ Route::get('/policies/shipping', function () {
 Route::get('/policies/terms', function () {
     return inertia('Policy/terms');
 })->name('terms');
+
 
 Route::get('/checkout/status/{payment:ulid}', [CheckoutController::class, 'status'])
     ->name('checkout_status');
