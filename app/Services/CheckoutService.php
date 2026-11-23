@@ -6,6 +6,7 @@ use App\Enums\OrderFulfilmentStatus;
 use App\Enums\OrderPaymentStatus;
 use App\Enums\PaymentProvider;
 use App\Enums\PaymentStatus;
+use App\Events\OrderPlacedEvent;
 use App\Models\Cart;
 use App\Models\Order;
 use App\Models\Payment;
@@ -340,20 +341,22 @@ class CheckoutService
             'payment_id' => $result['payment']->id,
         ]);
 
+        
         try {
-            Notification::route('mail', $result['order']->customer_email)
-                ->notify(new OrderPlacedNotification($result['order']));
+    event(new OrderPlacedEvent($result['order']));
 
-            Log::info('Checkout: OrderPlacedNotification sent', [
-                'order_id' => $result['order']->id,
-                'email' => $result['order']->customer_email,
-            ]);
-        } catch (\Throwable $e) {
-            Log::warning('OrderPlacedNotification failed', [
-                'order' => $result['order']->order_number,
-                'error' => $e->getMessage(),
-            ]);
-        }
+    Log::info('Checkout: OrderPlacedEvent dispatched', [
+        'order_id' => $result['order']->id,
+        'order_number' => $result['order']->order_number,
+    ]);
+} catch (\Throwable $e) {
+    Log::error('Checkout: Failed to dispatch OrderPlacedEvent', [
+        'order_id' => $result['order']->id,
+        'order_number' => $result['order']->order_number,
+        'error' => $e->getMessage(),
+    ]);
+}
+
 
         Log::info('Checkout: placeOrder END', [
             'order_id' => $result['order']->id,

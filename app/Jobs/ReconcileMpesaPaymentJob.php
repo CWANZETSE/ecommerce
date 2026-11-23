@@ -63,15 +63,24 @@ class ReconcileMpesaPaymentJob implements ShouldQueue
                 'cancelled_at' => now(),
             ]);
             $payment->order->recordStatus('pending', 'cancelled', 'payment', $resultDesc);
-            try {
-        \Illuminate\Support\Facades\Notification::route('mail', $payment->order->customer_email)
-            ->notify(new \App\Notifications\PaymentFailedNotification($payment->order, $resultDesc));
-            } catch (\Throwable $e) {
-                Log::warning('PaymentFailedNotification failed (reconcile)', [
-                    'order' => $payment->order->order_number,
-                    'error' => $e->getMessage(),
-                ]);
+            $order = $payment->order;
+
+            $order->loadMissing('user');
+
+            $customer = $order->user;
+
+            if (!$customer) {
+                throw new \RuntimeException(
+                    "Customer account not found for order {$order->order_number}."
+                );
             }
+
+            $customer->notify(
+                new \App\Notifications\PaymentFailedNotification(
+                    $order,
+                    $resultDesc
+                )
+            );
         }
         // Any other code: leave pending for manual review
     }
