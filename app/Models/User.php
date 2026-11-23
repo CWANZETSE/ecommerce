@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\Review;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use Laravel\Fortify\PasskeyAuthenticatable;
@@ -73,5 +75,9 @@ class User extends Authenticatable
     {
         return $this->phone;
     }
+    public function reviews(): HasMany
+{
+    return $this->hasMany(Review::class);
+}
     
 }
