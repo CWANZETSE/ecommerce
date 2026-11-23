@@ -32,4 +32,4 @@
         </div>
     </body>
 </html>
-<?php /**PATH D:\SoftwareDevelopment\Vuejs\laravel_vuejs_inertia_tailwind_bootstrap\Ecommerce\vendor\laravel\framework\src\Illuminate\Foundation\Exceptions\views/minimal.blade.php ENDPATH**/ ?>
+<?php /**PATH D:\SoftwareDevelopment\Vuejs\laravel_vuejs_inertia_tailwind_bootstrap\Ecommerce\vendor\laravel\framework\src\Illuminate\Foundation\Exceptions\views\minimal.blade.php ENDPATH**/ ?>

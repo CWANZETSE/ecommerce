@@ -252,4 +252,4 @@
 
     </body>
 </html>
-<?php /**PATH D:\SoftwareDevelopment\Vuejs\laravel_vuejs_inertia_tailwind_bootstrap\Ecommerce\resources\views/app.blade.php ENDPATH**/ ?>
+<?php /**PATH D:\SoftwareDevelopment\Vuejs\laravel_vuejs_inertia_tailwind_bootstrap\Ecommerce\resources\views\app.blade.php ENDPATH**/ ?>
