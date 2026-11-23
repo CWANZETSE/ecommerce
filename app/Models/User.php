@@ -66,12 +66,12 @@ class User extends Authenticatable
         return $this->hasMany(Order::class);
     }
 
-    public function routeNotificationForAfricasTalking($notification): ?string
+    public function routeNotificationForAfricasTalking($notification = null): ?string
     {
         return $this->phone;
     }
 
-    public function routeNotificationForWhatsApp($notification): ?string
+    public function routeNotificationForWhatsApp($notification = null): ?string
     {
         return $this->phone;
     }
