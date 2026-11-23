@@ -49,7 +49,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <Head :title="title ?? 'Laravel'" />
+    <Head :title="title ?? 'Bazario'" />
 
     <div
         id="root"

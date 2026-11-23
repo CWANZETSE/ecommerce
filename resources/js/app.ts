@@ -10,7 +10,7 @@ import SettingsLayout from '@/layouts/settings/Layout.vue';
 // import 'alertifyjs/build/css/themes/default.css';
 // import { initializeFlashToast } from '@/lib/flashToast';
 
-const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+const appName = import.meta.env.VITE_APP_NAME || 'Bazario';
 
 async function bootstrap() {
     // Load Alertify only in the browser and wait until it is ready.

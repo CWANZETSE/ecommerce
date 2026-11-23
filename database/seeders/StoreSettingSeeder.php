@@ -10,7 +10,7 @@ class StoreSettingSeeder extends Seeder
     public function run(): void
     {
         $defaults = [
-            ['key' => 'store_name',              'value' => 'My Store',       'group' => 'general'],
+            ['key' => 'store_name',              'value' => 'Bazario',       'group' => 'general'],
             ['key' => 'store_email',             'value' => 'info@bazariotechnologies.co.ke',               'group' => 'contact'],
             ['key' => 'store_phone',             'value' => '+254184391395',               'group' => 'contact'],
             ['key' => 'store_address',           'value' => 'Muthithi Road, Westlands,Nairobi',               'group' => 'contact'],

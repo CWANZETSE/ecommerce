@@ -4,6 +4,9 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="Shop online at Bazario Kenya for quality products at great prices. Enjoy convenient online shopping, secure M-Pesa payments, reliable delivery, and a seamless shopping experience across Kenya.">
+        <meta name="keywords" content="Bazario Kenya, online shopping Kenya, ecommerce Kenya, shop online Kenya, online store Kenya, M-Pesa shopping, electronics, fashion, home products, affordable products Kenya">
+        <meta property="og:description" content="Discover and shop quality products at Bazario Kenya. Enjoy great prices, convenient online shopping, secure M-Pesa payments, and reliable delivery across Kenya.">
 
         {{-- Detect system dark mode preference immediately --}}
         <script>
@@ -111,7 +114,7 @@
         ])
 
         <x-inertia::head>
-            <title>{{ config('app.name', 'Laravel') }}</title>
+            <title>{{ config('app.name', 'Bazario') }}</title>
         </x-inertia::head>
     </head>
 
