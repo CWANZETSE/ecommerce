@@ -52,9 +52,10 @@ class OrderDeliveredNotification extends Notification implements ShouldQueue
 
     public function toWhatsApp(object $notifiable): WhatsAppMessage
     {
-        return WhatsAppMessage::text(
-            "Hello, your order {$this->order->order_number} has been successfully delivered.\n\n"
-            .'Thank you for shopping with us. We appreciate your business!'
-        );
+        return WhatsAppMessage::template('order_delivered', 'en_US')
+            ->bodyParameters([
+                $notifiable->name,
+                $this->order->order_number,
+            ]);
     }
 }

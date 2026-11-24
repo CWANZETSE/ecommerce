@@ -70,14 +70,16 @@ class OrderCancelledNotification extends Notification implements ShouldQueue
 
     public function toWhatsApp(object $notifiable): WhatsAppMessage
     {
-        $message = "Your order {$this->order->number} has been cancelled.";
-
         if ($this->wasPaid) {
-            $message .= ' Your refund of KES '
-                .number_format((float) $this->order->grand_total, 2)
-                .' will be processed according to the payment provider\'s timeline.';
+            return WhatsAppMessage::template('order_canceled', 'en_US')
+                ->bodyParameters([
+                    $notifiable->name,
+                    $this->order->order_number,
+                ]);
         }
 
-        return WhatsAppMessage::text($message);
+        return WhatsAppMessage::text(
+            "Hello {$notifiable->name}, your order {$this->order->order_number} has been cancelled."
+        );
     }
 }

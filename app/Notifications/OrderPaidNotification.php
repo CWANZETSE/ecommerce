@@ -47,12 +47,12 @@ class OrderPaidNotification extends Notification implements ShouldQueue
 
     public function toWhatsApp(object $notifiable): WhatsAppMessage
     {
-        return WhatsAppMessage::text(
-            'Hello, we have received your payment of KES '
-            .number_format((float) $this->order->grand_total, 2)
-            ." for order {$this->order->order_number}.\n\n"
-            .'Your order is now being processed for delivery. Thank you for shopping with us!'
-        );
+        return WhatsAppMessage::template('payment_confirmation', 'en_US')
+            ->bodyParameters([
+                $notifiable->name,
+                number_format((float) $this->order->grand_total, 2, '.', ','),
+                $this->order->order_number,
+            ]);
     }
 
     public function toArray(object $notifiable): array

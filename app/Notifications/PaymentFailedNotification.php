@@ -52,15 +52,13 @@ class PaymentFailedNotification extends Notification implements ShouldQueue
         return AfricasTalkingMessage::create($message);
     }
 
-    public function toWhatsApp(object $notifiable): WhatsAppMessage
+     public function toWhatsApp(object $notifiable): WhatsAppMessage
     {
-        return WhatsAppMessage::text(
-            "Hello, we were unable to process payment for order {$this->order->order_number}.\n\n"
-            ."Reason: {$this->reason}\n\n"
-            ."Your order is still open. Please try making the payment again or contact our support team for assistance.\n\n"
-            .'Order total: KES '
-            .number_format((float) $this->order->grand_total, 2)
-        );
+        return WhatsAppMessage::template('payment_failed', 'en_US')
+            ->bodyParameters([
+                $notifiable->name,
+                "order {$this->order->order_number}",
+            ]);
     }
 
     public function toArray(object $notifiable): array

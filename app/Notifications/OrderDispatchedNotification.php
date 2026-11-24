@@ -64,26 +64,11 @@ class OrderDispatchedNotification extends Notification implements ShouldQueue
 
     public function toWhatsApp(object $notifiable): WhatsAppMessage
     {
-        $message = "Hello, your order {$this->order->order_number} has been dispatched.";
-
-        $shippingAddress = $this->order->shipping_address ?? [];
-
-        $county = $shippingAddress['county'] ?? null;
-        $address = $shippingAddress['address'] ?? null;
-
-        if ($county || $address) {
-            $message .= "\n\nDelivery destination:";
-
-            if ($county) {
-                $message .= "\nCounty: {$county}";
-            }
-
-            if ($address) {
-                $message .= "\nAddress: {$address}";
-            }
-        }
-
-        return WhatsAppMessage::text($message);
+        return WhatsAppMessage::template('order_dispatched', 'en_US')
+            ->bodyParameters([
+                $notifiable->name,
+                $this->order->order_number,
+            ]);
     }
 
     public function toArray(object $notifiable): array
