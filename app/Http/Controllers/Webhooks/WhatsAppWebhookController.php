@@ -50,7 +50,17 @@ class WhatsAppWebhookController extends Controller
      */
     public function receive(Request $request): Response
     {
+        Log::info('WhatsApp webhook POST received.', [
+            'content_type' => $request->header('Content-Type'),
+            'has_signature' => $request->hasHeader('X-Hub-Signature-256'),
+            'payload_size' => strlen($request->getContent()),
+        ]);
         if (! $this->signatureValidator->isValid($request)) {
+            Log::warning('WhatsApp webhook signature validation failed.', [
+                'ip' => $request->ip(),
+                'payload_size' => strlen($request->getContent()),
+            ]);
+
             return response('Invalid signature', 401);
         }
 
