@@ -20,7 +20,7 @@ interface Props extends PageProps {
 
 const props = defineProps<Props>();
 
-/* ---------- Initial values ---------- */
+/* ---------- Initial values (unchanged) ---------- */
 const initialValues: Record<string, string | boolean> = {};
 for (const settings of Object.values(props.groups)) {
     for (const setting of settings) {
@@ -40,7 +40,7 @@ const form = useForm({
     remove_logo: false,
 });
 
-/* ---------- Logo preview ---------- */
+/* ---------- Logo preview (unchanged) ---------- */
 const logoPreview = ref<string | null>(null);
 const currentLogo = computed(() => {
     for (const settings of Object.values(props.groups)) {
@@ -81,7 +81,7 @@ function undoRemoveLogo() {
 
 const processing = computed(() => form.processing);
 
-/* ---------- Labels ---------- */
+/* ---------- Labels (unchanged) ---------- */
 const fieldLabels: Record<string, string> = {
     store_name: "Store name",
     store_tagline: "Store tagline",
@@ -130,6 +130,11 @@ const groupIcons: Record<string, string> = {
     notifications: "M18 8a6 6 0 00-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4",
 };
 
+/* ---------- Active tab ---------- */
+const groupKeys = Object.keys(props.groups);
+const activeTab = ref<string>(groupKeys[0] ?? "general");
+
+/* ---------- Submit (unchanged) ---------- */
 function submit() {
     form.transform((data) => ({
         ...data,
@@ -154,47 +159,39 @@ function submit() {
 <template>
     <Head title="Settings" />
 
-    <div class="min-h-screen bg-slate-50/60 dark:bg-navy-900">
+    <div class="min-h-screen bg-slate-50 dark:bg-navy-900">
         <div class="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
             <!-- Header -->
             <div
-                class="p-6 border-0 shadow-md dark:shadow-dark-md mb-6 py-4 bg-primary/10 dark:bg-primary/10 overflow-hidden rounded-md border-none !shadow-none dark:!shadow-none"
-                style="border-radius: 12px"
+                class="mb-6 overflow-hidden rounded-xl bg-primary/10 dark:bg-primary/10 p-6"
             >
-                <div class="flex items-center justify-between gap-6 relative">
+                <div class="flex items-center justify-between gap-6">
                     <div>
-                        <h4
-                            class="font-semibold text-xl text-dark dark:text-white mb-3"
+                        <h1
+                            class="mb-2 text-xl font-semibold text-slate-800 dark:text-white"
                         >
                             Store Settings
-                        </h4>
-                        <ol
-                            class="flex items-center whitespace-nowrap"
+                        </h1>
+                        <nav
+                            class="flex items-center gap-2 text-sm"
                             aria-label="Breadcrumb"
                         >
-                            <li class="flex items-center">
-                                <Link
-                                    class="opacity-80 text-sm text-link dark:text-darklink leading-none"
-                                    :href="admin_dashboard.url()"
-                                    data-discover="true"
-                                    >Home</Link
-                                >
-                            </li>
-                            <li>
-                                <div
-                                    class="p-0.5 rounded-full bg-primary/10 dark:bg-primary mx-2.5 flex items-center"
-                                ></div>
-                            </li>
-                            <li
-                                class="flex items-center text-sm text-default dark:text-darklink leading-none"
-                                aria-current="page"
+                            <Link
+                                :href="admin_dashboard.url()"
+                                class="text-primary dark:text-accent-light opacity-80 hover:opacity-100 transition-opacity"
                             >
-                                Settings
-                            </li>
-                        </ol>
+                                Home
+                            </Link>
+                            <span
+                                class="size-1 rounded-full bg-primary/30 dark:bg-primary/50"
+                            ></span>
+                            <span class="text-slate-500 dark:text-navy-300"
+                                >Settings</span
+                            >
+                        </nav>
                     </div>
                     <div
-                        class="hidden lg:flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary"
+                        class="hidden lg:flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary dark:bg-accent/10 dark:text-accent-light"
                     >
                         <SettingSVG />
                     </div>
@@ -205,8 +202,47 @@ function submit() {
                 <div class="grid gap-6 lg:grid-cols-12">
                     <!-- Main column -->
                     <div class="space-y-6 lg:col-span-8">
+                        <!-- Tab bar -->
+                        <div
+                            class="flex items-center gap-1 overflow-x-auto is-scrollbar-hidden rounded-2xl border border-slate-200 bg-white px-2 py-1.5 shadow-sm dark:border-navy-600 dark:bg-navy-750"
+                        >
+                            <button
+                                v-for="(settings, group) in groups"
+                                :key="group"
+                                type="button"
+                                @click="activeTab = group"
+                                :class="
+                                    activeTab === group
+                                        ? 'bg-primary/10 text-primary dark:bg-accent/15 dark:text-accent-light'
+                                        : 'text-slate-500 hover:bg-primary/10 hover:text-slate-700 dark:text-navy-300 dark:hover:bg-navy-700 dark:hover:text-navy-100'
+                                "
+                                class="flex shrink-0 items-center gap-2 rounded-xl px-3.5 py-2 text-sm font-medium transition-all"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    class="size-4"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                    stroke-width="1.75"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        :d="
+                                            groupIcons[group] ??
+                                            groupIcons.general
+                                        "
+                                    />
+                                </svg>
+                                {{ groupTitles[group] ?? group }}
+                            </button>
+                        </div>
+
+                        <!-- Active group card -->
                         <div
                             v-for="(settings, group) in groups"
+                            v-show="activeTab === group"
                             :key="group"
                             class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-navy-600 dark:bg-navy-750"
                         >
@@ -243,7 +279,7 @@ function submit() {
                                     </h2>
                                     <p
                                         v-if="groupDescriptions[group]"
-                                        class="mt-0.5 text-xs text-slate-500 dark:text-navy-300"
+                                        class="mt-0.5 text-sm text-slate-500 dark:text-navy-300"
                                     >
                                         {{ groupDescriptions[group] }}
                                     </p>
@@ -251,9 +287,7 @@ function submit() {
                             </div>
 
                             <!-- Fields -->
-                            <div
-                                class="divide-y divide-slate-100 dark:divide-navy-600"
-                            >
+                            <div class="">
                                 <div
                                     v-for="setting in settings"
                                     :key="setting.id"
@@ -310,7 +344,7 @@ function submit() {
                                                     }}
                                                 </p>
                                                 <p
-                                                    class="mt-0.5 text-xs text-slate-500 dark:text-navy-300"
+                                                    class="mt-0.5 text-sm text-slate-500 dark:text-navy-300"
                                                 >
                                                     PNG, JPG, or SVG. Max 2 MB.
                                                     Shown in the storefront
@@ -321,7 +355,7 @@ function submit() {
                                                     class="mt-3 flex flex-wrap items-center gap-2"
                                                 >
                                                     <label
-                                                        class="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 shadow-sm transition-colors hover:bg-slate-50 dark:border-navy-600 dark:bg-navy-800 dark:text-navy-100 dark:hover:bg-navy-700"
+                                                        class="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:bg-slate-50 dark:border-navy-600 dark:bg-navy-800 dark:text-navy-100 dark:hover:bg-navy-700"
                                                     >
                                                         <svg
                                                             xmlns="http://www.w3.org/2000/svg"
@@ -351,7 +385,7 @@ function submit() {
                                                     <button
                                                         v-if="form.remove_logo"
                                                         type="button"
-                                                        class="rounded-lg px-3 py-1.5 text-xs font-medium text-primary hover:bg-primary/5 dark:text-accent-light dark:hover:bg-accent-light/10"
+                                                        class="rounded-lg px-3 py-1.5 text-sm font-medium text-primary hover:bg-primary/5 dark:text-accent-light dark:hover:bg-accent-light/10"
                                                         @click="undoRemoveLogo"
                                                     >
                                                         Undo remove
@@ -362,7 +396,7 @@ function submit() {
                                                             logoPreview
                                                         "
                                                         type="button"
-                                                        class="rounded-lg px-3 py-1.5 text-xs font-medium text-error hover:bg-error/5"
+                                                        class="rounded-lg px-3 py-1.5 text-sm font-medium text-error hover:bg-error/5"
                                                         @click="clearLogo"
                                                     >
                                                         Remove logo
@@ -371,7 +405,7 @@ function submit() {
 
                                                 <p
                                                     v-if="form.errors.logo"
-                                                    class="mt-1.5 text-xs text-error"
+                                                    class="mt-1.5 text-sm text-error"
                                                 >
                                                     {{ form.errors.logo }}
                                                 </p>
@@ -379,23 +413,26 @@ function submit() {
                                         </div>
                                     </template>
 
-                                    <!-- Boolean toggle (modern switch) -->
+                                    <!-- Boolean toggle -->
                                     <template
                                         v-else-if="setting.type === 'boolean'"
                                     >
                                         <label
-                                            class="flex items-center justify-between space-x-2"
+                                            class="flex items-center justify-between gap-4"
                                         >
-                                        <span>{{
-                                                fieldLabels[setting.key] ??
-                                                setting.key
-                                            }}</span>
+                                            <span
+                                                class="text-sm font-medium text-slate-700 dark:text-navy-100"
+                                            >
+                                                {{
+                                                    fieldLabels[setting.key] ??
+                                                    setting.key
+                                                }}
+                                            </span>
                                             <input
                                                 v-model="values[setting.key]"
-                                                class="form-switch h-5 w-10 rounded-full bg-slate-300 before:rounded-full before:bg-slate-50 checked:!bg-success checked:before:bg-white dark:bg-navy-900 dark:before:bg-navy-300 dark:checked:before:bg-white"
+                                                class="form-switch h-5 w-10 rounded-full bg-slate-300 before:rounded-full before:bg-slate-50 checked:bg-primary checked:before:bg-white dark:bg-navy-900 dark:before:bg-navy-300 dark:checked:bg-accent dark:checked:before:bg-white transition-all appearance-none cursor-pointer"
                                                 type="checkbox"
                                             />
-                                            
                                         </label>
                                     </template>
 
@@ -418,7 +455,7 @@ function submit() {
                                                 "
                                                 type="number"
                                                 min="0"
-                                                class="form-input mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 transition-colors hover:border-slate-300 focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-navy-600 dark:bg-navy-900 dark:text-navy-100 dark:hover:border-navy-500 dark:focus:border-accent dark:focus:ring-accent/20"
+                                                class="form-input mt-2 w-full rounded-lg border border-slate-300 bg-transparent px-3 py-2 placeholder:text-slate-400/70 hover:border-slate-400 focus:border-primary dark:border-navy-450 dark:hover:border-navy-400 dark:focus:border-accent dark:bg-navy-700/30 dark:text-navy-100 text-sm transition-all"
                                             />
                                             <span
                                                 v-if="
@@ -427,7 +464,7 @@ function submit() {
                                                     setting.key ===
                                                         'new_arrivals_limit'
                                                 "
-                                                class="mt-1.5 block text-xs text-slate-500 dark:text-navy-300"
+                                                class="mt-1.5 block text-sm text-slate-500 dark:text-navy-300"
                                             >
                                                 How many products appear on the
                                                 homepage. 0 hides the section.
@@ -448,7 +485,7 @@ function submit() {
                                             </span>
                                             <input
                                                 v-model="values[setting.key]"
-                                                class="form-input mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 transition-colors placeholder:text-slate-400/70 hover:border-slate-300 focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-navy-600 dark:bg-navy-900 dark:text-navy-100 dark:hover:border-navy-500 dark:focus:border-accent dark:focus:ring-accent/20"
+                                                class="form-input mt-2 w-full rounded-lg border border-slate-300 bg-transparent px-3 py-2 placeholder:text-slate-400/70 hover:border-slate-400 focus:border-primary dark:border-navy-450 dark:hover:border-navy-400 dark:focus:border-accent dark:bg-navy-700/30 dark:text-navy-100 text-sm transition-all"
                                             />
                                         </label>
                                     </template>
@@ -475,7 +512,7 @@ function submit() {
                                 </div>
                                 <div class="space-y-3 p-5">
                                     <p
-                                        class="text-xs leading-relaxed text-slate-500 dark:text-navy-300"
+                                        class="text-sm leading-relaxed text-slate-500 dark:text-navy-300"
                                     >
                                         Your settings take effect immediately
                                         after saving. Some changes, like the
@@ -520,33 +557,30 @@ function submit() {
                                     </p>
                                 </div>
                             </div>
-
-                            <!-- Quick reference -->
                             <div
-                                class="rounded-2xl border border-slate-200 bg-slate-50/60 p-5 dark:border-navy-600 dark:bg-navy-800/40"
+                                class="alert flex rounded-lg border border-primary/30 bg-primary/10 py-2 px-2 text-primary sm:px-5"
                             >
                                 <h4
-                                    class="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-navy-300"
+                                    class="text-sm mb-2 font-semibold uppercase tracking-wide text-slate-500 dark:text-navy-300"
                                 >
                                     Tips
                                 </h4>
                                 <ul
-                                    class="mt-3 space-y-2.5 text-xs leading-relaxed text-slate-600 dark:text-navy-300"
+                                    class="mt-3 space-y-2.5 text-sm leading-relaxed text-slate-600 dark:text-navy-300"
                                 >
                                     <li class="flex gap-2">
                                         <span
                                             class="mt-1.5 size-1 shrink-0 rounded-full bg-slate-400 dark:bg-navy-500"
                                         ></span>
-                                        <span
-                                            >Set the homepage limits to
+                                        <span>
+                                            Set the homepage limits to
                                             <strong
                                                 class="font-semibold text-slate-800 dark:text-navy-100"
                                                 >0</strong
                                             >
-                                            to hide a section entirely.</span
-                                        >
+                                            to hide a section entirely.
+                                        </span>
                                     </li>
-                                    
                                     <li class="flex gap-2">
                                         <span
                                             class="mt-1.5 size-1 shrink-0 rounded-full bg-slate-400 dark:bg-navy-500"
