@@ -37,11 +37,11 @@ function formatDate(value: string | null): string {
 
 function statusClass(status: string): string {
     const classes: Record<string, string> = {
-        pending: 'bg-warning/10 text-warning',
-        sent: 'bg-info/10 text-info',
-        delivered: 'bg-success/10 text-success',
-        read: 'bg-primary/10 text-primary dark:bg-accent-light/10 dark:text-accent-light',
-        failed: 'bg-danger/10 text-danger',
+        pending: 'badge space-x-2.5 rounded-full bg-warning/10 text-warning dark:bg-warning/15',
+        sent: 'badge space-x-2.5 rounded-full bg-secondary/10 text-secondary dark:bg-secondary-light/15 dark:text-secondary-light',
+        delivered: 'badge space-x-2.5 rounded-full bg-success/10 text-success dark:bg-success/15',
+        read: 'badge space-x-2.5 rounded-full bg-primary/10 text-primary dark:bg-accent-light/15 dark:text-accent-light',
+        failed: 'badge space-x-2.5 rounded-full bg-error/10 text-error dark:bg-error/15',
     };
 
     return classes[status] ?? 'bg-slate-100 text-slate-600 dark:bg-navy-600 dark:text-navy-300';
@@ -79,7 +79,7 @@ function prettyJson(value: Record<string, unknown> | null): string {
 
             <Link
                 href="/admin/whatsapp-messages"
-                class="inline-flex items-center justify-center rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50 dark:border-slate-600 dark:text-navy-200 dark:hover:bg-navy-700"
+                class="btn border border-primary/30 bg-primary/10 font-medium text-primary hover:bg-primary/20 focus:bg-primary/20 active:bg-primary/25 dark:border-accent-light/30 dark:bg-accent-light/10 dark:text-accent-light dark:hover:bg-accent-light/20 dark:focus:bg-accent-light/20 dark:active:bg-accent-light/25"
             >
                 Back to messages
             </Link>
@@ -160,7 +160,7 @@ function prettyJson(value: Record<string, unknown> | null): string {
                                 <span
                                     class="mt-1 size-3 shrink-0 rounded-full"
                                     :class="step.date
-                                        ? step.label === 'Failed' ? 'bg-danger' : 'bg-success'
+                                        ? step.label === 'Failed' ? 'bg-error' : 'bg-success'
                                         : 'bg-slate-300 dark:bg-navy-500'"
                                 />
                                 <span class="mt-1 min-h-8 w-px flex-1 bg-slate-200 dark:bg-slate-600" />
@@ -187,7 +187,7 @@ function prettyJson(value: Record<string, unknown> | null): string {
                 <!-- Failure information -->
                 <div
                     v-if="message.status === 'failed' || message.error_code || message.error_message"
-                    class="rounded-2xl border border-danger/20 bg-danger/[0.04] p-5 dark:border-danger/30 dark:bg-danger/[0.06]"
+                    class="rounded-2xl border border-danger/20 bg-error/[0.04] p-5 dark:border-danger/30 dark:bg-error/[0.06]"
                 >
                     <h3 class="font-semibold text-danger">
                         Delivery failure information
