@@ -2,7 +2,6 @@
 
 namespace App\Jobs;
 
-use App\Models\WhatsAppMessageLog;
 use App\Models\WhatsAppWebhookEvent;
 use App\Services\WhatsApp\WhatsAppWebhookProcessor;
 use RuntimeException;
@@ -40,18 +39,12 @@ class ProcessWhatsAppWebhookEvent implements ShouldQueue
             return;
         }
 
-        /*
-         * The outgoing message may not have been saved yet.
-         * Throwing allows Laravel to retry this job.
-         */
-        $messageExists = WhatsAppMessageLog::where(
-            'wamid',
-            $event->wamid
-        )->exists();
-
-        if (!$messageExists) {
+        if (
+            !is_string($event->wamid) ||
+            $event->wamid === ''
+        ) {
             throw new RuntimeException(
-                'WhatsApp message not found yet. Webhook event will be retried.'
+                'WhatsApp webhook event has no message ID.'
             );
         }
 

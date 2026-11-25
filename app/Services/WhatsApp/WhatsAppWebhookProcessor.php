@@ -4,7 +4,8 @@ namespace App\Services\WhatsApp;
 
 use App\Models\WhatsAppMessageLog;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
+use RuntimeException;
 
 class WhatsAppWebhookProcessor
 {
@@ -15,7 +16,9 @@ class WhatsAppWebhookProcessor
                 $statuses = $change['value']['statuses'] ?? [];
 
                 foreach ($statuses as $statusData) {
-                    $this->processStatus($statusData);
+                    if (is_array($statusData)) {
+                        $this->processStatus($statusData);
+                    }
                 }
             }
         }
@@ -39,101 +42,129 @@ class WhatsAppWebhookProcessor
             return;
         }
 
-        $message = WhatsAppMessageLog::where('wamid', $wamid)->first();
+        DB::transaction(function () use (
+            $wamid,
+            $incomingStatus,
+            $statusData
+        ): void {
+            $message = WhatsAppMessageLog::where('wamid', $wamid)
+                ->lockForUpdate()
+                ->first();
 
-        if (!$message) {
-            Log::warning('WhatsApp webhook references an unknown message.', [
-                'wamid' => $wamid,
-                'status' => $incomingStatus,
-            ]);
+            if (!$message) {
+                throw new RuntimeException(
+                    "WhatsApp message {$wamid} was not found. Webhook processing will be retried."
+                );
+            }
 
-            return;
-        }
+            $timestamp = $this->getEventTimestamp($statusData);
 
-        /*
-         * A read message must never move backwards.
-         * A failed message must not be changed by delayed
-         * non-failure events.
-         */
-        if (
-            $message->status === 'read' ||
-            (
-                $message->status === 'failed' &&
-                $incomingStatus !== 'failed'
-            )
-        ) {
-            return;
-        }
+            $updates = [];
 
-        $timestamp = $this->getEventTimestamp($statusData);
+            /*
+             * Only update the current status when the incoming
+             * event represents a valid forward transition.
+             */
+            if ($this->shouldUpdateStatus(
+                $message->status,
+                $incomingStatus
+            )) {
+                $updates['status'] = $incomingStatus;
+            }
 
-        $updates = [];
+            /*
+             * Preserve the first recorded occurrence of each
+             * delivery event. Duplicate webhooks won't overwrite it.
+             */
+            if (
+                $incomingStatus === 'sent' &&
+                !$message->sent_at
+            ) {
+                $updates['sent_at'] = $timestamp;
+            }
 
-        /*
-         * Update the current delivery status without allowing
-         * delayed events to move it backwards.
-         */
-        if ($this->shouldUpdateStatus(
-            $message->status,
-            $incomingStatus
-        )) {
-            $updates['status'] = $incomingStatus;
-        }
+            if (
+                $incomingStatus === 'delivered' &&
+                !$message->delivered_at
+            ) {
+                $updates['delivered_at'] = $timestamp;
+            }
 
-        /*
-         * Preserve the actual event timestamps.
-         */
-        if ($incomingStatus === 'sent') {
-            $updates['sent_at'] = $timestamp;
-        }
+            if (
+                $incomingStatus === 'read' &&
+                !$message->read_at
+            ) {
+                $updates['read_at'] = $timestamp;
+            }
 
-        if ($incomingStatus === 'delivered') {
-            $updates['delivered_at'] = $timestamp;
-        }
+            if ($incomingStatus === 'failed') {
+                $error = $statusData['errors'][0] ?? [];
 
-        if ($incomingStatus === 'read') {
-            $updates['read_at'] = $timestamp;
-        }
+                $updates['error_code'] = isset($error['code'])
+                    ? (string) $error['code']
+                    : null;
 
-        if ($incomingStatus === 'failed') {
-            $updates['failed_at'] = $timestamp;
+                $updates['error_message'] =
+                    $error['error_data']['details']
+                    ?? $error['message']
+                    ?? $error['title']
+                    ?? 'WhatsApp message delivery failed.';
 
-            $error = $statusData['errors'][0] ?? [];
+                if (!$message->failed_at) {
+                    $updates['failed_at'] = $timestamp;
+                }
+            }
 
-            $updates['error_code'] = isset($error['code'])
-                ? (string) $error['code']
-                : null;
-
-            $updates['error_message'] =
-                $error['error_data']['details']
-                ?? $error['message']
-                ?? $error['title']
-                ?? 'WhatsApp message delivery failed.';
-        }
-
-        if ($updates !== []) {
-            $message->update($updates);
-        }
+            if ($updates !== []) {
+                $message->update($updates);
+            }
+        });
     }
 
     private function shouldUpdateStatus(
-        string $currentStatus,
-        string $incomingStatus,
+        ?string $currentStatus,
+        string $incomingStatus
     ): bool {
+        /*
+         * A read message is terminal.
+         */
+        if ($currentStatus === 'read') {
+            return false;
+        }
+
+        /*
+         * A failed message remains failed.
+         * Duplicate failed events can still refresh error details.
+         */
+        if ($currentStatus === 'failed') {
+            return false;
+        }
+
+        /*
+         * A delayed failure event must not override
+         * a successful delivery confirmation.
+         */
+        if ($currentStatus === 'delivered') {
+            return $incomingStatus === 'read';
+        }
+
+        /*
+         * Failure can replace pending or sent.
+         */
+        if ($incomingStatus === 'failed') {
+            return in_array($currentStatus, [
+                'pending',
+                'sent',
+                null,
+            ], true);
+        }
+
         $priority = [
             'pending' => 0,
             'sent' => 1,
             'delivered' => 2,
             'read' => 3,
         ];
-
-        if ($incomingStatus === 'failed') {
-            return $currentStatus !== 'read';
-        }
-
-        if ($currentStatus === 'failed') {
-            return false;
-        }
 
         return ($priority[$incomingStatus] ?? -1)
             > ($priority[$currentStatus] ?? -1);
