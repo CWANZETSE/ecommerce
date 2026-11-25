@@ -92,7 +92,7 @@ function statusClass(status: string): string {
         sent: 'bg-info/10 text-info',
         delivered: 'bg-success/10 text-success',
         read: 'bg-primary/10 text-primary dark:bg-accent-light/10 dark:text-accent-light',
-        failed: 'bg-danger/10 text-danger',
+        failed: 'bg-error/10 text-error',
     };
 
     return classes[status] ?? 'bg-slate-100 text-slate-600 dark:bg-navy-600 dark:text-navy-300';
@@ -137,7 +137,7 @@ function statusLabel(status: string): string {
                     { label: 'Sent', value: statistics.sent, color: 'text-info' },
                     { label: 'Delivered', value: statistics.delivered, color: 'text-success' },
                     { label: 'Read', value: statistics.read, color: 'text-primary dark:text-accent-light' },
-                    { label: 'Failed', value: statistics.failed, color: 'text-danger' },
+                    { label: 'Failed', value: statistics.failed, color: 'text-error' },
                 ]"
                 :key="item.label"
                 class="rounded-xl border border-slate-150 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-navy-800"
@@ -163,7 +163,7 @@ function statusLabel(status: string): string {
                             v-model="form.search"
                             type="search"
                             placeholder="Phone, message ID, notification..."
-                            class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-primary dark:border-slate-600 dark:bg-navy-900 dark:text-navy-100"
+                            class="w-full form-input w-full rounded-lg border border-slate-300 bg-transparent px-3 py-2 placeholder:text-slate-400/70 hover:border-slate-400 focus:border-primary dark:border-navy-450 dark:hover:border-navy-400 dark:focus:border-accent"
                         />
                     </div>
 
@@ -173,7 +173,7 @@ function statusLabel(status: string): string {
                         </label>
                         <select
                             v-model="form.status"
-                            class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-primary dark:border-slate-600 dark:bg-navy-900 dark:text-navy-100"
+                            class="w-full form-select mt-1.5 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 hover:border-slate-400 focus:border-primary dark:border-navy-450 dark:bg-navy-700 dark:hover:border-navy-400 dark:focus:border-accent"
                         >
                             <option value="all">All statuses</option>
                             <option value="pending">Pending</option>
@@ -191,7 +191,7 @@ function statusLabel(status: string): string {
                         <input
                             v-model="form.from"
                             type="date"
-                            class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-primary dark:border-slate-600 dark:bg-navy-900 dark:text-navy-100"
+                            class="w-full form-select mt-1.5 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 hover:border-slate-400 focus:border-primary dark:border-navy-450 dark:bg-navy-700 dark:hover:border-navy-400 dark:focus:border-accent"
                         />
                     </div>
 
@@ -203,7 +203,7 @@ function statusLabel(status: string): string {
                             v-model="form.to"
                             type="date"
                             :min="form.from || undefined"
-                            class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-primary dark:border-slate-600 dark:bg-navy-900 dark:text-navy-100"
+                            class="w-full form-select mt-1.5 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 hover:border-slate-400 focus:border-primary dark:border-navy-450 dark:bg-navy-700 dark:hover:border-navy-400 dark:focus:border-accent"
                         />
                     </div>
 
@@ -213,7 +213,7 @@ function statusLabel(status: string): string {
                         </label>
                         <select
                             v-model.number="form.per_page"
-                            class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-primary dark:border-slate-600 dark:bg-navy-900 dark:text-navy-100"
+                            class="w-full form-select mt-1.5 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 hover:border-slate-400 focus:border-primary dark:border-navy-450 dark:bg-navy-700 dark:hover:border-navy-400 dark:focus:border-accent"
                         >
                             <option :value="10">10</option>
                             <option :value="25">25</option>
@@ -225,7 +225,7 @@ function statusLabel(status: string): string {
                 <div class="mt-4 flex flex-wrap justify-end gap-2">
                     <button
                         type="button"
-                        class="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50 dark:border-slate-600 dark:text-navy-200 dark:hover:bg-navy-700"
+                        class="btn bg-warning/10 font-medium text-warning hover:bg-warning/20 focus:bg-warning/20 active:bg-warning/25"
                         @click="clearFilters"
                     >
                         Clear filters
@@ -300,7 +300,7 @@ function statusLabel(status: string): string {
                                 >
                                     {{ statusLabel(message.status) }}
                                 </span>
-                                <p v-if="message.error_code" class="mt-1 text-xs text-danger">
+                                <p v-if="message.error_code" class="mt-1 text-xs text-error">
                                     Error {{ message.error_code }}
                                 </p>
                             </td>
