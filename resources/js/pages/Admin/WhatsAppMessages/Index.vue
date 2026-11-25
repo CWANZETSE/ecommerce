@@ -128,28 +128,6 @@ function statusLabel(status: string): string {
             </div>
         </div>
 
-        <!-- Statistics -->
-        <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-            <div
-                v-for="item in [
-                    { label: 'Total', value: statistics.total, color: 'text-slate-800 dark:text-navy-50' },
-                    { label: 'Pending', value: statistics.pending, color: 'text-warning' },
-                    { label: 'Sent', value: statistics.sent, color: 'text-info' },
-                    { label: 'Delivered', value: statistics.delivered, color: 'text-success' },
-                    { label: 'Read', value: statistics.read, color: 'text-primary dark:text-accent-light' },
-                    { label: 'Failed', value: statistics.failed, color: 'text-error' },
-                ]"
-                :key="item.label"
-                class="rounded-xl border border-slate-150 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-navy-800"
-            >
-                <p class="text-xs font-medium text-slate-500 dark:text-navy-300">
-                    {{ item.label }}
-                </p>
-                <p class="mt-2 text-2xl font-semibold tabular-nums" :class="item.color">
-                    {{ item.value.toLocaleString() }}
-                </p>
-            </div>
-        </div>
 
         <!-- Filters -->
         <div class="mt-5 rounded-2xl border border-slate-150 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-navy-800">
