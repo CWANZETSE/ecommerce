@@ -6,6 +6,7 @@ use App\Concerns\PasswordValidationRules;
 use App\Concerns\ProfileValidationRules;
 use App\Events\UserRegisteredEvent;
 use App\Models\User;
+use Illuminate\Validation\Rules\Password;
 use Illuminate\Support\Facades\Validator;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
 
@@ -28,7 +29,7 @@ class CreateNewUser implements CreatesNewUsers
                 'regex:/^(?:0\d{9}|254\d{9})$/',
                 'unique:users,phone',
             ],
-            'password' => $this->passwordRules(),
+            'password' => ['required', 'min:5', 'confirmed'],
         ])->validate();
 
         // Convert Kenyan numbers starting with 0 to international format.
