@@ -246,7 +246,6 @@ function prettyJson(value: Record<string, unknown> | null): string {
                     <h3 class="font-semibold text-slate-800 dark:text-navy-50">
                         Provider response
                     </h3>
-
                     <pre class="mt-4 max-h-[480px] overflow-auto rounded-lg bg-slate-50 p-3 text-xs leading-relaxed text-slate-700 dark:bg-navy-900 dark:text-navy-200">{{ prettyJson(message.provider_response) }}</pre>
                 </div>
             </div>

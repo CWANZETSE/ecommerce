@@ -38,7 +38,6 @@ return new class extends Migration
 
             // Optional response returned by Meta.
             $table->json('provider_response')->nullable();
-
             // Delivery timestamps.
             $table->timestamp('sent_at')->nullable();
             $table->timestamp('delivered_at')->nullable();
