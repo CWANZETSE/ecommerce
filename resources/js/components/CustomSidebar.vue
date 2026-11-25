@@ -193,6 +193,37 @@ function logout() {
                     </Link>
                 </li>
 
+                <!-- WhatsApp Messages -->
+<li>
+    <Link
+        href="/admin/whatsapp-messages"
+        class="flex items-center gap-3 rounded-lg px-3 py-1 text-xs-plus tracking-wide outline-hidden transition-colors duration-200 hover:bg-primary/20 focus:bg-primary/20 active:bg-primary/25 dark:hover:bg-navy-300/20 dark:focus:bg-navy-300/20 dark:active:bg-navy-300/25"
+        :class="isActive('/admin/whatsapp-messages')
+            ? 'bg-primary/20 font-medium text-primary dark:bg-navy-300/20 dark:text-accent-light'
+            : 'text-slate-600 hover:text-slate-900 dark:text-navy-200 dark:hover:text-navy-50'"
+        @click="emit('close')"
+    >
+        <span
+            class="relative flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 dark:bg-primary"
+        >
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="size-4"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.7"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            >
+                <path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8A8.5 8.5 0 0 1 8.7 3.9a8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8z" />
+            </svg>
+        </span>
+
+        <span class="truncate">WhatsApp Messages</span>
+    </Link>
+</li>
+
                 <!-- Shipping -->
                 <li>
                     <Link href="/admin/shipping"

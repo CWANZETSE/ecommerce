@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\ProductImageController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\ShippingZoneController;
 use App\Http\Controllers\Admin\StoreSettingController;
+use App\Http\Controllers\Admin\WhatsAppMessageController;
 use App\Http\Controllers\Customer\AccountController;
 use App\Http\Controllers\Customer\AddressController;
 use App\Http\Controllers\Customer\OrderController as CustomerOrderController;
@@ -170,7 +171,13 @@ Route::middleware(['auth', 'verified', EnsureUserIsAdmin::class])
                 'update' => 'categories_update',
                 'destroy' => 'categories_destroy',
             ]);
+        // WhatsApp message history
+        Route::get('/whatsapp-messages', [WhatsAppMessageController::class, 'index'])
+            ->name('whatsapp_messages_index');
 
+        Route::get('/whatsapp-messages/{whatsappMessageLog}', [WhatsAppMessageController::class, 'show'])
+        ->whereNumber('whatsappMessageLog')
+        ->name('whatsapp_messages_show');
         // Brands
         Route::resource('brands', BrandController::class)
             ->names([
