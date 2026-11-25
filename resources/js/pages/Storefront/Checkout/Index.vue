@@ -446,7 +446,7 @@ const formatMoney = (amount) =>
 
                 <!-- Trust & Terms Note -->
                 <div
-                    class="card p-4 bg-slate-100/60 dark:bg-navy-900 border border-slate-150 dark:border-navy-600 text-xs text-slate-500 dark:text-navy-300 leading-relaxed">
+                    class="alert flex rounded-lg border border-primary/30 bg-primary/10 py-4 px-4 text-primary sm:px-5">
                     By placing this order, you agree to our terms of service and return policy. Payments are securely
                     processed via M-Pesa. Your order will be confirmed instantly upon successful authorization.
                 </div>
