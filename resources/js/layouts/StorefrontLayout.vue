@@ -220,19 +220,7 @@ onBeforeUnmount(() => {
 
                     <!-- Right actions -->
                     <div class="ml-auto flex items-center gap-3">
-                        <button
-                            type="button"
-                            class="btn flex size-10 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-slate-100 p-0 text-slate-700 transition-colors hover:bg-slate-200 dark:border-navy-500 dark:bg-navy-700 dark:text-navy-100 dark:hover:bg-accent-light/20"
-                            :aria-label="
-                                isDark
-                                    ? 'Switch to light mode'
-                                    : 'Switch to dark mode'
-                            "
-                            @click="toggleTheme"
-                        >
-                            <Sun v-if="!isDark" class="size-5 text-amber-400" />
-                            <Moon v-else class="size-5 text-amber-400" />
-                        </button>
+                        
                         <Link
                             href="/cart"
                             class="relative flex size-10 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-primary/10 text-primary dark:bg-accent-light/10 dark:text-accent-light dark:border-navy-500"
@@ -730,5 +718,15 @@ onBeforeUnmount(() => {
                 </div>
             </div>
         </footer>
+        <!-- Floating theme toggle (bottom-right) -->
+<button
+    type="button"
+    class="fixed bottom-6 right-6 z-50 btn flex size-10 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-slate-100 p-0 text-slate-700 shadow-lg transition-colors hover:bg-slate-200 dark:border-navy-500 dark:bg-navy-700 dark:text-navy-100 dark:hover:bg-accent-light/20"
+    :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
+    @click="toggleTheme"
+>
+    <Sun v-if="!isDark" class="size-5 text-amber-400" />
+    <Moon v-else class="size-5 text-amber-400" />
+</button>
     </div>
 </template>
