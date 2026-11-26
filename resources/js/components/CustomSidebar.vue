@@ -73,7 +73,7 @@ function logout() {
                 <img
                     :src="storeLogoUrl"
                     :alt="storeName"
-                    class="h-12 w-auto object-contain object-left"
+                    class="h-22 w-auto object-contain object-left"
                 />
             </Link>
 
