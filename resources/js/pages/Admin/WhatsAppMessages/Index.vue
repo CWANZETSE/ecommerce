@@ -4,6 +4,7 @@ import { Head, Link, router } from '@inertiajs/vue3';
 import { reactive } from 'vue';
 import type { PageProps } from '@/types';
 import Pagination from '@/components/Pagination.vue';
+import { admin_logs_index } from '@/routes';
 
 interface WhatsAppMessage {
     id: number;
@@ -117,17 +118,26 @@ function statusLabel(status: string): string {
 
     <div class="p-4 sm:p-5 lg:p-6">
         <!-- Page heading -->
-        <div class="flex flex-col justify-between gap-3 py-5 sm:flex-row sm:items-center lg:py-6">
+        
+
+        <div class="flex items-center justify-between py-5 lg:py-6">
+            <div class="flex flex-col justify-between gap-3 py-5 sm:flex-row sm:items-center lg:py-6">
             <div>
                 <h2 class="text-xl font-medium text-slate-800 dark:text-navy-50 lg:text-2xl">
-                    WhatsApp Messages
+                    WhatsApp Message Logs
                 </h2>
-                <p class="mt-1 text-sm text-slate-500 dark:text-navy-300">
+                <p class="badge space-x-2.5 rounded-full bg-warning/10 text-warning dark:bg-warning/15">
                     Monitor WhatsApp notification delivery and read statuses.
                 </p>
             </div>
         </div>
-
+            <Link
+                :href="admin_logs_index.url()"
+                class="btn space-x-1.5 bg-slate-150 font-medium text-slate-700 hover:bg-slate-200 focus:bg-slate-200 active:bg-slate-200/80 dark:bg-navy-500 dark:text-navy-50 dark:hover:bg-navy-450 dark:focus:bg-navy-450 dark:active:bg-navy-450/90"
+            >
+                <span>← Back</span>
+            </Link>
+        </div>
 
         <!-- Filters -->
         <div class="mt-5 rounded-2xl border border-slate-150 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-navy-800">

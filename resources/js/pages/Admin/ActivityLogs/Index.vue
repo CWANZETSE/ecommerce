@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { Head, Link, router } from "@inertiajs/vue3";
-import { reactive, ref, watch } from "vue";
+import { Head, Link, router,usePage } from "@inertiajs/vue3";
+import { reactive, ref, watch,computed } from "vue";
 import {
     Search,
     Filter,
@@ -10,7 +10,7 @@ import {
     ClipboardList,
     X,
 } from "@lucide/vue";
-import { admin_dashboard, admin_logs_index } from "@/routes";
+import { admin_dashboard, admin_logs_index,admin_whatsapp_messages_index } from "@/routes";
 import Pagination from "@/components/Pagination.vue";
 import NoteSVG from "@/components/SVG/NoteSVG.vue";
 
@@ -75,6 +75,26 @@ const form = reactive<Filters>({
     date_to: props.filters.date_to ?? "",
 });
 
+const page = usePage();
+
+const isActivityLogs = computed(
+    () => page.url.startsWith(admin_logs_index.url()),
+);
+
+const isWhatsappLogs = computed(
+    () => page.url.startsWith("/admin/whatsapp-messages"),
+);
+const goToActivityLogs = () => {
+    if (!isActivityLogs.value) {
+        router.visit(admin_logs_index.url());
+    }
+};
+
+const goToWhatsappLogs = () => {
+    if (!isWhatsappLogs.value) {
+        router.visit(admin_whatsapp_messages_index.url()); // or admin_whatsapp_messages_index.url()
+    }
+};
 // Keep local filter values synchronized with server props.
 watch(
     () => props.filters,
@@ -180,7 +200,7 @@ const actionColor = (action: string) => {
                     <h4
                         class="font-semibold text-xl text-dark dark:text-white mb-3"
                     >
-                        Activity Logs
+                        Logs
                     </h4>
                     <ol
                         class="flex items-center whitespace-nowrap"
@@ -214,7 +234,29 @@ const actionColor = (action: string) => {
                 </div>
             </div>
         </div>
+        <div class="gap-2 flex justify-between w-1/2">
+    <label class="inline-flex items-center space-x-2 cursor-pointer">
+        <input
+            :checked="isActivityLogs"
+            @change="goToActivityLogs"
+            class="form-checkbox is-basic size-5 rounded-sm border-slate-400/70 checked:!border-success checked:bg-success hover:!border-success focus:!border-success dark:border-navy-400"
+            name="log-type"
+            type="radio"
+        />
+        <p>Activity Logs</p>
+    </label>
 
+    <label class="inline-flex items-center space-x-2 cursor-pointer">
+        <input
+            :checked="isWhatsappLogs"
+            @change="goToWhatsappLogs"
+            class="form-checkbox is-basic size-5 rounded-sm border-slate-400/70 checked:!border-success checked:bg-success hover:!border-success focus:!border-success dark:border-navy-400"
+            name="log-type"
+            type="radio"
+        />
+        <p>Whatsapp Logs</p>
+    </label>
+</div>
         <!-- Filters -->
         <div
             class="mt-4 overflow-hidden rounded-2xl bg-white shadow-sm dark:border-slate-700 dark:bg-navy-800"

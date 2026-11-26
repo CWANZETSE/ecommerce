@@ -252,28 +252,6 @@ function logout() {
                     </Link>
                 </li>
 
-                <!-- WhatsApp Messages -->
-                <li>
-                    <Link
-                        href="/admin/whatsapp-messages"
-                        class="flex items-center gap-3 rounded-lg px-3 py-1 text-xs-plus tracking-wide outline-hidden transition-colors duration-200 hover:bg-primary/20 focus:bg-primary/20 active:bg-primary/25 dark:hover:bg-navy-300/20 dark:focus:bg-navy-300/20 dark:active:bg-navy-300/25"
-                        :class="
-                            isActive('/admin/whatsapp-messages')
-                                ? 'bg-primary/20 font-medium text-primary dark:bg-navy-300/20 dark:text-accent-light'
-                                : 'text-slate-600 hover:text-slate-900 dark:text-navy-200 dark:hover:text-navy-50'
-                        "
-                        @click="emit('close')"
-                    >
-                        <span
-                            class="relative flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 dark:bg-primary"
-                        >
-                            <WhatsappSVG />
-                        </span>
-
-                        <span class="truncate">WhatsApp Logs</span>
-                    </Link>
-                </li>
-
                 <!-- Shipping -->
                 <li>
                     <Link
@@ -397,7 +375,7 @@ function logout() {
                             <NoteSVG />
                         </span>
 
-                        <span class="truncate">Activity Logs</span>
+                        <span class="truncate">Logs</span>
                     </Link>
                 </li>
             </ul>
