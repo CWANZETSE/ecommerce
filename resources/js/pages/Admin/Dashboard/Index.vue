@@ -100,9 +100,9 @@ function badgeClass(status: string): string {
 const getStatusColor = (status: string): string => {
     const s = status.toLowerCase();
     if (s.includes("paid") || s.includes("deliver") || s.includes("complete"))
-        return "#2dd4bf"; // Success
+        return "#13DEB9"; // Success
     if (s.includes("pending") || s.includes("await")) return "#f59e0b"; // Warning
-    if (s.includes("process") || s.includes("ship")) return "#2563eb"; // Info
+    if (s.includes("process") || s.includes("ship")) return "#5D87FF"; // Info
     if (s.includes("fail") || s.includes("cancel") || s.includes("refund"))
         return "#ef4444"; // Error
     return "#64748b"; // Default Slate
@@ -121,9 +121,9 @@ const revenueOptions = computed(() => ({
         fontFamily: "Geologica",
         toolbar: { show: false },
     },
-    colors: ["#10b981"],
+    colors: ["#13DEB9"],
     dataLabels: { enabled: false },
-    stroke: { curve: "smooth", width: 2 },
+    stroke: { curve: "smooth", width: 3 },
     fill: {
         type: "gradient",
         gradient: {
@@ -143,7 +143,7 @@ const revenueOptions = computed(() => ({
             style: { colors: "#94a3b8" },
         },
     },
-    grid: { show: true, borderColor: "#818cf8", strokeDashArray: 4 },
+    grid: { show: false, borderColor: "#818cf8", strokeDashArray: 4 },
     tooltip: { y: { formatter: (val: number) => `KES ${val.toFixed(2)}` } },
 }));
 
@@ -185,7 +185,7 @@ const orderStatusOptions = computed(() => ({
     colors: orderStatusData.value.map((item) => getStatusColor(item.status)),
 
     dataLabels: {
-        enabled: true,
+        enabled: false,
         formatter: (value: number) => value.toString(),
         style: {
             fontSize: "12px",
@@ -202,10 +202,10 @@ const orderStatusOptions = computed(() => ({
             },
         },
         axisBorder: {
-            show: false,
+            show: true,
         },
         axisTicks: {
-            show: false,
+            show: true,
         },
     },
 
