@@ -187,7 +187,7 @@ onBeforeUnmount(() => {
                             v-if="page.props.store_logo_url"
                             :src="page.props.store_logo_url"
                             :alt="page.props.store_name"
-                            class="h-28 w-auto"
+                            class="h-16 w-auto"
                         />
                         <span
                             v-else
@@ -629,7 +629,7 @@ onBeforeUnmount(() => {
                                     v-if="page.props.store_logo_url"
                                     :src="page.props.store_logo_url"
                                     alt="Store logo"
-                                    class="h-28 w-auto"
+                                    class="h-16 w-auto"
                                 />
                                 <span
                                     v-else
