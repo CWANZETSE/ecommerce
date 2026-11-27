@@ -11,13 +11,19 @@ class AfricasTalkingService
         array|string $recipients,
         string $message,
         ?string $senderId = null,
-        bool $enqueue = false,
+        bool $enqueue = true,
     ): array {
         $recipients = is_array($recipients)
             ? $recipients
             : [$recipients];
 
-        $recipients = array_values(array_filter($recipients));
+        $recipients = array_values(array_filter(
+            array_map(
+                fn ($recipient) => trim((string) $recipient),
+                $recipients
+            ),
+            fn ($recipient) => $recipient !== ''
+        ));
 
         if (empty($recipients)) {
             throw new RuntimeException(
@@ -25,44 +31,54 @@ class AfricasTalkingService
             );
         }
 
-        if (empty(config('africastalking.username'))) {
+        $username = config('africastalking.username');
+        $apiKey = config('africastalking.api_key');
+
+        if (empty($username)) {
             throw new RuntimeException(
                 'Africa\'s Talking username is not configured.'
             );
         }
 
-        if (empty(config('africastalking.api_key'))) {
+        if (empty($apiKey)) {
             throw new RuntimeException(
                 'Africa\'s Talking API key is not configured.'
             );
         }
 
-        $payload = [
-            'username' => config('africastalking.username'),
-            'to' => implode(',', $recipients),
-            'message' => $message,
-            'enqueue' => $enqueue,
-        ];
-
         $senderId ??= config('africastalking.sender_id');
 
-        if ($senderId) {
-            $payload['from'] = $senderId;
+        if (empty($senderId)) {
+            throw new RuntimeException(
+                'Africa\'s Talking sender ID is not configured.'
+            );
         }
+
+        $endpoint = config('africastalking.endpoint');
+
+        if (empty($endpoint)) {
+            throw new RuntimeException(
+                'Africa\'s Talking SMS endpoint is not configured.'
+            );
+        }
+
+        $payload = [
+            'username' => $username,
+            'phoneNumbers' => implode(',', $recipients),
+            'message' => $message,
+            'senderId' => $senderId,
+            'enqueue' => $enqueue ? 1 : 0,
+        ];
 
         $response = Http::timeout(
             config('africastalking.timeout', 15)
         )
             ->withHeaders([
-                'Apikey' => config('africastalking.api_key'),
+                'Apikey' => $apiKey,
                 'Accept' => 'application/json',
             ])
-            ->asForm()
-            ->post(
-                rtrim(config('africastalking.base_url'), '/')
-                    . '/version1/messaging',
-                $payload
-            );
+            ->asJson()
+            ->post($endpoint, $payload);
 
         if ($response->failed()) {
             throw new RuntimeException(
@@ -73,9 +89,13 @@ class AfricasTalkingService
 
         $result = $response->json();
 
-        if (!isset($result['SMSMessageData'])) {
+        if (
+            !is_array($result)
+            || !isset($result['SMSMessageData'])
+        ) {
             throw new RuntimeException(
-                'Invalid response received from Africa\'s Talking.'
+                'Invalid response received from Africa\'s Talking: '
+                . $response->body()
             );
         }
 

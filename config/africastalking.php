@@ -1,4 +1,9 @@
+
 <?php
+
+$environment = strtolower(
+    env('AFRICASTALKING_ENVIRONMENT', 'sandbox')
+);
 
 return [
 
@@ -8,15 +13,15 @@ return [
 
     'sender_id' => env('AFRICASTALKING_SENDER_ID'),
 
-    'environment' => env('AFRICASTALKING_ENVIRONMENT', 'sandbox'),
+    'environment' => $environment,
 
-    'base_url' => env(
-        'AFRICASTALKING_BASE_URL',
-        env('AFRICASTALKING_ENVIRONMENT', 'sandbox') === 'sandbox'
-            ? 'https://api.sandbox.africastalking.com'
-            : 'https://api.africastalking.com'
+    'endpoint' => env(
+        'AFRICASTALKING_ENDPOINT',
+        $environment === 'sandbox'
+            ? 'https://api.sandbox.africastalking.com/version1/messaging'
+            : 'https://api.africastalking.com/version1/messaging/bulk'
     ),
 
-    'timeout' => env('AFRICASTALKING_TIMEOUT', 15),
+    'timeout' => (int) env('AFRICASTALKING_TIMEOUT', 15),
 
 ];

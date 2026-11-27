@@ -53,12 +53,47 @@ class AfricasTalkingChannel
                 );
             }
 
-            $this->service->send(
+            $result = $this->service->send(
                 recipients: $recipients,
                 message: $message->content,
                 senderId: $message->from,
                 enqueue: $message->enqueue,
             );
+
+            $recipientResults = data_get(
+                $result,
+                'SMSMessageData.Recipients'
+            );
+
+            if (!is_array($recipientResults) || empty($recipientResults)) {
+                throw new RuntimeException(
+                    'Africa\'s Talking returned no recipient results.'
+                );
+            }
+
+            foreach ($recipientResults as $recipientResult) {
+                $statusCode = (int) ($recipientResult['statusCode'] ?? 0);
+
+                if (in_array($statusCode, [100, 101, 102], true)) {
+                    continue;
+                }
+
+                $recipientNumber = $recipientResult['number'] ?? 'Unknown';
+
+                $this->failureLogger->log(
+                    channel: 'sms',
+                    notifiable: $notifiable,
+                    notification: $notification,
+                    exception: new RuntimeException(
+                        sprintf(
+                            'Africa\'s Talking SMS failed. Status code: %d. Status: %s.',
+                            $statusCode,
+                            $recipientResult['status'] ?? 'Unknown'
+                        )
+                    ),
+                    recipient: $recipientNumber,
+                );
+            }
         } catch (Throwable $exception) {
             $this->failureLogger->log(
                 channel: 'sms',

@@ -7,7 +7,7 @@ class AfricasTalkingMessage
     public function __construct(
         public string $content,
         public ?string $from = null,
-        public bool $enqueue = false,
+        public bool $enqueue = true,
     ) {}
 
     public static function create(string $content): self
