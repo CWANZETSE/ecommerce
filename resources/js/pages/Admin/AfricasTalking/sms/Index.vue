@@ -184,11 +184,7 @@ function displayStatus(status: string): string {
                                     Recipient
                                 </th>
 
-                                <th
-                                    class="whitespace-nowrap border border-slate-150 px-5 py-4 font-bold dark:border-slate-700"
-                                >
-                                    Notification
-                                </th>
+                                
 
                                 <th
                                     class="whitespace-nowrap border border-slate-150 px-5 py-4 text-center font-bold dark:border-slate-700"
@@ -239,16 +235,7 @@ function displayStatus(status: string): string {
                                     </p>
                                 </td>
 
-                                <!-- Notification -->
-                                <td
-                                    class="min-w-[180px] border border-slate-150 px-5 py-4 dark:border-slate-700"
-                                >
-                                    <p
-                                        class="max-w-[220px] truncate text-xs text-slate-600 dark:text-navy-200"
-                                    >
-                                        {{ message.notification_type || "—" }}
-                                    </p>
-                                </td>
+                                
 
                                 <!-- Status -->
                                 <td
