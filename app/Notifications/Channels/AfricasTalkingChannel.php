@@ -80,7 +80,7 @@ class AfricasTalkingChannel
             foreach ($recipients as $recipient) {
                 $messageLogs[$this->normalizePhone($recipient)] =
                     SmsMessageLog::create([
-                        'notifiable_type' => get_class($notifiable),
+                        'notifiable_type' => $notifiable->getMorphClass(),
                         'notifiable_id' => (string) $notifiable->getKey(),
 
                         'notification_id' => $notification->id ?? null,
@@ -178,7 +178,7 @@ class AfricasTalkingChannel
                      * silently losing its message ID.
                      */
                     $messageLog = SmsMessageLog::create([
-                        'notifiable_type' => get_class($notifiable),
+                        'notifiable_type' => $notifiable->getMorphClass(),
                         'notifiable_id' => (string) $notifiable->getKey(),
                         'notification_id' => $notification->id ?? null,
                         'notification_type' => get_class($notification),

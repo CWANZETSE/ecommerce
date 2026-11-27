@@ -5,6 +5,7 @@ namespace Tests\Unit\Notifications\Channels;
 use App\Notifications\Channels\AfricasTalkingChannel;
 use App\Notifications\Support\NotificationFailureLogger;
 use App\Services\AfricasTalking\AfricasTalkingMessage;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Services\AfricasTalking\AfricasTalkingService;
 use Illuminate\Notifications\Notification;
 use RuntimeException;
@@ -13,6 +14,8 @@ use Throwable;
 
 class AfricasTalkingChannelTest extends TestCase
 {
+    use RefreshDatabase;
+    
     protected function makeChannel(
         AfricasTalkingService $service,
         NotificationFailureLogger $failureLogger,

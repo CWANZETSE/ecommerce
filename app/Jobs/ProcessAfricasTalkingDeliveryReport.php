@@ -9,7 +9,9 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\DB;
 use RuntimeException;
+use Throwable;
 
 class ProcessAfricasTalkingDeliveryReport implements ShouldQueue
 {
@@ -31,109 +33,135 @@ class ProcessAfricasTalkingDeliveryReport implements ShouldQueue
 
     public function handle(): void
     {
-        $report = SmsDeliveryReport::find($this->reportId);
+        DB::transaction(function (): void {
+            $report = SmsDeliveryReport::query()
+                ->lockForUpdate()
+                ->find($this->reportId);
 
-        if (!$report || $report->processing_status === 'processed') {
-            return;
-        }
-
-        $message = SmsMessageLog::where(
-            'message_id',
-            $report->message_id
-        )->first();
-
-        /*
-         * The callback may arrive before the outgoing message record
-         * has been updated with the provider message ID.
-         *
-         * Throwing allows the queue to retry this job.
-         */
-        if (!$message) {
-            throw new RuntimeException(
-                'SMS message record not found for provider message ID: '
-                . $report->message_id
-            );
-        }
-
-        $incomingStatus = $this->normalizeStatus($report->status);
-
-        $finalStatuses = [
-            'success',
-            'rejected',
-            'failed',
-            'expired',
-        ];
-
-        $currentStatus = $message->status;
-
-        $currentIsFinal = in_array(
-            $currentStatus,
-            $finalStatuses,
-            true
-        );
-
-        $incomingIsFinal = in_array(
-            $incomingStatus,
-            $finalStatuses,
-            true
-        );
-
-        /*
-         * Do not allow a late intermediate callback to overwrite
-         * a final delivery result.
-         */
-        if (!$currentIsFinal) {
             if (
-                $incomingIsFinal ||
-                $this->statusRank($incomingStatus) >=
-                    $this->statusRank($currentStatus)
+                !$report ||
+                $report->processing_status === 'processed'
             ) {
-                $updates = [
-                    'status' => $incomingStatus,
-                    'network_code' => $report->network_code,
-                ];
-
-                if ($report->failure_reason) {
-                    $updates['failure_reason'] = $report->failure_reason;
-                }
-
-                if (
-                    in_array(
-                        $incomingStatus,
-                        ['sent', 'success'],
-                        true
-                    ) && !$message->sent_at
-                ) {
-                    $updates['sent_at'] = now();
-                }
-
-                if ($incomingStatus === 'success') {
-                    $updates['delivered_at'] = now();
-                    $updates['failure_reason'] = null;
-                }
-
-                if (
-                    in_array(
-                        $incomingStatus,
-                        ['rejected', 'failed', 'expired'],
-                        true
-                    )
-                ) {
-                    $updates['failed_at'] = now();
-                }
-
-                $message->update($updates);
+                return;
             }
-        }
 
-        $report->update([
-            'processing_status' => 'processed',
-            'processed_at' => now(),
-            'processing_error' => null,
-        ]);
+            $message = SmsMessageLog::query()
+                ->where('message_id', $report->message_id)
+                ->lockForUpdate()
+                ->first();
+
+            /*
+             * A delivery callback can arrive before the outgoing
+             * message record has received its provider message ID.
+             *
+             * Throwing allows Laravel's queue retry mechanism to retry.
+             */
+            if (!$message) {
+                throw new RuntimeException(
+                    'SMS message record not found for provider message ID: '
+                    . $report->message_id
+                );
+            }
+
+            $incomingStatus = $this->normalizeStatus($report->status);
+
+            /*
+             * Unknown provider statuses are retained in the callback
+             * table but do not alter the outgoing message.
+             */
+            if ($incomingStatus === null) {
+                $report->update([
+                    'processing_status' => 'processed',
+                    'processed_at' => now(),
+                    'processing_error' => null,
+                ]);
+
+                return;
+            }
+
+            $finalStatuses = [
+                'success',
+                'rejected',
+                'failed',
+                'expired',
+            ];
+
+            $currentIsFinal = in_array(
+                $message->status,
+                $finalStatuses,
+                true
+            );
+
+            $incomingIsFinal = in_array(
+                $incomingStatus,
+                $finalStatuses,
+                true
+            );
+
+            /*
+             * Never replace an already-final delivery result.
+             *
+             * A final callback can replace an intermediate status.
+             * Intermediate callbacks must follow status progression.
+             */
+            if (!$currentIsFinal) {
+                $currentRank = $this->statusRank($message->status);
+                $incomingRank = $this->statusRank($incomingStatus);
+
+                if (
+                    $incomingIsFinal ||
+                    $incomingRank >= $currentRank
+                ) {
+                    $updates = [
+                        'status' => $incomingStatus,
+                    ];
+
+                    if ($report->network_code !== null) {
+                        $updates['network_code'] = $report->network_code;
+                    }
+
+                    if ($report->failure_reason !== null) {
+                        $updates['failure_reason'] = $report->failure_reason;
+                    }
+
+                    if (
+                        in_array($incomingStatus, ['sent', 'success'], true)
+                        && !$message->sent_at
+                    ) {
+                        $updates['sent_at'] = now();
+                    }
+
+                    if ($incomingStatus === 'success') {
+                        $updates['delivered_at'] =
+                            $message->delivered_at ?? now();
+
+                        $updates['failure_reason'] = null;
+                    }
+
+                    if (
+                        in_array(
+                            $incomingStatus,
+                            ['rejected', 'failed', 'expired'],
+                            true
+                        )
+                    ) {
+                        $updates['failed_at'] =
+                            $message->failed_at ?? now();
+                    }
+
+                    $message->update($updates);
+                }
+            }
+
+            $report->update([
+                'processing_status' => 'processed',
+                'processed_at' => now(),
+                'processing_error' => null,
+            ]);
+        }, attempts: 3);
     }
 
-    protected function normalizeStatus(string $status): string
+    protected function normalizeStatus(string $status): ?string
     {
         return match (strtolower(trim($status))) {
             'sent' => 'sent',
@@ -144,25 +172,26 @@ class ProcessAfricasTalkingDeliveryReport implements ShouldQueue
             'failed' => 'failed',
             'absentsubscriber' => 'absent_subscriber',
             'expired' => 'expired',
-            default => 'unknown',
+            default => null,
         };
     }
 
     protected function statusRank(string $status): int
-    {
-        return match ($status) {
-            'pending', 'queued', 'processed' => 0,
-            'buffered' => 1,
-            'submitted' => 2,
-            'sent' => 3,
-            'absent_subscriber' => 4,
-            default => -1,
-        };
-    }
+{
+    return match ($status) {
+        'pending', 'queued', 'processed' => 0,
+        'buffered' => 1,
+        'submitted' => 2,
+        'absent_subscriber' => 3,
+        'sent' => 4,
+        default => -1,
+    };
+}
 
-    public function failed(\Throwable $exception): void
+    public function failed(Throwable $exception): void
     {
-        SmsDeliveryReport::whereKey($this->reportId)
+        SmsDeliveryReport::query()
+            ->whereKey($this->reportId)
             ->where('processing_status', '!=', 'processed')
             ->update([
                 'processing_status' => 'failed',
