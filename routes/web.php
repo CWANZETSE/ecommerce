@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProductImageController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\ShippingZoneController;
+use App\Http\Controllers\Admin\SmsMessageController;
 use App\Http\Controllers\Admin\StoreSettingController;
 use App\Http\Controllers\Admin\WhatsAppMessageController;
 use App\Http\Controllers\Customer\AccountController;
@@ -208,6 +209,17 @@ Route::middleware(['auth', 'verified', EnsureUserIsAdmin::class])
             Route::patch('/{image}/primary', [ProductImageController::class, 'setPrimary'])->name('primary');
             Route::delete('/{image}', [ProductImageController::class, 'destroy'])->name('destroy');
         });
+
+        Route::prefix('africas-talking/sms')
+            ->name('africas_talking_sms_')
+            ->controller(SmsMessageController::class)
+            ->group(function () {
+                Route::get('/', 'index')->name('index');
+
+                Route::get('/{smsMessageLog}', 'show')
+                    ->whereNumber('smsMessageLog')
+                    ->name('show');
+            });
 
         // Shipping
         Route::get('/shipping', [ShippingZoneController::class, 'index'])->name('shipping_index');

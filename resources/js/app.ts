@@ -62,9 +62,7 @@ async function bootstrap() {
         },
     });
 
-    if (typeof window !== 'undefined') {
-        initializeFlashToast();
-    }
+    
 }
 
 initializeTheme();

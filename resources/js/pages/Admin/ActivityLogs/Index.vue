@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { Head, Link, router,usePage } from "@inertiajs/vue3";
-import { reactive, ref, watch,computed } from "vue";
+import { Head, Link, router, usePage } from "@inertiajs/vue3";
+import { reactive, ref, watch, computed } from "vue";
 import {
     Search,
     Filter,
@@ -10,7 +10,12 @@ import {
     ClipboardList,
     X,
 } from "@lucide/vue";
-import { admin_dashboard, admin_logs_index,admin_whatsapp_messages_index } from "@/routes";
+import {
+    admin_dashboard,
+    admin_logs_index,
+    admin_whatsapp_messages_index,
+    admin_africas_talking_sms_index,
+} from "@/routes";
 import Pagination from "@/components/Pagination.vue";
 import NoteSVG from "@/components/SVG/NoteSVG.vue";
 
@@ -77,16 +82,25 @@ const form = reactive<Filters>({
 
 const page = usePage();
 
-const isActivityLogs = computed(
-    () => page.url.startsWith(admin_logs_index.url()),
+const isActivityLogs = computed(() =>
+    page.url.startsWith(admin_logs_index.url()),
 );
 
-const isWhatsappLogs = computed(
-    () => page.url.startsWith("/admin/whatsapp-messages"),
+const isWhatsappLogs = computed(() =>
+    page.url.startsWith(admin_whatsapp_messages_index.url()),
+);
+const isAfricasTalkingLogs = computed(() =>
+    page.url.startsWith(admin_africas_talking_sms_index.url()),
 );
 const goToActivityLogs = () => {
     if (!isActivityLogs.value) {
         router.visit(admin_logs_index.url());
+    }
+};
+
+const goToAfricasTalkingLogs = () => {
+    if (!isAfricasTalkingLogs.value) {
+        router.visit(admin_africas_talking_sms_index.url());
     }
 };
 
@@ -235,28 +249,38 @@ const actionColor = (action: string) => {
             </div>
         </div>
         <div class="gap-2 flex justify-between w-1/2">
-    <label class="inline-flex items-center space-x-2 cursor-pointer">
-        <input
-            :checked="isActivityLogs"
-            @change="goToActivityLogs"
-            class="form-checkbox is-basic size-5 rounded-sm border-slate-400/70 checked:!border-success checked:bg-success hover:!border-success focus:!border-success dark:border-navy-400"
-            name="log-type"
-            type="radio"
-        />
-        <p>Activity Logs</p>
-    </label>
+            <label class="inline-flex items-center space-x-2 cursor-pointer">
+                <input
+                    :checked="isActivityLogs"
+                    @change="goToActivityLogs"
+                    class="form-checkbox is-basic size-5 rounded-sm border-slate-400/70 checked:!border-success checked:bg-success hover:!border-success focus:!border-success dark:border-navy-400"
+                    name="log-type"
+                    type="radio"
+                />
+                <p>Activity Logs</p>
+            </label>
 
-    <label class="inline-flex items-center space-x-2 cursor-pointer">
-        <input
-            :checked="isWhatsappLogs"
-            @change="goToWhatsappLogs"
-            class="form-checkbox is-basic size-5 rounded-sm border-slate-400/70 checked:!border-success checked:bg-success hover:!border-success focus:!border-success dark:border-navy-400"
-            name="log-type"
-            type="radio"
-        />
-        <p>Whatsapp Logs</p>
-    </label>
-</div>
+            <label class="inline-flex items-center space-x-2 cursor-pointer">
+                <input
+                    :checked="isWhatsappLogs"
+                    @change="goToWhatsappLogs"
+                    class="form-checkbox is-basic size-5 rounded-sm border-slate-400/70 checked:!border-success checked:bg-success hover:!border-success focus:!border-success dark:border-navy-400"
+                    name="log-type"
+                    type="radio"
+                />
+                <p>Whatsapp Logs</p>
+            </label>
+            <label class="inline-flex items-center space-x-2 cursor-pointer">
+                <input
+                    :checked="isAfricasTalkingLogs"
+                    @change="goToAfricasTalkingLogs"
+                    class="form-checkbox is-basic size-5 rounded-sm border-slate-400/70 checked:!border-success checked:bg-success hover:!border-success focus:!border-success dark:border-navy-400"
+                    name="log-type"
+                    type="radio"
+                />
+                <p>AfricasTalking Logs</p>
+            </label>
+        </div>
         <!-- Filters -->
         <div
             class="mt-4 overflow-hidden rounded-2xl bg-white shadow-sm dark:border-slate-700 dark:bg-navy-800"
