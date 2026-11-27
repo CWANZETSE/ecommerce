@@ -84,19 +84,19 @@ function statusClasses(status: string): string {
     switch (status.toLowerCase()) {
         case "processed":
         case "sent":
-            return "bg-success/10 text-success dark:bg-success/15";
+            return "badge space-x-2.5 rounded-full bg-success/10 text-success dark:bg-success/15";
 
         case "queued":
-            return "bg-info/10 text-info dark:bg-info/15";
+            return "badge space-x-2.5 rounded-full bg-info/10 text-info dark:bg-info/15";
 
         case "failed":
-            return "bg-danger/10 text-danger dark:bg-danger/15";
+            return "badge space-x-2.5 rounded-full bg-error/10 text-error dark:bg-error/15";
 
         case "pending":
-            return "bg-warning/10 text-warning dark:bg-warning/15";
+            return "badge space-x-2.5 rounded-full bg-warning/10 text-warning dark:bg-warning/15";
 
         default:
-            return "bg-slate-100 text-slate-600 dark:bg-navy-700 dark:text-navy-200";
+            return "badge bg-slate-150 text-slate-800 shadow-soft shadow-slate-200/50 dark:bg-navy-500 dark:text-navy-100 dark:shadow-navy-450/50";
     }
 }
 
