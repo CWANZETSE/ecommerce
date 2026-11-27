@@ -70,7 +70,7 @@ function displayStatus(status: string): string {
                     class="inline-flex items-center gap-2 text-sm font-medium text-gray-500 transition hover:text-primary dark:text-gray-400"
                 >
                     <span aria-hidden="true">←</span>
-                    SMS messages
+                    SMS Logs
                 </Link>
             </div>
         </div>
@@ -175,7 +175,7 @@ function displayStatus(status: string): string {
                 <!-- Failure information -->
                 <section
                     v-if="message.failure_reason"
-                    class="rounded-xl border border-red-200 bg-red-50/60 p-5 dark:border-red-500/20 dark:bg-red-500/5"
+                    class="rounded-xl border border-red-200 bg-red-50/60 p-5 dark:border-error dark:text-error-light dark:bg-error/15"
                 >
                     <h2 class="font-semibold text-red-700 dark:text-red-400">
                         Failure reason
