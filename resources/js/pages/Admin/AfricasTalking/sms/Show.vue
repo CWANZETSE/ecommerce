@@ -27,13 +27,13 @@ function statusClasses(status: string): string {
         case "processed":
         case "sent":
         case "queued":
-            return "bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400";
+            return "badge space-x-2.5 rounded-full bg-info/10 text-info dark:bg-info/15";
 
         case "failed":
-            return "bg-red-50 text-red-700 dark:bg-red-500/10 dark:text-red-400";
+            return "badge space-x-2.5 rounded-full bg-error/10 text-error dark:bg-error/15";
 
         case "pending":
-            return "bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400";
+            return "badge space-x-2.5 rounded-full bg-warning/10 text-warning dark:bg-warning/15";
 
         default:
             return "bg-gray-100 text-gray-700 dark:bg-navy-700 dark:text-gray-300";
@@ -49,7 +49,7 @@ function displayStatus(status: string): string {
     <div class="p-4 sm:p-5 lg:p-6">
         <!-- Heading -->
         <div
-            class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+            class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between py-5 lg:py-6"
         >
             <div>
                 <h1 class="text-xl font-bold text-gray-900 dark:text-white">
@@ -67,7 +67,7 @@ function displayStatus(status: string): string {
             <div class="mb-2">
                 <Link
                     href="/admin/africas-talking/sms"
-                    class="inline-flex items-center gap-2 text-sm font-medium text-gray-500 transition hover:text-primary dark:text-gray-400"
+                    class="btn bg-primary/10 font-medium text-primary hover:bg-primary/20 focus:bg-primary/20 active:bg-primary/25 dark:bg-accent-light/10 dark:text-accent-light dark:hover:bg-accent-light/20 dark:focus:bg-accent-light/20 dark:active:bg-accent-light/25"
                 >
                     <span aria-hidden="true">←</span>
                     SMS Logs
@@ -262,7 +262,7 @@ function displayStatus(status: string): string {
 
         
 
-        <div class="alert flex overflow-hidden rounded-lg bg-warning/10 text-warning dark:bg-warning/15">
+        <div class="alert flex overflow-hidden rounded-lg bg-warning/10 my-3 text-warning dark:bg-warning/15">
                   <div class="flex flex-1 items-center space-x-3 p-4">
                     <svg xmlns="http://www.w3.org/2000/svg" class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
