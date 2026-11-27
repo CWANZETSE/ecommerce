@@ -113,6 +113,7 @@
             "resources/js/pages/{$page['component']}.vue"
         ])
 
+        @PwaHead
         <x-inertia::head>
             <title>{{ config('app.name', 'Bazario') }}</title>
         </x-inertia::head>
@@ -212,6 +213,6 @@
                 }
             })();
         </script>
-
+        @RegisterServiceWorkerScript
     </body>
 </html>

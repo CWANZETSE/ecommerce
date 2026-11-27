@@ -62,6 +62,7 @@ const cartCount = computed(() => page.props.cart_count ?? 0);
 const currentPath = computed(() => page.url.split("?")[0]);
 import { useToast } from '@/composables/useToast';
 import { Toaster } from '@/components/ui/sonner';
+import InstallPwaButton from "@/components/InstallPwaButton.vue";
 // Initialize global toast watcher.
 useToast();
 
@@ -169,6 +170,7 @@ onBeforeUnmount(() => {
         <header
             class="sticky top-0 z-40 border-b border-slate-150 bg-white/90 backdrop-blur-md dark:border-navy-600 dark:bg-navy-750 dark:text-navy-300"
         >
+        <InstallPwaButton/>
             <div class="mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-8">
                 <div class="flex h-16 items-center gap-3">
                     <!-- Mobile Menu Trigger -->

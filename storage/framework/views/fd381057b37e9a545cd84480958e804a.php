@@ -113,6 +113,7 @@
             "resources/js/pages/{$page['component']}.vue"
         ]); ?>
 
+        <?php echo app(\EragLaravelPwa\Services\PWAService::class)->headTag(); ?>
         <?php if (isset($component)) { $__componentOriginal56673881198e3a2924721e242dee6899 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal56673881198e3a2924721e242dee6899 = $attributes; } ?>
 <?php $component = Inertia\View\Components\Head::resolve([] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -249,7 +250,7 @@
                 }
             })();
         </script>
-
+        <?php echo app(\EragLaravelPwa\Services\PWAService::class)->registerServiceWorkerScript(); ?>
     </body>
 </html>
 <?php /**PATH D:\SoftwareDevelopment\Vuejs\laravel_vuejs_inertia_tailwind_bootstrap\Ecommerce\resources\views/app.blade.php ENDPATH**/ ?>
