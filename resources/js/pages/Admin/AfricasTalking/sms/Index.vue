@@ -234,9 +234,6 @@ function displayStatus(status: string): string {
                                         {{ message.recipient }}
                                     </p>
                                 </td>
-
-                                
-
                                 <!-- Status -->
                                 <td
                                     class="whitespace-nowrap border border-slate-150 px-4 py-4 text-center dark:border-slate-700"
