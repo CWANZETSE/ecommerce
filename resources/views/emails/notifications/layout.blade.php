@@ -4,39 +4,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="color-scheme" content="light">
-    <title>{{ $heading }}</title>
+    <title>{{ $heading ?? 'Bazario Notification' }}</title>
 
     <style>
-        @font-face {
-            font-family: 'Geologica';
-            src: url('{{ asset('fonts/Geologica.ttf') }}') format('truetype');
-            font-weight: normal;
-        }
-
-        @font-face {
-            font-family: 'Geologica';
-            src: url('{{ asset('fonts/Geologica-Bold.ttf') }}') format('truetype');
-            font-weight: bold;
-        }
-
         body {
             margin: 0;
             padding: 0;
             background-color: #f8fafc;
             color: #334155;
-            font-family: 'Geologica', Arial, sans-serif;
-            font-size: 14px;
-            line-height: 1.7;
+            font-family: Geologica, Arial, sans-serif;
+            font-size: 13px;
+            line-height: 1.4;
         }
 
         table {
             border-collapse: collapse;
+            border-spacing: 0;
         }
 
         .email-wrapper {
             width: 100%;
-            padding: 35px 15px;
+            padding: 22px 12px;
             background-color: #f8fafc;
         }
 
@@ -46,27 +34,32 @@
             margin: 0 auto;
             background-color: #ffffff;
             border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            overflow: hidden;
+            border-radius: 9px;
         }
 
         .email-header {
-            padding: 22px 28px;
+            padding: 16px 20px;
             border-bottom: 1px solid #e2e8f0;
         }
 
-        .brand-name {
-            margin: 0;
-            color: #0f172a;
-            font-size: 23px;
-            font-weight: bold;
-            letter-spacing: -0.5px;
+        .logo {
+            display: block;
+            max-width: 175px;
+            max-height: 38px;
+            width: auto;
+            height: auto;
         }
 
-        .brand-tagline {
-            margin: 4px 0 0;
+        .store-name {
+            color: #0f172a;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .tagline {
+            margin-top: 3px;
             color: #64748b;
-            font-size: 11px;
+            font-size: 10px;
         }
 
         .header-label {
@@ -74,32 +67,50 @@
             font-size: 10px;
             font-weight: bold;
             letter-spacing: 1px;
+            text-align: right;
             text-transform: uppercase;
         }
 
         .email-content {
-            padding: 32px 28px;
+            padding: 20px;
         }
 
         .email-heading {
-            margin: 0 0 22px;
+            margin: 0 0 12px;
             color: #0f172a;
-            font-size: 21px;
+            font-size: 19px;
             font-weight: bold;
+            line-height: 1.3;
+        }
+
+        .email-body {
+            color: #334155;
+            font-size: 13px;
             line-height: 1.4;
         }
 
-        .email-paragraph {
-            margin: 0 0 16px;
-            color: #475569;
-            font-size: 13px;
-            line-height: 1.8;
+        .email-body p {
+            margin: 0 0 7px;
+            padding: 0;
+            line-height: 1.4;
+        }
+
+        .email-body p:last-child {
+            margin-bottom: 0;
+        }
+
+        .email-body strong,
+        .email-body b {
+            color: #0f172a;
         }
 
         .email-action {
+            margin-top: 14px;
+        }
+
+        .email-button {
             display: inline-block;
-            margin: 8px 0 18px;
-            padding: 11px 22px;
+            padding: 9px 16px;
             border-radius: 6px;
             background-color: #4f46e5;
             color: #ffffff !important;
@@ -109,70 +120,103 @@
         }
 
         .email-footer {
-            padding: 22px 25px;
+            padding: 13px 20px;
             border-top: 1px solid #e2e8f0;
-            background-color: #f8fafc;
+            color: #64748b;
+            font-size: 10px;
+            line-height: 1.4;
             text-align: center;
         }
 
-        .footer-message {
-            margin: 0 0 7px;
-            color: #334155;
-            font-size: 12px;
-            font-weight: bold;
+        .email-footer p {
+            margin: 0 0 3px;
+            padding: 0;
         }
 
-        .footer-copyright {
-            margin: 0;
-            color: #64748b;
-            font-size: 10px;
+        .email-footer p:last-child {
+            margin-bottom: 0;
         }
 
-        .footer-automated {
-            margin: 8px 0 0;
-            color: #94a3b8;
-            font-size: 10px;
-        }
-
-        @media only screen and (max-width: 600px) {
+        @media only screen and (max-width: 480px) {
             .email-wrapper {
-                padding: 15px 8px !important;
+                padding: 10px 6px;
             }
 
             .email-header,
             .email-content {
-                padding: 22px 18px !important;
+                padding: 15px;
             }
 
             .email-heading {
-                font-size: 19px !important;
+                font-size: 17px;
             }
         }
     </style>
 </head>
 
 <body>
+    @php
+        use App\Models\StoreSetting;
+        use Illuminate\Support\Facades\Storage;
+
+        $settings = StoreSetting::public()
+            ->pluck('value', 'key')
+            ->all();
+
+        $logoPath = $settings['store_logo'] ?? $settings['logo'] ?? null;
+
+        if ($logoPath) {
+            $logoPath = preg_replace('#^/?storage/#', '', $logoPath);
+        }
+
+        $logoUrl = null;
+
+        if ($logoPath) {
+            try {
+                if (Storage::exists($logoPath)) {
+                    $logoUrl = Storage::url($logoPath);
+                }
+            } catch (\Throwable $e) {
+                report($e);
+            }
+        }
+    @endphp
+
     <table role="presentation" width="100%" class="email-wrapper">
         <tr>
             <td align="center">
+
                 <table role="presentation" width="100%" class="email-container">
 
-                    <!-- Common Header -->
+                    <!-- Header -->
                     <tr>
                         <td class="email-header">
                             <table role="presentation" width="100%">
                                 <tr>
                                     <td align="left" valign="middle">
-                                        <h1 class="brand-name">BAZARIO</h1>
-                                        <p class="brand-tagline">
-                                            Technology at your fingertips.
-                                        </p>
+                                        @if($logoUrl)
+                                            <img
+                                                src="{{ $logoUrl }}"
+                                                alt="{{ $settings['store_name'] ?? 'Bazario' }}"
+                                                class="logo"
+                                            >
+                                        @else
+                                            <div class="store-name">
+                                                {{ $settings['store_name'] ?? 'Bazario' }}
+                                            </div>
+                                        @endif
+
+                                        @if(!empty($settings['store_tagline']))
+                                            <div class="tagline">
+                                                {{ $settings['store_tagline'] }}
+                                            </div>
+                                        @endif
                                     </td>
 
                                     <td align="right" valign="middle">
-                                        <span class="header-label">
-                                            Official Notification
-                                        </span>
+                                        <div class="header-label">
+                                            Official
+                                        </div>
                                     </td>
                                 </tr>
                             </table>
@@ -182,47 +226,54 @@
                     <!-- Dynamic Content -->
                     <tr>
                         <td class="email-content">
-                            <h2 class="email-heading">
-                                {{ $heading }}
-                            </h2>
 
-                            @foreach ($body as $block)
-                                @if (is_array($block) && ($block['type'] ?? null) === 'action')
-                                    <p style="margin: 0;">
-                                        <a
-                                            href="{{ $block['url'] }}"
-                                            class="email-action"
-                                        >
-                                            {{ $block['label'] }}
-                                        </a>
-                                    </p>
-                                @else
-                                    <p class="email-paragraph">
-                                        {{ is_array($block) ? '' : $block }}
-                                    </p>
-                                @endif
-                            @endforeach
+                            <h1 class="email-heading">
+                                {{ $heading }}
+                            </h1>
+
+                            <div class="email-body">
+                                @foreach($body as $block)
+                                    @if(is_array($block) && ($block['type'] ?? null) === 'action')
+                                        <div class="email-action">
+                                            <a
+                                                href="{{ $block['url'] }}"
+                                                class="email-button"
+                                            >
+                                                {{ $block['label'] }}
+                                            </a>
+                                        </div>
+                                    @elseif(is_string($block))
+                                        <p>{{ $block }}</p>
+                                    @endif
+                                @endforeach
+                            </div>
+
                         </td>
                     </tr>
 
-                    <!-- Common Footer -->
+                    <!-- Footer -->
                     <tr>
                         <td class="email-footer">
-                            <p class="footer-message">
-                                Thank you for choosing Bazario.
+                            <p>
+                                Thank you for choosing
+                                {{ $settings['store_name'] ?? 'Bazario' }}.
                             </p>
 
-                            <p class="footer-copyright">
-                                &copy; {{ date('Y') }} Bazario. All rights reserved.
+                            <p>
+                                This is an automated notification.
+                                Please do not reply to this email.
                             </p>
 
-                            <p class="footer-automated">
-                                This is an automated notification. Please do not reply to this email.
+                            <p>
+                                &copy; {{ date('Y') }}
+                                {{ $settings['store_name'] ?? 'Bazario' }}.
+                                All rights reserved.
                             </p>
                         </td>
                     </tr>
 
                 </table>
+
             </td>
         </tr>
     </table>
