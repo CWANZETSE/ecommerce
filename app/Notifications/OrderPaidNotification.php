@@ -20,21 +20,21 @@ class OrderPaidNotification extends Notification implements ShouldQueue
         public Order $order
     ) {}
 
-    public function toMail(object $notifiable): MailMessage
-    {
-        return (new MailMessage)
-            ->subject("Payment Received - Order {$this->order->order_number}")
-            ->greeting("Hello {$notifiable->name},")
-            ->line('Payment received!')
-            ->line(
-                "We have successfully received KES {$this->order->grand_total} for order {$this->order->order_number}."
-            )
-            ->line(
-                'Your order is now being processed for delivery.'
-            )
-            ->line('Thank you for shopping with us!')
-            ->salutation('Thank you.');
-    }
+   public function toMail(object $notifiable): MailMessage
+{
+    return (new MailMessage)
+        ->subject("Payment Received - Order {$this->order->order_number}")
+        ->view('emails.notifications.layout', [
+            'heading' => 'Payment Successfully Received',
+            'body' => [
+                "Hello {$notifiable->name},",
+                'Payment received!',
+                "We have successfully received KES {$this->order->grand_total} for order {$this->order->order_number}.",
+                'Your order is now being processed for delivery.',
+                'Thank you for shopping with us!',
+            ],
+        ]);
+}
 
     public function toAfricasTalking(
         object $notifiable

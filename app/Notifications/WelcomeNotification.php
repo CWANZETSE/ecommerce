@@ -16,17 +16,24 @@ class WelcomeNotification extends Notification implements ShouldQueue
     use Queueable;
 
     public function toMail(object $notifiable): MailMessage
-    {
-        return (new MailMessage)
-            ->subject('Welcome to My Store!')
-            ->greeting("Hi {$notifiable->name},")
-            ->line('Thank you for creating an account with us.')
-            ->line(
-                'You can now track orders, save delivery addresses, and checkout faster.'
-            )
-            ->action('Start Shopping', url('/customer/products'))
-            ->line('We look forward to serving you!');
-    }
+{
+    return (new MailMessage)
+        ->subject('Welcome to Bazario!')
+        ->view('emails.notifications.layout', [
+            'heading' => 'Welcome to Bazario!',
+            'body' => [
+                "Hello {$notifiable->name},",
+                'Thank you for creating an account with us.',
+                'You can now track orders, save delivery addresses, and checkout faster.',
+                [
+                    'type' => 'action',
+                    'label' => 'Start Shopping',
+                    'url' => url('/customer/products'),
+                ],
+                'We look forward to serving you!',
+            ],
+        ]);
+}
 
     public function toAfricasTalking(
         object $notifiable

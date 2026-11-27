@@ -22,23 +22,21 @@ class PaymentFailedNotification extends Notification implements ShouldQueue
     ) {}
 
     public function toMail(object $notifiable): MailMessage
-    {
-        return (new MailMessage)
-            ->subject("Payment Failed - Order {$this->order->order_number}")
-            ->greeting("Hello {$notifiable->name},")
-            ->line(
-                "Unfortunately, payment for order {$this->order->order_number} could not be completed."
-            )
-            ->line("Reason: {$this->reason}.")
-            ->line(
-                'Your order is still open. Please try paying again or contact our support team if the issue persists.'
-            )
-            ->line("Order total: KES {$this->order->grand_total}.")
-            ->line(
-                'If money was deducted, it will be reversed within 48 hours.'
-            )
-            ->salutation('Thank you.');
-    }
+{
+    return (new MailMessage)
+        ->subject("Payment Failed - Order {$this->order->order_number}")
+        ->view('emails.notifications.layout', [
+            'heading' => 'Payment Could Not Be Completed',
+            'body' => [
+                "Hello {$notifiable->name},",
+                "Unfortunately, payment for order {$this->order->order_number} could not be completed.",
+                "Reason: {$this->reason}.",
+                'Your order is still open. Please try paying again or contact our support team if the issue persists.',
+                "Order total: KES {$this->order->grand_total}.",
+                'If money was deducted, it will be reversed within 48 hours.',
+            ],
+        ]);
+}
 
     public function toAfricasTalking(
         object $notifiable

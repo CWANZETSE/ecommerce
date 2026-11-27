@@ -21,22 +21,23 @@ class OrderPlacedNotification extends Notification implements ShouldQueue
     ) {}
 
     public function toMail(object $notifiable): MailMessage
-    {
-        return (new MailMessage)
-            ->subject("Order Received - {$this->order->order_number}")
-            ->greeting("Hello {$notifiable->name},")
-            ->line('Thank you for your order!')
-            ->line(
-                "Order {$this->order->order_number} has been received for KES {$this->order->grand_total}."
-            )
-            ->line(
-                'Please check your phone for the M-Pesa payment prompt and enter your PIN to complete payment.'
-            )
-            ->line(
-                'If you do not receive the prompt, please try again or contact our support team.'
-            )
-            ->salutation('Thank you for shopping with us!');
-    }
+{
+    return (new MailMessage)
+        ->subject("Order Received - {$this->order->order_number}")
+        ->view('emails.notifications.layout', [
+            'heading' => 'Your Order Has Been Received',
+
+            'body' => [
+                "Hello {$notifiable->name},",
+
+                "Thank you for shopping with Bazario. Your order {$this->order->order_number} has been successfully received.",
+
+                "Your order total is KES {$this->order->grand_total}. Please follow the M-Pesa payment prompt to complete your payment.",
+
+                'We appreciate your business.',
+            ],
+        ]);
+}
 
     public function toAfricasTalking(
         object $notifiable

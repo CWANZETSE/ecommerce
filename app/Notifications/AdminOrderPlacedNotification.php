@@ -24,19 +24,23 @@ class AdminOrderPlacedNotification extends Notification implements ShouldQueue
      * Admin email notification.
      */
     public function toMail(object $notifiable): MailMessage
-    {
-        return (new MailMessage)
-            ->subject("New Order Received - {$this->order->order_number}")
-            ->greeting("Hello {$notifiable->name},")
-            ->line('A new order has been placed on Bazario.')
-            ->line("Order Number: {$this->order->order_number}")
-            ->line("Customer: {$this->order->customer_name}")
-            ->line("Customer Email: {$this->order->customer_email}")
-            ->line("Customer Phone: {$this->order->customer_phone}")
-            ->line("Order Total: KES {$this->order->grand_total}")
-            ->line('Please log in to the administration dashboard to review and process this order.')
-            ->salutation('Bazario Order Management');
-    }
+{
+    return (new MailMessage)
+        ->subject("New Order Received - {$this->order->order_number}")
+        ->view('emails.notifications.layout', [
+            'heading' => 'New Order Received',
+            'body' => [
+                "Hello {$notifiable->name},",
+                'A new order has been placed on Bazario.',
+                "Order Number: {$this->order->order_number}",
+                "Customer: {$this->order->customer_name}",
+                "Customer Email: {$this->order->customer_email}",
+                "Customer Phone: {$this->order->customer_phone}",
+                "Order Total: KES {$this->order->grand_total}",
+                'Please log in to the administration dashboard to review and process this order.',
+            ],
+        ]);
+}
 
     /**
      * Admin SMS notification.

@@ -21,29 +21,30 @@ class OrderDispatchedNotification extends Notification implements ShouldQueue
     ) {}
 
     public function toMail(object $notifiable): MailMessage
-    {
-        $mail = (new MailMessage)
-            ->subject("Order {$this->order->order_number} Dispatched")
-            ->greeting("Hello {$notifiable->name},")
-            ->line(
-                "Good news! Your order {$this->order->order_number} has been dispatched and is on its way to you."
-            );
+{
+    $body = [
+        "Hello {$notifiable->name},",
+        "Good news! Your order {$this->order->order_number} has been dispatched and is on its way to you.",
+    ];
 
-        $shippingAddress = $this->order->shipping_address;
+    $shippingAddress = $this->order->shipping_address;
 
-        if (
-            ! empty($shippingAddress['county'])
-            && ! empty($shippingAddress['address'])
-        ) {
-            $mail->line(
-                "Delivery to {$shippingAddress['county']}, {$shippingAddress['address']}."
-            );
-        }
-
-        return $mail
-            ->line('Thank you for shopping with us!')
-            ->salutation('Thank you.');
+    if (
+        ! empty($shippingAddress['county'])
+        && ! empty($shippingAddress['address'])
+    ) {
+        $body[] = "Delivery to {$shippingAddress['county']}, {$shippingAddress['address']}.";
     }
+
+    $body[] = 'Thank you for shopping with us!';
+
+    return (new MailMessage)
+        ->subject("Order {$this->order->order_number} Dispatched")
+        ->view('emails.notifications.layout', [
+            'heading' => 'Your Order Is On Its Way',
+            'body' => $body,
+        ]);
+}
 
     public function toAfricasTalking(
         object $notifiable

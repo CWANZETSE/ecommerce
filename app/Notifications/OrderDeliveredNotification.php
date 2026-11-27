@@ -21,16 +21,18 @@ class OrderDeliveredNotification extends Notification implements ShouldQueue
     ) {}
 
     public function toMail(object $notifiable): MailMessage
-    {
-        return (new MailMessage)
-            ->subject("Order {$this->order->order_number} Delivered")
-            ->greeting("Hello {$notifiable->name},")
-            ->line(
-                "Your order {$this->order->order_number} has been successfully delivered."
-            )
-            ->line('Thank you for shopping with us!')
-            ->salutation('Thank you.');
-    }
+{
+    return (new MailMessage)
+        ->subject("Order {$this->order->order_number} Delivered")
+        ->view('emails.notifications.layout', [
+            'heading' => 'Order Successfully Delivered',
+            'body' => [
+                "Hello {$notifiable->name},",
+                "Your order {$this->order->order_number} has been successfully delivered.",
+                'Thank you for shopping with us!',
+            ],
+        ]);
+}
 
     public function toAfricasTalking(
         object $notifiable

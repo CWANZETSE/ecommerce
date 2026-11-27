@@ -22,27 +22,26 @@ class OrderCancelledNotification extends Notification implements ShouldQueue
     ) {}
 
     public function toMail(object $notifiable): MailMessage
-    {
-        $mail = (new MailMessage)
-            ->subject("Order {$this->order->order_number} Cancelled")
-            ->greeting("Hello {$notifiable->name},")
-            ->line(
-                "Your order {$this->order->order_number} has been cancelled."
-            );
+{
+    $body = [
+        "Hello {$notifiable->name},",
+        "Your order {$this->order->order_number} has been cancelled.",
+    ];
 
-        if ($this->wasPaid) {
-            $mail->line(
-                "A refund of KES {$this->order->grand_total} is being processed."
-            )
-                ->line(
-                    'The amount will be returned to your M-Pesa number within 3-5 business days.'
-                );
-        }
-
-        return $mail
-            ->line('Contact our support team if you have any questions.')
-            ->salutation('Thank you.');
+    if ($this->wasPaid) {
+        $body[] = "A refund of KES {$this->order->grand_total} is being processed.";
+        $body[] = 'The amount will be returned to your M-Pesa number within 3-5 business days.';
     }
+
+    $body[] = 'Contact our support team if you have any questions.';
+
+    return (new MailMessage)
+        ->subject("Order {$this->order->order_number} Cancelled")
+        ->view('emails.notifications.layout', [
+            'heading' => 'Order Cancelled',
+            'body' => $body,
+        ]);
+}
 
     public function toAfricasTalking(
         object $notifiable
