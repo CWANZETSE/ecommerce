@@ -18,7 +18,6 @@ class StoreProductRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'sku' => ['required', 'string', 'max:100', 'unique:products,sku'],
             'category_id' => ['required', 'uuid', Rule::exists('categories', 'id')],
             'brand_id' => ['nullable', 'uuid', Rule::exists('brands', 'id')],
             'short_description' => ['nullable', 'string', 'max:500'],
@@ -32,17 +31,13 @@ class StoreProductRequest extends FormRequest
             'images.*' => ['image', 'max:4096'],
 
             'variations' => ['required', 'array', 'min:1'],
-            'variations.*.sku' => ['required', 'string', 'max:100', 'distinct', 'unique:product_variations,sku'],
             'variations.*.price' => ['required', 'numeric', 'min:0'],
             'variations.*.sale_price' => ['nullable', 'numeric', 'min:0'],
             'variations.*.stock_quantity' => ['required', 'integer', 'min:0'],
             'variations.*.low_stock_threshold' => ['nullable', 'integer', 'min:0'],
             'variations.*.attribute_value_ids' => ['required', 'array', 'min:1'],
             'variations.*.attribute_value_ids.*' => ['uuid', Rule::exists('product_attribute_values', 'id')],
-            'variations.*.is_default' => [
-                'required',
-                'boolean',
-            ],
+            'variations.*.is_default' => ['required', 'boolean'],
         ];
     }
 
@@ -182,7 +177,6 @@ class StoreProductRequest extends FormRequest
     {
         return [
             'name' => 'product name',
-            'sku' => 'product SKU',
             'category_id' => 'category',
             'brand_id' => 'brand',
             'short_description' => 'short description',
