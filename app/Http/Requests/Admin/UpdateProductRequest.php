@@ -16,79 +16,44 @@ class UpdateProductRequest extends FormRequest
     }
 
     public function rules(): array
-    {
-        $productId = $this->route('product')?->id;
+{
+    $productId = $this->route('product')?->id;
 
-        return [
-            'name' => ['required', 'string', 'max:255'],
-            'sku' => ['required', 'string', 'max:100', Rule::unique('products', 'sku')->ignore($productId)],
-            'category_id' => ['required', 'uuid', Rule::exists('categories', 'id')],
-            'brand_id' => ['nullable', 'uuid', Rule::exists('brands', 'id')],
-            'short_description' => ['nullable', 'string', 'max:500'],
-            'description' => ['nullable', 'string'],
-            'is_active' => ['boolean'],
-            'is_featured' => ['boolean'],
-            'seo_title' => ['nullable', 'string', 'max:255'],
-            'seo_description' => ['nullable', 'string', 'max:500'],
+    return [
+        'name' => ['required', 'string', 'max:255'],
+        'category_id' => ['required', 'uuid', Rule::exists('categories', 'id')],
+        'brand_id' => ['nullable', 'uuid', Rule::exists('brands', 'id')],
+        'short_description' => ['nullable', 'string', 'max:500'],
+        'description' => ['nullable', 'string'],
+        'is_active' => ['boolean'],
+        'is_featured' => ['boolean'],
+        'seo_title' => ['nullable', 'string', 'max:255'],
+        'seo_description' => ['nullable', 'string', 'max:500'],
 
-            'images' => ['nullable', 'array'],
-            'images.*' => ['image', 'max:4096'],
+        'images' => ['nullable', 'array'],
+        'images.*' => ['image', 'max:4096'],
 
-            'variations' => ['required', 'array', 'min:1'],
-            'variations.*.id' => ['nullable', 'uuid'],
-            'variations.*.sku' => ['required', 'string', 'max:100', 'distinct'],
-            'variations.*.price' => ['required', 'numeric', 'min:0'],
-            'variations.*.sale_price' => ['nullable', 'numeric', 'min:0'],
-            'variations.*.stock_quantity' => ['required', 'integer', 'min:0'],
-            'variations.*.low_stock_threshold' => ['nullable', 'integer', 'min:0'],
-            'variations.*.attribute_value_ids' => ['required', 'array', 'min:1'],
-            'variations.*.attribute_value_ids.*' => ['uuid', Rule::exists('product_attribute_values', 'id')],
-            'variations.*.is_default' => [
-                'required',
-                'boolean',
-            ],
-        ];
-    }
+        'variations' => ['required', 'array', 'min:1'],
+        'variations.*.id' => ['nullable', 'uuid'],
+        'variations.*.price' => ['required', 'numeric', 'min:0'],
+        'variations.*.sale_price' => ['nullable', 'numeric', 'min:0'],
+        'variations.*.stock_quantity' => ['required', 'integer', 'min:0'],
+        'variations.*.low_stock_threshold' => ['nullable', 'integer', 'min:0'],
+        'variations.*.attribute_value_ids' => ['required', 'array', 'min:1'],
+        'variations.*.attribute_value_ids.*' => ['uuid', Rule::exists('product_attribute_values', 'id')],
+        'variations.*.is_default' => ['required', 'boolean'],
+    ];
+}
 
-    public function withValidator(Validator $validator): void
-    {
-        $validator->after(function (Validator $v) {
-            $product = $this->route('product');
-            if (! $product) {
-                return;
-            }
+public function withValidator(Validator $validator): void
+{
+    $validator->after(function (Validator $v) {
+        $rows = (array) $this->input('variations', []);
+        $this->validateAttributeCombinations($v, $rows);
+    });
+}
 
-            $rows = (array) $this->input('variations', []);
 
-            // 1. SKU uniqueness across the table, allowing this product's own variations
-            $ownIds = ProductVariation::where('product_id', $product->id)->pluck('id')->all();
-            $seenSkus = [];
-            foreach ($rows as $i => $row) {
-                $sku = $row['sku'] ?? null;
-                $id = $row['id'] ?? null;
-                if (! is_string($sku) || $sku === '') {
-                    continue;
-                }
-                if (in_array($sku, $seenSkus, true)) {
-                    $v->errors()->add("variations.$i.sku", 'Duplicate SKU in this form.');
-
-                    continue;
-                }
-                $seenSkus[] = $sku;
-
-                $q = ProductVariation::where('sku', $sku);
-                if ($id && in_array($id, $ownIds, true)) {
-                    $q->where('id', '!=', $id);
-                }
-                if ($q->exists()) {
-                    $v->errors()->add("variations.$i.sku", 'This SKU is already used by another variation.');
-                }
-            }
-
-            // 2. Attribute combinations
-            $this->validateAttributeCombinations($v, $rows);
-        });
-    }
 
     protected function validateAttributeCombinations(Validator $v, array $rows): void
     {
@@ -172,7 +137,7 @@ class UpdateProductRequest extends FormRequest
 
             'variations.*.sku.required' => 'Every variation needs a SKU.',
             'variations.*.sku.distinct' => 'Two variations have the same SKU — they must be unique.',
-
+            
             'variations.*.price.required' => 'Please enter variant price.',
             'variations.*.price.numeric' => 'Variation prices must be numbers.',
             'variations.*.price.min' => 'Variation prices cannot be negative.',

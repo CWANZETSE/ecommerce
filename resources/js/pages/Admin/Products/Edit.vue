@@ -267,10 +267,10 @@ function setDefaultVariation(selectedRow: VariationFormRow) {
 
                     <label class="block">
                         <span class="font-medium text-slate-700 dark:text-navy-100">Product SKU</span>
-                        <input v-model="form.sku"
-                            class="form-input mt-1.5 w-full rounded-lg border border-slate-300 bg-transparent px-3 py-2 placeholder:text-slate-400/70 hover:border-slate-400 focus:border-primary dark:border-navy-450 dark:hover:border-navy-400 dark:focus:border-accent"
+                        <input v-model="form.sku" disabled
+                            class="form-input mt-1.5 cursor-not-allowed w-full rounded-lg border border-slate-300 bg-transparent px-3 py-2 mb-2 placeholder:text-slate-400/70 hover:border-slate-400 focus:border-primary dark:border-navy-450 dark:hover:border-navy-400 dark:focus:border-accent"
                             placeholder="Enter SKU" />
-                        <p v-if="form.errors.sku" class="mt-1 text-xs text-error">{{ form.errors.sku }}</p>
+                        <div class="badge bg-primary/10 text-primary dark:bg-accent-light/15 dark:text-accent-light">Auto-generated from name and category. Updates automatically when either changes.</div>
                     </label>
 
                     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -475,8 +475,8 @@ function setDefaultVariation(selectedRow: VariationFormRow) {
                                         <div>
                                             <label
                                                 class="text-xs font-medium text-slate-600 dark:text-navy-300">SKU</label>
-                                            <input v-model="row.sku"
-                                                class="form-input mt-1 w-full rounded-lg border border-slate-300 bg-transparent px-2.5 py-1.5 text-sm dark:border-navy-450 dark:bg-navy-900" />
+                                            <input v-model="row.sku" disabled
+                                                class="form-input mt-1 w-full cursor-not-allowed rounded-lg border border-slate-300 bg-transparent px-2.5 py-1.5 text-sm dark:border-navy-450 dark:bg-navy-900" />
                                         </div>
                                         <div>
                                             <label class="text-xs font-medium text-slate-600 dark:text-navy-300">

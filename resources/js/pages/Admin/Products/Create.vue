@@ -32,7 +32,6 @@ interface Attribute {
 
 interface VariationFormRow {
     id: string | null;
-    sku: string;
     price: number | null;
     sale_price: number | null;
     stock_quantity: number;
@@ -46,10 +45,8 @@ defineProps<PageProps & {
     brands: Option[];
     attributes: Attribute[];
 }>();
-
 const form = useForm({
     name: '',
-    sku: '',
     category_id: '',
     brand_id: '',
     short_description: '',
@@ -63,7 +60,6 @@ const form = useForm({
 function addVariation() {
     form.variations.push({
         id: null,
-        sku: '',
         price: null,
         sale_price: null,
         stock_quantity: 0,
@@ -135,7 +131,6 @@ function submit() {
             ...data,
             variations: data.variations.map((row) => ({
                 id: row.id,
-                sku: row.sku,
                 price: row.price,
                 sale_price: row.sale_price,
                 is_default: row.is_default === true,
@@ -194,16 +189,7 @@ function submit() {
                         <p v-if="form.errors.name" class="mt-1 text-xs text-error">{{ form.errors.name }}</p>
                     </label>
 
-                    <label class="block">
-                        <span class="font-medium text-slate-700 dark:text-navy-100">Product SKU</span>
-                        <input v-model="form.sku"
-                            class="form-input mt-1.5 w-full rounded-lg border border-slate-300 bg-transparent px-3 py-2 placeholder:text-slate-400/70 hover:border-slate-400 focus:border-primary dark:border-navy-450 dark:hover:border-navy-400 dark:focus:border-accent"
-                            placeholder="Enter SKU" />
-                        <p class="mt-1 text-xs text-slate-400 dark:text-navy-300">
-                            Catalogue reference. Each variation has its own SKU below.
-                        </p>
-                        <p v-if="form.errors.sku" class="mt-1 text-xs text-error">{{ form.errors.sku }}</p>
-                    </label>
+                    
 
                     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <label class="block">
@@ -303,14 +289,7 @@ function submit() {
 
 
                     <div class="mt-3 grid gap-3 sm:grid-cols-3 lg:grid-cols-6">
-                        <div>
-                            <label class="text-xs font-medium text-slate-600 dark:text-navy-300">
-                                SKU <span class="text-error">*</span>
-                            </label>
-                            <input v-model="row.sku" required
-                                class="form-input mt-1 w-full rounded-lg border border-slate-300 bg-transparent px-2.5 py-1.5 text-sm dark:border-navy-450 dark:bg-navy-900"
-                                placeholder="Variation SKU" />
-                        </div>
+                        
 
                         <div>
                             <label class="text-xs font-medium text-slate-600 dark:text-navy-300">
@@ -380,13 +359,6 @@ function submit() {
                             </div>
                         </div>
                     </div>
-
-                    <p v-if="form.errors[`variations.${index}.sku`]" class="mt-2 text-xs text-error">
-                        {{ form.errors[`variations.${index}.sku`] }}
-                    </p>
-                    <p v-if="form.errors[`variations.${index}.attribute_value_ids`]" class="mt-2 text-xs text-error">
-                        {{ form.errors[`variations.${index}.attribute_value_ids`] }}
-                    </p>
                 </div>
             </section>
 
